@@ -1,1 +1,3 @@
-import product_configurator
+# -*- coding: utf-8 -*-
+
+from . import product_configurator
