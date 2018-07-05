@@ -128,7 +128,9 @@ class ProductTemplate(models.Model):
             value_ids, custom_values=custom_values)
 
         bom_obj = self.env['mrp.bom']
+
         bom = bom_obj.browse(bom_obj._bom_find(product=variant))
+
         if not bom:
             bom_line_vals = session.get_bom_line_vals()
             if bom_line_vals:
