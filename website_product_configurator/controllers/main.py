@@ -14,35 +14,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
             )
 
         cfg_session_obj = request.env['product.config.session']
-        cfg_session = False
-        product_config_sessions = request.session.get(
-            'product_config_session',
-            {}
-        )
-        is_public_user = request.env.user.has_group('base.group_public')
-        if product_config_sessions and product_config_sessions.get(product.id):
-            cfg_session = cfg_session_obj.browse(
-                int(product_config_sessions.get(product.id))
-            )
 
         # Retrieve and active configuration session or create a new one
-        if not cfg_session or not cfg_session.exists():
-            cfg_session = cfg_session_obj.sudo().create_get_session(
-                product.id,
-                force_create=is_public_user,
-                user_id=request.env.user.id
-            )
-            if product_config_sessions:
-                request.session['product_config_session'].update({
-                    product.id: cfg_session.id
-                })
-            else:
-                request.session['product_config_session'] = {
-                    product.id: cfg_session.id
-                }
-        if (cfg_session.user_id.has_group('base.group_public') and not
-                is_public_user):
-            cfg_session.user_id = request.env.user
+        cfg_session = cfg_session_obj.create_get_session(product.id)
 
         # Render the configuration template based on the configuration session
         config_form = self.render_form(cfg_session)
@@ -53,13 +27,23 @@ class ProductConfigWebsiteSale(WebsiteSale):
         """Return dictionary with values required for website template
         rendering"""
 
-        cfg_session = cfg_session.sudo()
+        open_cfg_step_lines = cfg_session.get_open_step_lines()
+        active_step = cfg_session.get_active_step()
+        cfg_step_lines = cfg_session.get_all_step_lines()
+        check_val_ids = cfg_session.product_tmpl_id.attribute_line_ids.mapped(
+            'value_ids')
+        available_value_ids = cfg_session.values_available(
+            check_val_ids=check_val_ids.ids)
+        if not active_step:
+            active_step = cfg_step_lines[:1]
         vals = {
             'cfg_session': cfg_session,
-            'cfg_step_lines': cfg_session.get_open_step_lines(),
-            'active_step': cfg_session.get_active_step(),
+            'cfg_step_lines': cfg_step_lines or self.get_default_step(),
+            'open_cfg_step_lines': (open_cfg_step_lines or
+                                    self.get_default_step()),
+            'active_step': active_step,
             'value_ids': cfg_session.value_ids.ids,
-            'available_value_ids': cfg_session.values_available(),
+            'available_value_ids': available_value_ids,
             'main_object': cfg_session.product_tmpl_id
         }
 
@@ -73,12 +57,178 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'website_product_configurator.product_configurator', vals
         )
 
+    def remove_prefix(self, values):
+        product_configurator_obj = request.env['product.configurator']
+        field_prefix = product_configurator_obj._prefixes.get('field_prefix')
+        custom_field_prefix = product_configurator_obj._prefixes.get(
+            'custom_field_prefix')
+        new_values = {}
+        for key, value in values.items():
+            key = key.replace(field_prefix, '').replace(
+                custom_field_prefix, '')
+            new_values[key] = value
+        return new_values
+
+    def remove_recursive_list(self, values):
+        new_values = {}
+        for key, value in values.items():
+            if isinstance(value, tuple):
+                value = value[0]
+            if isinstance(value, list):
+                value = value[0][2]
+            new_values[key] = value
+        return new_values
+
+    def get_default_step(self):
+        return self.env.ref(
+            'website_product_configurator.config_step_configure')
+
+    def get_current_configuration(self, form_values,
+                                  cfg_session, product_tmpl_id):
+        product_attribute_lines = product_tmpl_id.attribute_line_ids
+        value_ids = []
+        for attr_line in product_attribute_lines:
+            if attr_line.custom:
+                pass
+            else:
+                attr_values = form_values.get(attr_line.attribute_id.id, False)
+                if not attr_values:
+                    continue
+                if not isinstance(attr_values, list):
+                    attr_values = [attr_values]
+                value_ids += attr_values
+        return value_ids
+
+    def update_dynamic_fields(self, product_tmpl_id, form_vals):
+        product_configurator_obj = request.env['product.configurator']
+        field_prefix = product_configurator_obj._prefixes.get('field_prefix')
+        # custom_field_prefix = product_configurator_obj._prefixes.get(
+        #    'custom_field_prefix')
+
+        attr_lines = product_tmpl_id.attribute_line_ids.sorted()
+        vals = {}
+        for attr_line in attr_lines:
+            attribute_id = attr_line.attribute_id.id
+            field_name = '%s%s' % (field_prefix, attribute_id)
+            # custom_field = '%s%s' % (custom_field_prefix, attribute_id)
+            field_value = form_vals.get(attribute_id, False)
+            # custom_field_value = form_vals.get('%s' % (custom_field), False)
+            if attr_line.custom:
+                pass
+
+            elif attr_line.multi:
+                if not field_value:
+                    field_value = []
+                field_value = [[6, False, field_value]]
+
+            vals.update({
+                field_name: field_value,
+                # custom_field: form_vals.get(
+                #    '%s' % (custom_field), False) or False,
+            })
+        return vals
+
+    def _prepare_configurator_values(self, form_vals, config_session_id,
+                                     product_tmpl_id):
+        config_fields = {
+            'state': config_session_id.state,
+            'config_session_id': config_session_id.id,
+            'product_tmpl_id': product_tmpl_id.id,
+            'product_preset_id': config_session_id.product_preset_id.id,
+            'price': config_session_id.price,
+            'value_ids': [[6, False, config_session_id.value_ids.ids]],
+            'attribute_value_line_ids': [
+                [4, line.id, False]
+                for line in config_session_id.attribute_value_line_ids
+            ],
+            'attribute_line_ids': [
+                [4, line.id, False]
+                for line in product_tmpl_id.attribute_line_ids
+            ],
+        }
+        config_fields.update(self.update_dynamic_fields(
+            product_tmpl_id, form_vals))
+        return config_fields
+
+    # TODO :: remaining part : FOR CUSTOM
+    def get_dictionary_from_form_vals(self, form_vals,
+                                      config_session, product_tmpl_id):
+        values = {}
+        for form_val in form_vals:
+            if form_val['name'] in values and form_val['value']:
+                values[form_val['name']].append(form_val['value'])
+            else:
+                value = form_val['value'] and [form_val['value']] or []
+                values.update({form_val['name']: value})
+
+        config_vals = {}
+        for attr_line in product_tmpl_id.attribute_line_ids:
+            if attr_line.custom:
+                pass
+            else:
+                attr_vals = values.get('%s' % (attr_line.attribute_id.id), [])
+                attr_vals = [int(s) for s in attr_vals]
+                if not attr_line.multi:
+                    attr_vals = attr_vals and attr_vals[0] or False
+                config_vals.update({
+                    attr_line.attribute_id.id: attr_vals
+                })
+        return config_vals
+
+    def get_session_and_product(self, form_vals):
+        product_template_id = request.env['product.template']
+        config_session = request.env['product.config.session']
+        for val in form_vals:
+            if val.get('name') == 'product_tmpl_id':
+                product_tmpl_id = val.get('value')
+            if val.get('name') == 'config_session_id':
+                config_session_id = val.get('value')
+
+        if product_tmpl_id:
+            product_template_id = product_template_id.browse(
+                int(product_tmpl_id))
+        if config_session_id:
+            config_session = config_session.browse(
+                int(config_session_id))
+        return {
+            'config_session': config_session,
+            'product_tmpl': product_template_id
+        }
+
     @http.route('/website_product_configurator/onchange',
                 type='json', methods=['POST'], auth="public", website=True)
     def onchange(self, form_values, field_name):
         """Capture onchange events in the website and forward data to backend
         onchange method"""
-        import pdb
-        pdb.set_trace()
-        for form_val in form_values:
-            pass
+        product_configurator_obj = request.env['product.configurator']
+        result = self.get_session_and_product(form_values)
+        config_session_id = result.get('config_session')
+        product_template_id = result.get('product_tmpl')
+
+        form_values = self.get_dictionary_from_form_vals(
+            form_values, config_session_id, product_template_id)
+        config_vals = self._prepare_configurator_values(
+            form_values, config_session_id, product_template_id)
+
+        field_prefix = product_configurator_obj._prefixes.get('field_prefix')
+        field_name = '%s%s' % (field_prefix, field_name)
+        specs = product_configurator_obj._onchange_spec()
+        updates = product_configurator_obj.onchange(
+            config_vals, field_name, specs)
+
+        value_ids = self.get_current_configuration(
+            form_values, config_session_id, product_template_id)
+        open_cfg_step_lines = config_session_id.get_open_step_lines(value_ids)
+        if not open_cfg_step_lines:
+            open_cfg_step_lines = self.get_default_step()
+
+        updates['value'] = self.remove_prefix(updates['value'])
+        updates['value'] = self.remove_recursive_list(updates['value'])
+        updates['domain'] = self.remove_prefix(updates['domain'])
+        updates['open_cfg_step_lines'] = open_cfg_step_lines.ids
+        return updates
+
+    @http.route('/website_product_configurator/save_configuration',
+                type='json', methods=['POST'], auth="public", website=True)
+    def save_configuration(self, form_values):
+        form_values = self.get_dictionary_from_form_vals(form_values)
