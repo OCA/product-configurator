@@ -944,6 +944,38 @@ class ProductConfigurator(models.TransientModel):
         self.config_session_id.config_step = step
         return wizard_action
 
+    def check_and_open_incomplete_step(self, value_ids=None,
+                                       custom_value_ids=None):
+        """ Check and open incomplete step if any
+        :param value_ids: recordset of product.attribute.value
+        """
+        if not value_ids:
+            value_ids = self.value_ids
+        if not custom_value_ids:
+            custom_value_ids = self.custom_value_ids
+        open_step_lines = self.config_session_id.get_open_step_lines()
+        step_to_open = False
+        custom_attr_selected = custom_value_ids.mapped('attribute_id')
+        for step in open_step_lines:
+            unset_attr_line_value_ids = step.attribute_line_ids.search([
+                ('id', 'in', step.attribute_line_ids.ids),
+                ('required', '=', True),
+                ('value_ids', 'not in', value_ids.ids),
+
+            ])
+            unset_attr_line_custom_vals = step.attribute_line_ids.search([
+                ('id', 'in', unset_attr_line_value_ids.ids),
+                ('custom', '=', True),
+                ('attribute_id', 'in', custom_attr_selected.ids)
+            ])
+
+            if unset_attr_line_value_ids - unset_attr_line_custom_vals:
+                step_to_open = step
+                break
+        if step_to_open:
+            return self.open_step(step_to_open)
+        return False
+
     @api.multi
     def action_config_done(self):
         """This method is for the final step which will be taken care by a
