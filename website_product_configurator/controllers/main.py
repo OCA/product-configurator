@@ -72,6 +72,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'prefixes': product_configurator_obj._prefixes,
             'custom_val_id': custom_val_id,
             'extra_attribute_line_ids': extra_attribute_line_ids,
+            'attribute_value_line_ids': cfg_session.attribute_value_line_ids.ids
         }
         return vals
 
@@ -280,6 +281,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
         updates['value'] = self.remove_recursive_list(updates['value'])
         updates['open_cfg_step_lines'] = open_cfg_step_lines
+        print("updates", updates)
         return updates
 
     def set_config_next_step(self, config_session_id,
