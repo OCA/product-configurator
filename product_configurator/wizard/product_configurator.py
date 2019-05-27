@@ -4,7 +4,7 @@ from odoo.osv import orm
 from odoo.addons.base.ir.ir_model import FIELD_TYPES
 
 from odoo import models, fields, tools, api, _
-from odoo.exceptions import Warning, ValidationError
+from odoo.exceptions import Warning as warning, ValidationError
 
 
 class FreeSelection(fields.Selection):
@@ -117,7 +117,7 @@ class ProductConfigurator(models.TransientModel):
 
         if self.value_ids:
             # TODO: Add confirmation button an delete cfg session
-            raise Warning(
+            raise warning(
                 _('Changing the product template while having an active '
                   'configuration will erase reset/clear all values')
             )
@@ -533,7 +533,7 @@ class ProductConfigurator(models.TransientModel):
             xml_dynamic_form = xml_view.xpath(
                 "//group[@name='dynamic_form']")[0]
         except Exception:
-            raise Warning(
+            raise warning(
                 _('There was a problem rendering the view '
                   '(dynamic_form not found)')
             )
@@ -789,6 +789,64 @@ class ProductConfigurator(models.TransientModel):
         """Prevent database storage of dynamic fields and instead write values
         to database persistent value_ids field"""
 
+        # Get current database value_ids (current configuration)
+        field_prefix = self._prefixes.get('field_prefix')
+        custom_field_prefix = self._prefixes.get('custom_field_prefix')
+
+        custom_ext_id = 'product_configurator.custom_attribute_value'
+        custom_val = self.env.ref(custom_ext_id)
+
+        attr_val_dict = {}
+        custom_val_dict = {}
+
+        for attr_line in self.product_tmpl_id.attribute_line_ids:
+            attr_id = attr_line.attribute_id.id
+            field_name = field_prefix + str(attr_id)
+            custom_field_name = custom_field_prefix + str(attr_id)
+
+            if field_name not in vals and custom_field_name not in vals:
+                continue
+
+            # Add attribute values from the client except custom attribute
+            # If a custom value is being written, but field name is not in
+            #   the write dictionary, then it must be a custom value!
+            if vals.get(field_name, custom_val.id) != custom_val.id:
+                if attr_line.multi and isinstance(vals[field_name], list):
+                    if not vals[field_name]:
+                        field_val = None
+                    else:
+                        field_val = vals[field_name][0][2]
+                elif not attr_line.multi and isinstance(vals[field_name], int):
+                    field_val = vals[field_name]
+                else:
+                    raise warning(
+                        _('An error occursed while parsing value for '
+                          'attribute %s' % attr_line.attribute_id.name)
+                    )
+                attr_val_dict.update({
+                    attr_id: field_val
+                })
+                # Ensure there is no custom value stored if we have switched
+                # from custom value to selected attribute value.
+                if attr_line.custom:
+                    custom_val_dict.update({attr_id: False})
+            elif attr_line.custom:
+                val = vals.get(custom_field_name, False)
+                if attr_line.attribute_id.custom_type == 'binary':
+                    # TODO: Add widget that enables multiple file uploads
+                    val = [{
+                        'name': 'custom',
+                        'datas': vals[custom_field_name]
+                    }]
+                custom_val_dict.update({
+                    attr_id: val
+                })
+                # Ensure there is no standard value stored if we have switched
+                # from selected value to custom value.
+                attr_val_dict.update({attr_id: False})
+
+        self.config_session_id.update_config(attr_val_dict, custom_val_dict)
+
         # Remove all dynamic fields from write values
         self.config_session_id.update_session_configuration_value(
             vals=vals,
@@ -825,13 +883,34 @@ class ProductConfigurator(models.TransientModel):
                 _('Product Template does not have any attribute lines defined')
             )
 
-        next_step = self.config_session_id.get_next_step(
-            state=self.state,
-            product_tmpl_id=self.product_tmpl_id,
-            value_ids=self.value_ids,
-            custom_value_ids=self.custom_value_ids,
-        )
-        if not next_step:
+        cfg_step_lines = self.product_tmpl_id.config_step_line_ids
+        if not cfg_step_lines:
+            if (self.value_ids or self.custom_value_ids)\
+                    and not self.state == 'select':
+                return self.action_config_done()
+            elif not (self.value_ids or self.custom_value_ids)\
+                    and not self.state == 'select':
+                raise warning(_("You must select at least one\
+                    attribute in order to configure a product"))
+            else:
+                self.state = 'configure'
+                return wizard_action
+
+        adjacent_steps = self.config_session_id.get_adjacent_steps()
+        next_step = adjacent_steps.get('next_step')
+
+        session_config_step = self.config_session_id.config_step
+        if session_config_step and self.state != session_config_step:
+            next_step = self.config_session_id.config_step
+        else:
+            next_step = str(next_step.id) if next_step else None
+        if next_step:
+            self.state = next_step
+            self.config_session_id.config_step = next_step
+        elif not (self.value_ids or self.custom_value_ids):
+            raise warning(_("You must select at least one\
+                    attribute in order to configure a product"))
+        else:
             return self.action_config_done()
         return self.open_step(step=next_step)
 
