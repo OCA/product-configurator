@@ -164,12 +164,12 @@ class ProductConfigurator(models.TransientModel):
 
     def get_onchange_vals(self, cfg_val_ids, config_session_id=None):
         """Onchange hook to add / modify returned values by onchange method"""
-        if not config_session_id:
-            config_session_id = self.config_session_id
+        # Remove None from cfg_val_ids if exist
+        cfg_val_ids = [val for val in cfg_val_ids if val]
 
-        product_img = config_session_id.get_config_image(cfg_val_ids)
-        price = config_session_id.get_cfg_price(cfg_val_ids)
-        weight = config_session_id.get_cfg_weight(value_ids=cfg_val_ids)
+        product_img = self.config_session_id.get_config_image(cfg_val_ids)
+        price = self.config_session_id.get_cfg_price(cfg_val_ids)
+        weight = self.config_session_id.get_cfg_weight(value_ids=cfg_val_ids)
 
         return {
             'product_img': product_img,
