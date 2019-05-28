@@ -4,7 +4,7 @@ from odoo.osv import orm
 from odoo.addons.base.ir.ir_model import FIELD_TYPES
 
 from odoo import models, fields, tools, api, _
-from odoo.exceptions import Warning as warning, ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 
 class FreeSelection(fields.Selection):
@@ -117,7 +117,7 @@ class ProductConfigurator(models.TransientModel):
 
         if self.value_ids:
             # TODO: Add confirmation button an delete cfg session
-            raise warning(
+            raise UserError(
                 _('Changing the product template while having an active '
                   'configuration will erase reset/clear all values')
             )
@@ -533,7 +533,7 @@ class ProductConfigurator(models.TransientModel):
             xml_dynamic_form = xml_view.xpath(
                 "//group[@name='dynamic_form']")[0]
         except Exception:
-            raise warning(
+            raise UserError(
                 _('There was a problem rendering the view '
                   '(dynamic_form not found)')
             )
@@ -819,7 +819,7 @@ class ProductConfigurator(models.TransientModel):
                 elif not attr_line.multi and isinstance(vals[field_name], int):
                     field_val = vals[field_name]
                 else:
-                    raise warning(
+                    raise UserError(
                         _('An error occursed while parsing value for '
                           'attribute %s' % attr_line.attribute_id.name)
                     )
@@ -890,7 +890,7 @@ class ProductConfigurator(models.TransientModel):
                 return self.action_config_done()
             elif not (self.value_ids or self.custom_value_ids)\
                     and not self.state == 'select':
-                raise warning(_("You must select at least one\
+                raise UserError(_("You must select at least one\
                     attribute in order to configure a product"))
             else:
                 self.state = 'configure'
@@ -912,7 +912,7 @@ class ProductConfigurator(models.TransientModel):
             self.state = next_step
             self.config_session_id.config_step = next_step
         elif not (self.value_ids or self.custom_value_ids):
-            raise warning(_("You must select at least one\
+            raise UserError(_("You must select at least one\
                     attribute in order to configure a product"))
         else:
             return self.action_config_done()
