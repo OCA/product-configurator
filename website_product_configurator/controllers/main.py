@@ -26,15 +26,35 @@ class ProductConfigWebsiteSale(WebsiteSale):
             )
 
         cfg_session_obj = request.env['product.config.session']
+        cfg_session = False
+        product_config_sessions = request.session.get(
+            'product_config_session',
+            {}
+        )
+        is_public_user = request.env.user.has_group('base.group_public')
+        if product_config_sessions and product_config_sessions.get(product.id):
+            cfg_session = cfg_session_obj.browse(
+                int(product_config_sessions.get(product.id))
+            )
 
         # Retrieve and active configuration session or create a new one
-        cfg_session = cfg_session_obj.sudo().create_get_session(product.id)
-
-        # Set config-step in config session when it creates from wizard
-        # because select state not exist on website
-        if not cfg_session.config_step:
-            cfg_session.config_step = 'select'
-            self.set_config_next_step(cfg_session)
+        if not cfg_session or not cfg_session.exists():
+            cfg_session = cfg_session_obj.sudo().create_get_session(
+                product.id,
+                force_create=is_public_user,
+                user_id=request.env.user.id
+            )
+            if product_config_sessions:
+                request.session['product_config_session'].update({
+                    product.id: cfg_session.id
+                })
+            else:
+                request.session['product_config_session'] = {
+                    product.id: cfg_session.id
+                }
+        if (cfg_session.user_id.has_group('base.group_public') and not
+                is_public_user):
+            cfg_session.user_id = request.env.user
 
         # Render the configuration template based on the configuration session
         config_form = self.render_form(cfg_session)
@@ -60,6 +80,8 @@ class ProductConfigWebsiteSale(WebsiteSale):
             active_step = cfg_step_lines[:1]
         extra_attribute_line_ids = self.get_extra_attribute_line_ids(
             cfg_session.product_tmpl_id)
+        cfg_session = cfg_session.sudo()
+        attr_val_line_ids = cfg_session.attribute_value_line_ids.ids
         vals = {
             'cfg_session': cfg_session,
             'cfg_step_lines': cfg_step_lines,
@@ -72,7 +94,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'prefixes': product_configurator_obj._prefixes,
             'custom_val_id': custom_val_id,
             'extra_attribute_line_ids': extra_attribute_line_ids,
-            'attribute_value_line_ids': cfg_session.attribute_value_line_ids.ids
+            'attribute_value_line_ids': attr_val_line_ids
         }
         return vals
 
@@ -244,7 +266,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
         """Capture onchange events in the website and forward data to backend
         onchange method"""
         # config session and product template
-        print("form_valuesform_valuesform_valuesform_valuesform_valuesform_valuesform_values ", form_values, field_name)
         product_configurator_obj = request.env['product.configurator']
         result = self.get_session_and_product(form_values)
         config_session_id = result.get('config_session')
@@ -282,7 +303,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
         updates['value'] = self.remove_recursive_list(updates['value'])
         updates['open_cfg_step_lines'] = open_cfg_step_lines
-        print("updates ",updates)
         return updates
 
     def set_config_next_step(self, config_session_id,
