@@ -32,11 +32,12 @@ class ProductConfigWebsiteSale(WebsiteSale):
             {}
         )
         is_public_user = request.env.user.has_group('base.group_public')
-        cfg_session_id = product_config_sessions.get(product.id)
-        if cfg_session_id:
-            cfg_session = cfg_session_obj.browse(int(cfg_session_id))
+        if product_config_sessions and product_config_sessions.get(product.id):
+            cfg_session = cfg_session_obj.browse(
+                int(product_config_sessions.get(product.id))
+            )
 
-        # Retrieve an active configuration session or create a new one
+        # Retrieve and active configuration session or create a new one
         if not cfg_session or not cfg_session.exists():
             cfg_session = cfg_session_obj.sudo().create_get_session(
                 product.id,
@@ -55,17 +56,19 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 is_public_user):
             cfg_session.user_id = request.env.user
 
-        # Set config-step in config session when it creates from wizard
-        # because select state not exist on website
-        if not cfg_session.config_step:
-            cfg_session.config_step = 'select'
-            self.set_config_next_step(cfg_session)
-
-
         # Render the configuration template based on the configuration session
         config_form = self.render_form(cfg_session)
 
         return config_form
+
+    def get_image_vals(self, config_image):
+        if(isinstance(config_image, list)):
+            config_image_vals = {'config_image_ids': config_image,
+                                 'name': 'product.attribute.value.line'}
+        else:
+            config_image_vals = {'config_image_ids': config_image.ids,
+                                 'name': config_image._name}
+        return config_image_vals
 
     def get_render_vals(self, cfg_session):
         """Return dictionary with values required for website template
@@ -87,6 +90,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
         extra_attribute_line_ids = self.get_extra_attribute_line_ids(
             cfg_session.product_tmpl_id)
         cfg_session = cfg_session.sudo()
+        config_image = cfg_session._get_config_image(
+            cfg_session.value_ids, cfg_session.custom_value_ids)
+
         vals = {
             'cfg_session': cfg_session,
             'cfg_step_lines': cfg_step_lines,
@@ -95,11 +101,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'value_ids': cfg_session.value_ids,
             'custom_value_ids': cfg_session.custom_value_ids,
             'available_value_ids': available_value_ids,
-            'product_tmpl': cfg_session.product_tmpl_id,
+            'main_object': cfg_session.product_tmpl_id,
             'prefixes': product_configurator_obj._prefixes,
             'custom_val_id': custom_val_id,
             'extra_attribute_line_ids': extra_attribute_line_ids,
-            'attribute_value_line_ids': cfg_session.attribute_value_line_ids.ids
+            'config_image_vals': self.get_image_vals(config_image),
         }
         return vals
 
@@ -165,6 +171,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
         """Return dictionary of fields and values present
         on configuration wizard"""
         config_session_id = config_session_id.sudo()
+        config_image = config_session_id._get_config_image(
+            config_session_id.value_ids, config_session_id.custom_value_ids)
+
         config_fields = {
             'state': config_session_id.state,
             'config_session_id': config_session_id.id,
@@ -172,10 +181,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'product_preset_id': config_session_id.product_preset_id.id,
             'price': config_session_id.price,
             'value_ids': [[6, False, config_session_id.value_ids.ids]],
-            'attribute_value_line_ids': [
-                [4, line.id, False]
-                for line in config_session_id.attribute_value_line_ids
-            ],
+            'config_image_vals': self.get_image_vals(config_image),
             'attribute_line_ids': [
                 [4, line.id, False]
                 for line in product_tmpl_id.attribute_line_ids
@@ -271,12 +277,10 @@ class ProductConfigWebsiteSale(WebsiteSale):
         """Capture onchange events in the website and forward data to backend
         onchange method"""
         # config session and product template
-        print("form_valuesform_valuesform_valuesform_valuesform_valuesform_valuesform_values ", form_values, field_name)
         product_configurator_obj = request.env['product.configurator']
         result = self.get_session_and_product(form_values)
         config_session_id = result.get('config_session')
         product_template_id = result.get('product_tmpl')
-
         # prepare dictionary in formate needed to pass in onchage
         form_values = self.get_dictionary_from_form_vals(
             form_values, config_session_id, product_template_id)
@@ -307,9 +311,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
         if extra_attr_line_ids:
             open_cfg_step_lines.append('configure')
 
+        config_image = config_session_id._get_config_image(value_ids)
+
         updates['value'] = self.remove_recursive_list(updates['value'])
         updates['open_cfg_step_lines'] = open_cfg_step_lines
-        print("updates ",updates)
+        updates['config_image_vals'] = self.get_image_vals(config_image)
         return updates
 
     def set_config_next_step(self, config_session_id,
