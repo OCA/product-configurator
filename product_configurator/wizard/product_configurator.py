@@ -396,7 +396,6 @@ class ProductConfigurator(models.TransientModel):
         # launched and is not stored in the database yet
         if not wizard_id:
             return res
-
         # Get the wizard object from the database
         wiz = self.browse(wizard_id)
         active_step_id = wiz.state
@@ -479,7 +478,6 @@ class ProductConfigurator(models.TransientModel):
                         toolbar=False, submenu=False):
         """ Generate view dynamically using attributes stored on the
         product.template"""
-
         if view_type == 'form' and not view_id:
             view_ext_id = 'product_configurator.product_configurator_form'
             view_id = self.env.ref(view_ext_id).id
@@ -519,7 +517,6 @@ class ProductConfigurator(models.TransientModel):
         """ Create the configuration view using the dynamically generated
             fields in fields_get()
         """
-
         field_prefix = self._prefixes.get('field_prefix')
         custom_field_prefix = self._prefixes.get('custom_field_prefix')
 
