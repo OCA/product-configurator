@@ -79,6 +79,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         # if no config step exist
         product_configurator_obj = request.env['product.configurator']
         open_cfg_step_lines = cfg_session.get_open_step_lines()
+        active_step = cfg_session.get_active_step()
         cfg_step_lines = cfg_session.get_all_step_lines()
         custom_ext_id = 'product_configurator.custom_attribute_value'
         custom_val_id = request.env.ref(custom_ext_id)
@@ -86,16 +87,10 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'value_ids') + custom_val_id
         available_value_ids = cfg_session.values_available(
             check_val_ids=check_val_ids.ids)
+        if not active_step:
+            active_step = cfg_step_lines[:1]
         extra_attribute_line_ids = self.get_extra_attribute_line_ids(
             cfg_session.product_tmpl_id)
-
-        # If one remove/add config steps in middle of session
-        active_step = False
-        if cfg_step_lines:
-            active_step = cfg_session.get_active_step()
-            if not active_step or active_step not in cfg_step_lines:
-                active_step = cfg_step_lines[:1]
-
         cfg_session = cfg_session.sudo()
         if cfg_session.value_ids:
             config_image_ids = cfg_session._get_config_image(
@@ -395,7 +390,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
             product = config_session_id.sudo().create_get_variant()
             if product:
+                config_session_id = config_session_id.sudo()
                 redirect_url = "/website_product_configurator/open_product"
+                redirect_url += '/%s' % (slug(config_session_id))
                 redirect_url += '/%s' % (slug(product))
                 return {
                     'product_id': product.id,
@@ -408,27 +405,28 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
     @http.route(
         '/website_product_configurator/open_product/'
+        '<model("product.config.session"):cfg_session>/'
         '<model("product.product"):product_id>',
         type='http', auth="public", website=True)
-    def cfg_session(self, product_id, **post):
+    def cfg_session(self, cfg_session, product_id, **post):
         """Render product page of product_id"""
-        product_tmpl_id = product_id.product_tmpl_id
+        try:
+            product_tmpl = cfg_session.sudo().product_tmpl_id
+        except Exception:
+            product_tmpl = product_id.product_tmpl_id
 
-        custom_vals = sorted(
-            product_id.value_custom_ids,
-            key=lambda obj: obj.attribute_id.sequence
-        )
-        vals = sorted(
-            product_id.attribute_value_ids,
-            key=lambda obj: obj.attribute_id.sequence
-        )
+        def _get_product_vals(cfg_session):
+            vals = cfg_session.value_ids
+            # vals += cfg_session.custom_value_ids
+            return sorted(vals, key=lambda obj: obj.attribute_id.sequence)
+
         pricelist = get_pricelist()
         values = {
+            'get_product_vals': _get_product_vals,
             'product_id': product_id,
-            'product_tmpl': product_tmpl_id,
+            'product_tmpl': product_tmpl,
             'pricelist': pricelist,
-            'custom_vals': custom_vals,
-            'vals': vals,
+            'cfg_session': cfg_session,
         }
         return request.render(
-            "website_product_configurator.cfg_product_variant", values)
+            "website_product_configurator.cfg_session", values)
