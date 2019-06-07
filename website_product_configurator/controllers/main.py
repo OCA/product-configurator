@@ -103,10 +103,12 @@ class ProductConfigWebsiteSale(WebsiteSale):
         extra_attribute_line_ids = self.get_extra_attribute_line_ids(
             cfg_session.product_tmpl_id)
         cfg_session = cfg_session.sudo()
-        config_image_ids = cfg_session.product_tmpl_id
+        config_image_ids = False
         if cfg_session.value_ids:
             config_image_ids = cfg_session._get_config_image(
                 cfg_session.value_ids, cfg_session.custom_value_ids)
+        if not config_image_ids:
+            config_image_ids = cfg_session.product_tmpl_id
 
         vals = {
             'cfg_session': cfg_session,
@@ -323,6 +325,8 @@ class ProductConfigWebsiteSale(WebsiteSale):
         # configuration images
         config_image_ids = config_session_id._get_config_image(
             value_ids=value_ids)
+        if not config_image_ids:
+            config_image_ids = product_template_id
 
         image_vals = self.get_image_vals(
             image_line_ids=config_image_ids,
