@@ -40,23 +40,34 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 };
                 var values = data.value;
                 var domains = data.domain;
+
                 var open_cfg_step_line_ids = data.open_cfg_step_line_ids;
-                var attribute_value_lines = values.attribute_value_line_ids;
+                var config_image_vals = data.config_image_vals;
 
                 _applyDomainOnValues(domains);
                 _handleOpenSteps(open_cfg_step_line_ids);
-                _setImageUrl(attribute_value_lines);
-
+                _setImageUrl(config_image_vals);
+                _setWeightPrice(values.weight, values.price);
             });
             _handleCustomAttribute(ev)
         });
 
-        function _setImageUrl(attribute_value_lines) {
+        function _setWeightPrice(weight, price) {
+            var formatted_price = _.str.sprintf('%.2f', price);
+            var formatted_weight = _.str.sprintf('%.1f', weight);
+            $('.config_product_weight').text(formatted_weight);
+            $('.config_product_price').find('.oe_currency_value').text(formatted_price);
+        }
+
+        function _setImageUrl(config_image_vals) {
             var images = '';
-            attribute_value_lines.forEach(function(line){
-                images += "<img id='cfg_image' itemprop='image' class='img img-responsive pull-right'"
-                images += "src='/web/image/product.attribute.value.line/"+line+"/image'/>"
-            })   
+            if (config_image_vals){
+                var model = config_image_vals.name
+                config_image_vals.config_image_ids.forEach(function(line){
+                    images += "<img id='cfg_image' itemprop='image' class='img img-responsive pull-right'"
+                    images += "src='/web/image/"+model+"/"+line+"/image'/>"
+                })
+            }
             $('#product_config_image').html(images);
         };
 
@@ -141,7 +152,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 return false;
             }
         };
-        
+
         function _displayTooltip(config_attribut, message) {
             $(config_attribut).tooltip({
                 title: message,
@@ -265,32 +276,27 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
             var current_target = $(ev.currentTarget);
             var custom_value = current_target.parent().find('input.custom_config_value');
+            var quantity = parseFloat(custom_value.val() || 0);
             var max_val = parseFloat(custom_value.attr('max') || Infinity);
             var min_val = parseFloat(custom_value.attr('min') || 0);
-            var new_qty = min_val;
-            if (isNaN(parseFloat(custom_value.val()))) {
-                var message = "Characters are not allowed. Please enter a number.";
+
+            var new_qty = quantity;
+            if (current_target.has(".fa-minus").length) {
+                new_qty = quantity - 1;
+            } else if (current_target.has(".fa-plus").length) {
+                new_qty = quantity + 1;
+            }
+            if (new_qty > max_val) {
+                var attribute_name = custom_value.closest('.tab-pane').find('label[data-oe-id="' + custom_value.attr('data-oe-id') + '"]');
+                var message = "Selected custom value " + attribute_name.text() + " must be lower than " + (max_val + 1);
                 _displayTooltip(custom_value, message);
-            } else {
-                var quantity = parseFloat(custom_value.val() || 0);
-                new_qty = quantity;
-                if (current_target.has(".fa-minus").length) {
-                    new_qty = quantity - 1;
-                } else if (current_target.has(".fa-plus").length) {
-                    new_qty = quantity + 1;
-                }
-                if (new_qty > max_val) {
-                    var attribute_name = custom_value.closest('.tab-pane').find('label[data-oe-id="' + custom_value.attr('data-oe-id') + '"]');
-                    var message = "Selected custom value " + attribute_name.text() + " must be lower than " + (max_val + 1);
-                    _displayTooltip(custom_value, message);
-                    new_qty = max_val;
-                }
-                else if (new_qty < min_val) {
-                    var attribute_name = custom_value.closest('.tab-pane').find('label[data-oe-id="' + custom_value.attr('data-oe-id') + '"]');
-                    var message = "Selected custom value " + attribute_name.text() + " must be at least " + min_val;
-                    _displayTooltip(custom_value, message);
-                    new_qty = min_val;
-                }
+                new_qty = max_val;
+            }
+            else if (new_qty < min_val) {
+                var attribute_name = custom_value.closest('.tab-pane').find('label[data-oe-id="' + custom_value.attr('data-oe-id') + '"]');
+                var message = "Selected custom value " + attribute_name.text() + " must be at least " + min_val;
+                _displayTooltip(custom_value, message);
+                new_qty = min_val;
             }
             custom_value.val(new_qty);
             _disableEnableAddRemoveQtyButton(new_qty ,max_val ,min_val)
