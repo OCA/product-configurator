@@ -729,7 +729,6 @@ class ProductConfigSession(models.Model):
     def get_components_prices(self, prices, pricelist, value_ids=None):
         """Return prices of the components which make up the final
         configured variant"""
-
         if not value_ids:
             value_ids = self.value_ids.ids
 
@@ -763,7 +762,6 @@ class ProductConfigSession(models.Model):
         :param value_ids: list of attribute value_ids
         :param custom_vals: dictionary of custom attribute values
         :returns: final configuration price"""
-
         if not value_ids:
             value_ids = self.value_ids.ids
 
@@ -771,7 +769,6 @@ class ProductConfigSession(models.Model):
             custom_vals = {}
 
         product_tmpl = self.product_tmpl_id
-
         self = self.with_context({'active_id': product_tmpl.id})
 
         value_ids = self.flatten_val_ids(value_ids)
@@ -1159,10 +1156,6 @@ class ProductConfigSession(models.Model):
 
         :returns: list of available attribute values
         """
-
-        if not check_val_ids:
-            check_val_ids = self.value_ids.ids
-
         if not self.product_tmpl_id:
             product_tmpl = self.env['product.template'].browse(product_tmpl_id)
         else:
