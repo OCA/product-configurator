@@ -359,7 +359,7 @@ class ProductConfigSession(models.Model):
         :param custom_vals: dictionary of custom attribute values
         :returns: final configuration weight"""
 
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
         if custom_vals is None:
@@ -762,7 +762,8 @@ class ProductConfigSession(models.Model):
         :param value_ids: list of attribute value_ids
         :param custom_vals: dictionary of custom attribute values
         :returns: final configuration price"""
-        if not value_ids:
+
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
         if custom_vals is None:
