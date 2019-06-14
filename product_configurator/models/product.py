@@ -268,7 +268,6 @@ class ProductTemplate(models.Model):
                 wizard_model='product.configurator',
             ),
         }
-
         wizard_obj = self.env[model_name]
         wizard_vals = {
             'product_tmpl_id': self.id
@@ -281,6 +280,7 @@ class ProductTemplate(models.Model):
         else:
             action.update({'res_id': wizard.id})
         return action
+
 
 
 class ProductProduct(models.Model):
@@ -315,7 +315,6 @@ class ProductProduct(models.Model):
                 value_ids=self.attribute_value_ids.ids,
                 custom_vals=custom_vals
             ).filtered(lambda p: p.id != self.id)
-
             if duplicates:
                 raise ValidationError(
                     _("Configurable Products cannot have duplicates "
