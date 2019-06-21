@@ -5,26 +5,19 @@ from datetime import timedelta
 class ProductConfigStepLine(models.Model):
     _inherit = 'product.config.step.line'
 
-    CONFIG_FORM = [
-        'website_product_configurator.config_form_select',
-        'website_product_configurator.config_form_radio'
-    ]
-
     website_tmpl_id = fields.Many2one(
         string='Website Template',
         comodel_name='ir.ui.view',
         domain=lambda s: [(
-            'id', 'in', [s.env.ref(xml_id).id for xml_id in s.CONFIG_FORM]
+            'inherit_id', '=', s.env.ref(
+                'website_product_configurator.config_form_base').id
         )],
     )
 
     def get_website_template(self):
         """Return the external id of the qweb template linked to this step"""
-        view_id = 'website_product_configurator.config_form_select'
-        if self.website_tmpl_id:
-            xml_id_dict = self.website_tmpl_id.get_xml_id()
-            view_id = xml_id_dict.get(self.website_tmpl_id.id)
-        return view_id
+        default_view_id = 'website_product_configurator.config_form_select'
+        return self.website_tmpl_id.get_xml_id() or default_view_id
 
 
 class ProductConfigSession(models.Model):
