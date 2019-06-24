@@ -7,6 +7,7 @@ from odoo.addons import decimal_precision as dp
 
 class ProductAttribute(models.Model):
     _inherit = 'product.attribute'
+    _order = 'sequence'
 
     @api.multi
     def copy(self, default=None):
@@ -90,15 +91,13 @@ class ProductAttribute(models.Model):
         'this attribute?'
     )
     uom_id = fields.Many2one(
-        comodel_name='product.uom',
+        comodel_name='uom.uom',
         string='Unit of Measure'
     )
     image = fields.Binary(string='Image')
 
     # TODO prevent the same attribute from being defined twice on the
     # attribute lines
-
-    _order = 'sequence'
 
     @api.constrains('custom_type', 'search_ok')
     def check_searchable_field(self):
@@ -147,6 +146,9 @@ class ProductAttribute(models.Model):
 
 class ProductAttributeLine(models.Model):
     _inherit = 'product.template.attribute.line'
+    _order = 'product_tmpl_id, sequence, id'
+    # TODO: Order by dependencies first and then sequence so dependent fields
+    # do not come before master field
 
     @api.onchange('attribute_id')
     def onchange_attribute(self):
@@ -180,10 +182,6 @@ class ProductAttributeLine(models.Model):
     )
 
     sequence = fields.Integer(string='Sequence', default=10)
-
-    # TODO: Order by dependencies first and then sequence so dependent fields
-    # do not come before master field
-    _order = 'product_tmpl_id, sequence, id'
 
     # TODO: Constraint not allowing introducing dependencies that do not exist
     # on the product.template
@@ -265,7 +263,7 @@ class ProductAttributeValue(models.Model):
         string='Related Product'
     )
     attribute_line_ids = fields.Many2many(
-        comodel_name='product.attribute.line',
+        comodel_name='product.template.attribute.line',
         string="Attribute Lines",
         copy=False
     )
@@ -293,6 +291,7 @@ class ProductAttributeValue(models.Model):
         extra_prices = {
             av.id: av.price_extra for av in self if av.price_extra
         }
+        print("extra_prices ",extra_prices)
 
         res_prices = []
 
@@ -366,6 +365,7 @@ class ProductAttributePrice(models.Model):
 
 class ProductAttributeValueLine(models.Model):
     _name = 'product.attribute.value.line'
+    _description = "Product Attribute Value Line"
 
     sequence = fields.Integer(string='Sequence', default=10)
     product_tmpl_id = fields.Many2one(
@@ -431,6 +431,8 @@ class ProductAttributeValueLine(models.Model):
 
 
 class ProductAttributeValueCustom(models.Model):
+    _name = 'product.attribute.value.custom'
+    _description = "Product Attribute Value Custom"
 
     @api.multi
     @api.depends('attribute_id', 'attribute_id.uom_id')
@@ -438,8 +440,6 @@ class ProductAttributeValueCustom(models.Model):
         for attr_val_custom in self:
             uom = attr_val_custom.attribute_id.uom_id.name
             attr_val_custom.name = '%s%s' % (attr_val_custom.value, uom or '')
-
-    _name = 'product.attribute.value.custom'
 
     name = fields.Char(
         string='Name',
