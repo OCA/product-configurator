@@ -72,11 +72,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
                     product, category, search, **kwargs
                 )
 
-        # Set config-step in config session when it creates from wizard
-        # because select state not exist on website
-        if not cfg_session.config_step:
-            cfg_session.config_step = 'select'
-            self.set_config_next_step(cfg_session)
         # Render the configuration template based on the configuration session
         config_form = self.render_form(cfg_session)
 
@@ -123,9 +118,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
         if not config_image_ids:
             config_image_ids = cfg_session.product_tmpl_id
 
-        weight_prec = request.env['decimal.precision'].precision_get(
-            'Stock Weight') or 2
-
         vals = {
             'cfg_session': cfg_session,
             'cfg_step_lines': cfg_step_lines,
@@ -141,7 +133,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'config_image_vals': self.get_image_vals(
                 image_line_ids=config_image_ids,
                 model_name=config_image_ids[:1]._name),
-            'weight_prec': weight_prec,
             'main_object': cfg_session.product_tmpl_id,
         }
         return vals
@@ -311,6 +302,8 @@ class ProductConfigWebsiteSale(WebsiteSale):
             form_values, config_session_id)
 
         # call onchange
+        field_prefix = product_configurator_obj._prefixes.get('field_prefix')
+        field_name = '%s%s' % (field_prefix, field_name)
         specs = product_configurator_obj._onchange_spec()
         updates = {}
         try:
@@ -351,11 +344,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
         updates['value'] = self.remove_recursive_list(updates['value'])
         updates['open_cfg_step_line_ids'] = open_cfg_step_line_ids
         updates['config_image_vals'] = image_vals
-        decimal_prec_obj = request.env['decimal.precision']
-        updates['decimal_precision'] = {
-            'weight': decimal_prec_obj.precision_get('Stock Weight') or 2,
-            'price': decimal_prec_obj.precision_get('Product Price') or 2,
-        }
         return updates
 
     def set_config_next_step(self, config_session_id,
