@@ -1,6 +1,6 @@
 from ..tests.test_product_configurator_test_cases import \
     ProductConfiguratorTestCases
-from odoo.exceptions import ValidationError, UserError
+from odoo.exceptions import ValidationError
 
 
 class ProductConfig(ProductConfiguratorTestCases):
