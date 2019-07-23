@@ -8,7 +8,7 @@ class TestProduct(ProductConfiguratorTestCases):
     def setUp(self):
         super(TestProduct, self).setUp()
         self.productTemplate = self.env['product.template']
-        self.productAttributeLine = self.env['product.attribute.line']
+        self.productAttributeLine = self.env['product.template.attribute.line']
         self.productConfigStepLine = self.env['product.config.step.line']
         self.product_category = self.env.ref('product.product_category_5')
         self.attributelinefuel = self.env.ref(
@@ -351,20 +351,21 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: reconfigure_product()'
         )
 
-    def test_13_compute_product_weight_extra(self):
-        product_product = self._get_product_id()
-        # _compute_product_weight_extra
-        productAttPrice = self.env['product.attribute.price'].create({
-            'product_tmpl_id': self.config_product.id,
-            'value_id': self.value_gasoline.id,
-            'weight_extra': 45
-        })
-        self.assertEqual(
-            productAttPrice.weight_extra,
-            product_product.weight_extra,
-            'Error: If weight_extra not equal\
-            Method: _compute_product_weight_extra()'
-        )
+    # def test_13_compute_product_weight_extra(self):
+    #     product_product = self._get_product_id()
+    #     # _compute_product_weight_extra
+    #     productAttPrice = self.env['product.template.attribute.value'].create({
+    #         'product_tmpl_id': self.config_product.id,
+    #         'value_id': self.value_gasoline.id,
+    #         'weight_extra': 45,
+    #         'product_attribute_value_id':self.value_diesel
+    #     })
+    #     self.assertEqual(
+    #         productAttPrice.weight_extra,
+    #         product_product.weight_extra,
+    #         'Error: If weight_extra not equal\
+    #         Method: _compute_product_weight_extra()'
+    #     )
 
     def test_14_unlink(self):
         product_product = self._get_product_id()
