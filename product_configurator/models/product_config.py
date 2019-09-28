@@ -1184,6 +1184,8 @@ class ProductConfigSession(models.Model):
         """
         if check_val_ids is None:
             check_val_ids = self.value_ids.ids
+        elif check_val_ids:
+            check_val_ids = check_val_ids.copy()
         if not self.product_tmpl_id:
             product_tmpl = self.env['product.template'].browse(product_tmpl_id)
         else:
@@ -1193,6 +1195,8 @@ class ProductConfigSession(models.Model):
 
         if value_ids is None:
             value_ids = self.value_ids.ids
+        elif value_ids:
+            value_ids = value_ids.copy()
 
         if custom_vals is None:
             custom_vals = self._get_custom_vals_dict()
