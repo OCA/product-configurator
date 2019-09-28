@@ -17,6 +17,9 @@ def get_pricelist():
     return pricelist
 
 
+error_page = '/website_product_configurator/error_page/'
+
+
 class ProductConfigWebsiteSale(WebsiteSale):
 
     def get_config_session(self, product_tmpl_id):
@@ -57,10 +60,8 @@ class ProductConfigWebsiteSale(WebsiteSale):
             )
         try:
             cfg_session = self.get_config_session(product_tmpl_id=product)
-        except Exception as Ex:
-            return request.render(
-                'website_product_configurator.error_page', {'error': Ex}
-            )
+        except Exception:
+            return request.redirect(error_page)
 
         # Set config-step in config session when it creates from wizard
         # because select state not exist on website
@@ -68,19 +69,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             cfg_session.config_step = 'select'
             res = self.set_config_next_step(cfg_session)
             if res.get('error', False):
-                return request.render(
-                    'website_product_configurator.error_page', res
-                )
-
-        # Set config-step in config session when it creates from wizard
-        # because select state not exist on website
-        if not cfg_session.config_step:
-            cfg_session.config_step = 'select'
-            res = self.set_config_next_step(cfg_session)
-            if res.get('error', False):
-                return request.render(
-                    'website_product_configurator.error_page', res
-                )
+                return request.redirect(error_page)
         # Render the configuration template based on the configuration session
         config_form = self.render_form(cfg_session)
 
@@ -122,6 +111,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 pass
             elif not active_step or active_step not in open_cfg_step_lines:
                 active_step = open_cfg_step_lines[:1]
+                cfg_session.config_step = '%s' % (active_step.id)
 
         cfg_session = cfg_session.sudo()
         config_image_ids = False
@@ -155,7 +145,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'weight_prec': weight_prec,
             'main_object': cfg_session.product_tmpl_id,
             'default_website_template': website_tmpl_xml_id,
-            'pricelist': request.website.get_current_pricelist(),
         }
         return vals
 
@@ -311,7 +300,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
     @http.route('/website_product_configurator/onchange',
                 type='json', methods=['POST'], auth="public", website=True)
-    def onchange(self, form_values, field_name, **post):
+    def onchange(self, form_values, field_name):
         """Capture onchange events in the website and forward data to backend
         onchange method"""
         # config session and product template
@@ -335,15 +324,12 @@ class ProductConfigWebsiteSale(WebsiteSale):
         try:
             updates = product_configurator_obj.sudo().onchange(
                 config_vals, field_name, specs)
-            updates['value'] = self.remove_recursive_list(updates['value'])
         except Exception as Ex:
             return {'error': Ex}
 
         # get open step lines according to current configuation
-        value_ids = updates['value'].get('value_ids')
-        if not value_ids:
-            value_ids = self.get_current_configuration(
-                form_values, config_session_id)
+        value_ids = self.get_current_configuration(
+            form_values, config_session_id)
         try:
             open_cfg_step_line_ids = config_session_id.sudo()\
                 .get_open_step_lines(value_ids).ids
@@ -371,6 +357,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             model_name=config_image_ids[:1]._name
         )
         pricelist = request.website.get_current_pricelist()
+        updates['value'] = self.remove_recursive_list(updates['value'])
         updates['open_cfg_step_line_ids'] = open_cfg_step_line_ids
         updates['config_image_vals'] = image_vals
         decimal_prec_obj = request.env['decimal.precision']
@@ -392,8 +379,15 @@ class ProductConfigWebsiteSale(WebsiteSale):
         extra_attr_line_ids = self.get_extra_attribute_line_ids(
             config_session_id.product_tmpl_id)
         if extra_attr_line_ids and current_step == 'configure':
-            config_session_id.config_step = next_step
-            return {'next_step': next_step}
+            if next_step:
+                config_session_id.config_step = next_step
+                return {'next_step': next_step}
+            else:
+                next_step = config_session_id.check_and_open_incomplete_step()
+            if not next_step:
+                return {'next_step': False}
+
+        # Bizzappdev end code
 
         if not next_step:
             try:
@@ -421,7 +415,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
     @http.route('/website_product_configurator/save_configuration',
                 type='json', methods=['POST'], auth="public", website=True)
     def save_configuration(self, form_values, current_step=False,
-                           next_step=False, **post):
+                           next_step=False):
         """Save current configuration in related session and
         next step if exist otherwise create variant using
         configuration redirect to product page of configured product"""
@@ -442,24 +436,15 @@ class ProductConfigWebsiteSale(WebsiteSale):
             )
 
             # next step
-            check_next_step = True
-            if post.get('force_check_build'):
-                try:
-                    valid = config_session_id.sudo().validate_configuration()
-                    if valid:
-                        check_next_step = False
-                except Exception:
-                    pass
-            if check_next_step:
-                result = self.set_config_next_step(
-                    config_session_id=config_session_id,
-                    current_step=current_step,
-                    next_step=next_step
-                )
-                if result.get('next_step', False):
-                    return {'next_step': result.get('next_step')}
-                elif result.get('error', False):
-                    return {'error': result.get('error')}
+            result = self.set_config_next_step(
+                config_session_id=config_session_id,
+                current_step=current_step,
+                next_step=next_step
+            )
+            if result.get('next_step', False):
+                return {'next_step': result.get('next_step')}
+            elif result.get('error', False):
+                return {'error': result.get('error')}
             if not (config_session_id.value_ids or
                     config_session_id.custom_value_ids):
                 return {
@@ -468,6 +453,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                         "attribute in order to configure a product"
                     )
                 }
+
             # create variant
             product = config_session_id.sudo().create_get_variant()
             if product:
@@ -499,8 +485,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
             key=lambda obj: obj.attribute_id.sequence
         )
         pricelist = get_pricelist()
-        if request.session['product_config_session'].get(product_tmpl_id.id):
-            product_config_session = request.session['product_config_session']
+        product_config_session = request.session.get('product_config_session')
+        if (product_config_session and
+                product_config_session.get(product_tmpl_id.id)):
+
+            # Bizzappdev end code
             del product_config_session[product_tmpl_id.id]
             request.session['product_config_session'] = product_config_session
         values = {
@@ -511,4 +500,21 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'vals': vals,
         }
         return request.render(
-            "website_product_configurator.cfg_product_variant", values)
+            "website_product_configurator.cfg_product_variant", values
+        )
+
+    @http.route([
+        error_page,
+        '%s<string:message>' % error_page,
+        '%s<string:error>/<string:message>' % error_page,
+        ],
+        type='http', auth="public", website=True)
+    def render_error(self, error=None, message='', **post):
+        error = error and True or False
+        if not message:
+            message = (
+                "Due to technical issues the requested operation is not"
+                "available. Please try again later."
+            )
+        vals = {'message': message, 'error': error}
+        return request.render('website_product_configurator.error_page', vals)
