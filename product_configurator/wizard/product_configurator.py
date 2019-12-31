@@ -395,7 +395,7 @@ class ProductConfigurator(models.TransientModel):
     @api.onchange("state")
     def _onchange_state(self):
         """Save values when change state of wizard by clicking on statusbar"""
-        if self.env.context.get('allow_preset_selection'):
+        if self.env.context.get("allow_preset_selection"):
             self = self.with_context(allow_preset_selection=False)
         if self.config_session_id:
             self.config_session_id._origin.write(
@@ -570,8 +570,9 @@ class ProductConfigurator(models.TransientModel):
         return res
 
     @api.model
-    def setup_modifiers(self, node, field=None,
-                        context=None, in_tree_view=False):
+    def setup_modifiers(
+        self, node, field=None, context=None, in_tree_view=False
+    ):
         """ Processes node attributes and field descriptors to generate
         the ``modifiers`` node attribute and set it on the provided node.
 
@@ -595,8 +596,10 @@ class ProductConfigurator(models.TransientModel):
         if field is not None:
             transfer_field_to_modifiers(field=field, modifiers=modifiers)
         transfer_node_to_modifiers(
-            node=node, modifiers=modifiers,
-            context=context, in_tree_view=in_tree_view
+            node=node,
+            modifiers=modifiers,
+            context=context,
+            in_tree_view=in_tree_view,
         )
         transfer_modifiers_to_node(modifiers=modifiers, node=node)
 
@@ -1091,7 +1094,7 @@ class ProductConfigurator(models.TransientModel):
         ctx = self.env.context.copy()
         ctx.update({"view_cache": view_cache})
         if wizard:
-            ctx.update({'wizard_id': wizard.id})
+            ctx.update({"wizard_id": wizard.id})
         wizard_action = {
             "type": "ir.actions.act_window",
             "res_model": self._name,
