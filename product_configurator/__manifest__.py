@@ -5,7 +5,7 @@
     "summary": "Base for product configuration interface modules",
     "author": "Pledra",
     "license": "AGPL-3",
-    "website": "http://www.pledra.com/",
+    "website": "https://github.com/OCA/product-configurator",
     "depends": ["account", "stock"],
     "data": [
         "security/configurator_security.xml",
