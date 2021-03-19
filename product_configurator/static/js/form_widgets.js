@@ -48,11 +48,11 @@ odoo.define("product_configurator.FieldBooleanButton", function (require) {
     });
 
     FormController.include({
-        renderButtons: function ($node) {
+        renderButtons: function () {
             var self = this;
             this._super.apply(this, arguments);
             if (
-                self.modelName == "product.product" &&
+                self.modelName === "product.product" &&
                 self.initialState.context.custom_create_variant
             ) {
                 this.$buttons.find(".o_form_button_create").css("display", "none");
@@ -83,11 +83,11 @@ odoo.define("product_configurator.FieldBooleanButton", function (require) {
         },
     });
     ListController.include({
-        renderButtons: function ($node) {
+        renderButtons: function () {
             var self = this;
             this._super.apply(this, arguments);
             if (
-                self.modelName == "product.product" &&
+                self.modelName === "product.product" &&
                 self.initialState.context.custom_create_variant
             ) {
                 this.$buttons.find(".o_list_button_add").css("display", "none");
@@ -95,11 +95,11 @@ odoo.define("product_configurator.FieldBooleanButton", function (require) {
         },
     });
     KanbanController.include({
-        renderButtons: function ($node) {
+        renderButtons: function () {
             var self = this;
             this._super.apply(this, arguments);
             if (
-                self.modelName == "product.product" &&
+                self.modelName === "product.product" &&
                 self.initialState.context.custom_create_variant
             ) {
                 this.$buttons.find(".o-kanban-button-new").css("display", "none");
