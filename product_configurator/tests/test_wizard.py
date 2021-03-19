@@ -1,4 +1,4 @@
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError
 
 from ..tests.test_product_configurator_test_cases import ProductConfiguratorTestCases
 
