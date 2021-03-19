@@ -118,7 +118,7 @@ class ProductTemplate(models.Model):
     # product-template so that no need of compute and inverse on this
     weight = fields.Float(
         compute="_compute_weight",
-        inverse="_set_weight",
+        inverse="_set_weight",  # pylint: disable=C8110
         search="_search_weight",
         store=False,
     )
