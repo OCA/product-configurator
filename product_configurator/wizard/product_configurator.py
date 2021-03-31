@@ -573,10 +573,7 @@ class ProductConfigurator(models.TransientModel):
         if field is not None:
             transfer_field_to_modifiers(field=field, modifiers=modifiers)
         transfer_node_to_modifiers(
-            node=node,
-            modifiers=modifiers,
-            context=context,
-            in_tree_view=in_tree_view,
+            node=node, modifiers=modifiers, context=context, current_node_path=None
         )
         transfer_modifiers_to_node(modifiers=modifiers, node=node)
 
@@ -928,7 +925,7 @@ class ProductConfigurator(models.TransientModel):
         wizard_action = self.with_context(
             allow_preset_selection=False
         ).get_wizard_action(wizard=self)
-
+        print(wizard_action)
         if not self.product_tmpl_id:
             return wizard_action
 
