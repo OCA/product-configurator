@@ -1,27 +1,25 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-<data>
 
     <menuitem
-            id="menu_product_configurable"
-            name="Configurator"
-            parent=""
-            web_icon="product_configurator,static/description/icon.png"
-            sequence="20"
-            groups="product_configurator.group_product_configurator_manager"
-        />
+        id="menu_product_configurable"
+        name="Configurator"
+        parent=""
+        sequence="20"
+        groups="product_configurator.group_product_configurator_manager"
+    />
     <menuitem
-            id="menu_product_configurable_product_main"
-            name="Configurable Products"
-            parent="menu_product_configurable"
-            sequence="10"
-        />
+        id="menu_product_configurable_product_main"
+        name="Configurable Products"
+        parent="menu_product_configurable"
+        sequence="10"
+    />
     <menuitem
-            id="menu_product_configurable_settings"
-            name="Configuration"
-            parent="menu_product_configurable"
-            sequence="20"
-        />
+        id="menu_product_configurable_settings"
+        name="Configuration"
+        parent="menu_product_configurable"
+        sequence="20"
+    />
 
     <record id="product_configurable_template_action" model="ir.actions.act_window">
         <field name="name">Configurable Templates</field>
@@ -30,16 +28,16 @@
         <field name="view_mode">kanban,tree,form</field>
         <field name="view_id" ref="product.product_template_kanban_view" />
         <field
-                name="context"
-            >{'default_config_ok': True, 'custom_create_variant': True, 'search_default_filter_config_ok': 1}</field>
+            name="context"
+        >{'default_config_ok': True, 'custom_create_variant': True, 'search_default_filter_config_ok': 1}</field>
     </record>
 
     <menuitem
-            action="product_configurable_template_action"
-            id="menu_product_configurable_template_action"
-            parent="menu_product_configurable_product_main"
-            sequence="20"
-        />
+        action="product_configurable_template_action"
+        id="menu_product_configurable_template_action"
+        parent="menu_product_configurable_product_main"
+        sequence="20"
+    />
 
     <record id="product_configurable_variant_action" model="ir.actions.act_window">
         <field name="name">Configured Variants</field>
@@ -49,42 +47,42 @@
         <field name="search_view_id" ref="product.product_search_form_view" />
         <field name="view_id" eval="False" /> <!-- Force empty -->
         <field
-                name="context"
-            >{'default_config_ok': True, 'custom_create_variant': True, 'search_default_filter_config_ok': 1}</field>
+            name="context"
+        >{'default_config_ok': True, 'custom_create_variant': True, 'search_default_filter_config_ok': 1}</field>
     </record>
 
     <menuitem
-            id="menu_product_configurable_variants_action"
-            action="product_configurable_variant_action"
-            name="Configurable Variants"
-            parent="menu_product_configurable_product_main"
-            sequence="25"
-        />
+        id="menu_product_configurable_variants_action"
+        action="product_configurable_variant_action"
+        name="Configurable Variants"
+        parent="menu_product_configurable_product_main"
+        sequence="25"
+    />
 
     <record
-            id="action_product_configurator_configuration"
-            model="ir.actions.act_window"
-        >
+        id="action_product_configurator_configuration"
+        model="ir.actions.act_window"
+    >
         <field name="name">Settings</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">res.config.settings</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>
         <field
-                name="view_id"
-                ref="product_configurator.configurator_settings_view_form"
-            />
+            name="view_id"
+            ref="product_configurator.configurator_settings_view_form"
+        />
         <field name="context">{'module' : 'product_configurator'}</field>
     </record>
 
     <menuitem
-            id="menu_action_product_configurator_configuration"
-            action="action_product_configurator_configuration"
-            name="Settings"
-            active="False"
-            parent="menu_product_configurable_settings"
-            sequence="0"
-        />
+        id="menu_action_product_configurator_configuration"
+        action="action_product_configurator_configuration"
+        name="Settings"
+        active="False"
+        parent="menu_product_configurable_settings"
+        sequence="0"
+    />
 
     <record id="product_config_steps_action" model="ir.actions.act_window">
         <field name="name">Configuration Steps</field>
@@ -94,12 +92,12 @@
     </record>
 
     <menuitem
-            id="menu_product_config_steps_action"
-            action="product_config_steps_action"
-            name="Configuration Steps"
-            parent="menu_product_configurable_settings"
-            sequence="30"
-        />
+        id="menu_product_config_steps_action"
+        action="product_config_steps_action"
+        name="Configuration Steps"
+        parent="menu_product_configurable_settings"
+        sequence="30"
+    />
 
     <record id="product_config_domain_action" model="ir.actions.act_window">
         <field name="name">Configuration Restrictions</field>
@@ -109,12 +107,12 @@
     </record>
 
     <menuitem
-            id="menu_product_config_domain_action"
-            action="product_config_domain_action"
-            name="Configuration Restrictions"
-            parent="menu_product_configurable_settings"
-            sequence="40"
-        />
+        id="menu_product_config_domain_action"
+        action="product_config_domain_action"
+        name="Configuration Restrictions"
+        parent="menu_product_configurable_settings"
+        sequence="40"
+    />
 
     <record id="product_config_session" model="ir.actions.act_window">
         <field name="name">Configuration Sessions</field>
@@ -124,12 +122,11 @@
     </record>
 
     <menuitem
-            id="menu_product_config_session"
-            action="product_config_session"
-            name="Configuration Sessions"
-            parent="menu_product_configurable_settings"
-            sequence="50"
-        />
+        id="menu_product_config_session"
+        action="product_config_session"
+        name="Configuration Sessions"
+        parent="menu_product_configurable_settings"
+        sequence="50"
+    />
 
-</data>
 </odoo>
