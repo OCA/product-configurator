@@ -575,7 +575,10 @@ class ProductConfigurator(models.TransientModel):
         transfer_node_to_modifiers(
             node=node, modifiers=modifiers, context=context, current_node_path=None
         )
-        transfer_modifiers_to_node(modifiers=modifiers, node=node)
+        # Daniel: This looks looks a duplicate call, but I'm not sure
+        # But after removing it the wizard can now be rendered
+        # https://github.com/pledra/odoo-product-configurator/commit/c943081811f73b421ccbdbe773355048a25754dc
+        # transfer_modifiers_to_node(modifiers=modifiers, node=node)
 
     @api.model
     def add_dynamic_fields(self, res, dynamic_fields, wiz):
@@ -925,7 +928,6 @@ class ProductConfigurator(models.TransientModel):
         wizard_action = self.with_context(
             allow_preset_selection=False
         ).get_wizard_action(wizard=self)
-        print(wizard_action)
         if not self.product_tmpl_id:
             return wizard_action
 
