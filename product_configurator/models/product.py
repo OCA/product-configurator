@@ -11,6 +11,13 @@ from odoo.tools.safe_eval import safe_eval
 _logger = logging.getLogger(__name__)
 
 
+class ProductProduct(models.Model):
+    _inherit = "product.product"
+
+    def toggle_config(self):
+        return self.product_tmpl_id.toggle_config()
+
+
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
@@ -277,12 +284,10 @@ class ProductTemplate(models.Model):
         - return action to launch wizard
         - click on next step based on value of click_next"""
         wizard_obj = self.env[model_name]
-        print("::::::::::::::OBJECT::::::::::::", wizard_obj)
         wizard_vals = {"product_tmpl_id": self.id}
         if extra_vals:
             wizard_vals.update(extra_vals)
         wizard = wizard_obj.create(wizard_vals)
-        print(wizard)
         if click_next:
             action = wizard.action_next_step()
         else:
@@ -290,9 +295,7 @@ class ProductTemplate(models.Model):
                 wizard_model=model_name,
                 allow_preset_selection=True,
             )
-            print(wizard_obj)
             action = wizard_obj.get_wizard_action(wizard=wizard)
-        print(action)
         return action
 
     @api.model
