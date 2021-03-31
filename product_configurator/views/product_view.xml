@@ -1,424 +1,379 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-<data>
-
-    <record id="product_template_form_view_procurement_button" model="ir.ui.view">
-        <field name="name">product.template_procurement.form.inherit</field>
-        <field name="model">product.template</field>
-        <field
+    <data>
+        <record id="product_template_form_view_procurement_button" model="ir.ui.view">
+            <field name="name">product.template_procurement.form.inherit</field>
+            <field name="model">product.template</field>
+            <field
                 name="inherit_id"
                 ref="stock.product_template_form_view_procurement_button"
             />
-        <field name="arch" type="xml">
-            <xpath
+            <field name="arch" type="xml">
+                <xpath
                     expr="//header/button[@name='action_update_quantity_on_hand']"
                     position="attributes"
                 >
-                <attribute
+                    <attribute
                         name="attrs"
                     >{'invisible': ['|', ('product_variant_count', '&lt;', 1), ('type', '!=', 'product')]}</attribute>
-            </xpath>
-        </field>
-    </record>
-
-    <record id="product_template_form_view_inherite" model="ir.ui.view">
-        <field name="name">product.template.common.form</field>
-        <field name="model">product.template</field>
-        <field name="priority">16</field>
-        <field name="inherit_id" ref="product.product_template_form_view" />
-        <field name="arch" type="xml">
-            <xpath
+                </xpath>
+            </field>
+        </record>
+        <record id="product_template_form_view_inherite" model="ir.ui.view">
+            <field name="name">product.template.common.form</field>
+            <field name="model">product.template</field>
+            <field name="priority">16</field>
+            <field name="inherit_id" ref="product.product_template_form_view" />
+            <field name="arch" type="xml">
+                <xpath
                     expr="//header/button[@name='%(product.product_attribute_value_action)d']"
                     position="attributes"
                 >
-                <attribute
+                    <attribute
                         name="attrs"
                     >{'invisible': ['|', ('config_ok','=',True), ('product_variant_count', '&lt;=', 1)]}</attribute>
-            </xpath>
-            <div name="button_box" position="inside">
-                <button
+                </xpath>
+                <div name="button_box" position="inside">
+                    <button
                         class="oe_stat_button"
+                        groups="product_configurator.group_product_configurator_manager"
+                        icon="fa-wrench"
                         name="toggle_config"
                         type="object"
-                        icon="fa-wrench"
-                        groups="product_configurator.group_product_configurator_manager"
                     >
-                    <field
+                        <field
                             name="config_ok"
-                            options='{"active": "Configurable", "inactive": "Standard"}'
+                            options="{&quot;active&quot;: &quot;Configurable&quot;, &quot;inactive&quot;: &quot;Standard&quot;}"
                             widget="boolean_button"
                         />
-                </button>
-            </div>
-        </field>
-    </record>
-
-    <record id="product_template_form_view" model="ir.ui.view">
-        <field name="name">product.configurator.product.template.form</field>
-        <field name="model">product.template</field>
-        <field name="priority">16</field>
-        <field name="inherit_id" ref="product.product_template_only_form_view" />
-        <field name="arch" type="xml">
-            <xpath expr='//header' position="inside">
-                <button
-                        class="oe_stat_button"
-                        name="get_product_attribute_values_action"
+                    </button>
+                </div>
+            </field>
+        </record>
+        <record id="product_template_form_view" model="ir.ui.view">
+            <field name="name">product.configurator.product.template.form</field>
+            <field name="model">product.template</field>
+            <field name="priority">16</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button
                         attrs="{'invisible': ['|', ('attribute_line_ids', '=', []), ('config_ok', '=', False)]}"
+                        class="oe_stat_button"
                         groups="product_configurator.group_product_configurator_manager"
-                        type="object"
+                        name="get_product_attribute_values_action"
                         string="Variant Prices"
-                    >
-                </button>
-                <button
-                        name="configure_product"
-                        class="oe_highlight"
                         type="object"
-                        string="Configure Product"
-                        groups="product_configurator.group_product_configurator"
-                        attrs="{'invisible': [('config_ok', '=', False)]}"
                     />
-            </xpath>
-            <xpath
+                    <button
+                        attrs="{'invisible': [('config_ok', '=', False)]}"
+                        class="oe_highlight"
+                        groups="product_configurator.group_product_configurator"
+                        name="configure_product"
+                        string="Configure Product"
+                        type="object"
+                    />
+                </xpath>
+                <xpath
                     expr="//label[@for='purchase_ok' or @for='sale_ok']"
                     position="after"
                 >
-                <div class="oe_left" name="options" groups="base.group_user">
-                    <field name="id" invisible="True" />
-                </div>
-            </xpath>
-
-            <!-- Product attributes -->
-            <xpath expr="//field[@name='attribute_line_ids']" position="attributes">
-                <attribute name="context">{
+                    <div class="oe_left" groups="base.group_user" name="options">
+                        <field invisible="True" name="id" />
+                    </div>
+                </xpath>
+                <!-- Product attributes -->
+                <xpath expr="//field[@name='attribute_line_ids']" position="attributes">
+                    <attribute name="context">{
                     'show_attribute': False,
                     'attribute_line_ids': attribute_line_ids,
                 }</attribute>
-            </xpath>
-
-            <!-- TODO: Implement a method to hide this field for non-configurable product templates -->
-            <xpath
+                </xpath>
+                <!-- TODO: Implement a method to hide this field for non-configurable product templates -->
+                <xpath
                     expr="//field[@name='attribute_line_ids']/tree/field[@name='value_ids']"
                     position="after"
                 >
-                <field
-                        name="default_val"
-                        domain="[('id', 'in', value_ids)]"
+                    <field
                         context="{'show_attribute': False}"
+                        domain="[('id', 'in', value_ids)]"
+                        invisible="not context.get('default_config_ok', False)"
+                        name="default_val"
                         options="{'no_create': True, 'no_create_edit': True}"
-                        invisible="not context.get('default_config_ok', False)"
                     />
-                <field
+                    <field
+                        invisible="not context.get('default_config_ok', False)"
                         name="required"
-                        invisible="not context.get('default_config_ok', False)"
                     />
-                <field
-                        name="multi"
-                        invisible="not context.get('default_config_ok', False)"
+                    <field
                         attrs="{'readonly': [('custom','=',True)]}"
                         force_save="1"
-                    />
-                <field
-                        name="custom"
                         invisible="not context.get('default_config_ok', False)"
+                        name="multi"
+                    />
+                    <field
                         attrs="{'readonly': [('multi','=',True)]}"
                         force_save="1"
+                        invisible="not context.get('default_config_ok', False)"
+                        name="custom"
                     />
-            </xpath>
-
-            <xpath
+                </xpath>
+                <xpath
                     expr="//field[@name='attribute_line_ids']/tree/field[@name='value_ids']"
                     position="attributes"
                 >
-                <attribute name="attrs">{'required': [('custom','!=',True)]}</attribute>
-            </xpath>
-
-            <xpath
-                    expr="//field[@name='attribute_line_ids']/tree/field[@name='attribute_id']"
-                    position="attributes"
-                >
-                <attribute
-                        name="context"
-                    >{'flag_config_ok': not parent and context.get('default_config_ok', False) or parent.config_ok}</attribute>
-            </xpath>
-
-            <xpath
+                    <attribute
+                        name="attrs"
+                    >{'required': [('custom','!=',True)]}</attribute>
+                </xpath>
+                <!-- <xpath expr="//field[@name='attribute_line_ids']/tree/field[@name='attribute_id']" position="attributes">
+                    <attribute name="context">{'flag_config_ok': not parent and context.get('default_config_ok', False) or parent.config_ok}</attribute>
+                </xpath> -->
+                <xpath
                     expr="//field[@name='attribute_line_ids']/tree/field[@name='attribute_id']"
                     position="before"
                 >
-                <field name="sequence" widget="handle" />
-            </xpath>
-
-            <!-- TODO: Apply domains so only values from template are available -->
-            <xpath expr="//notebook/page[@name='variants']" position="after">
-                <page
-                        string="Configurator"
-                        name="configurator"
+                    <field name="sequence" widget="handle" />
+                </xpath>
+                <!-- TODO: Apply domains so only values from template are available -->
+                <xpath expr="//notebook/page[@name='variants']" position="after">
+                    <page
                         attrs="{'invisible': [('config_ok','=',False)]}"
                         groups="product_configurator.group_product_configurator"
+                        name="configurator"
+                        string="Configurator"
                     >
-                <separator
+                        <separator
                             colspan="4"
-                            string="Configuration Restrictions"
                             name="configurator_restrictions"
+                            string="Configuration Restrictions"
                         />
-                <field
-                            name="config_line_ids"
+                        <field
                             attrs="{'readonly': [('attribute_line_ids','=',[])]}"
                             context="{'show_attribute': False}"
+                            name="config_line_ids"
                         >
-                    <tree string="Attribute Value Dependencies" editable="bottom">
-                        <field name="sequence" widget="handle" />
-                        <field
-                                    name="attribute_line_id"
+                            <tree
+                                editable="bottom"
+                                string="Attribute Value Dependencies"
+                            >
+                                <field name="sequence" widget="handle" />
+                                <field
                                     domain="[('product_tmpl_id','=',parent.id)]"
+                                    name="attribute_line_id"
                                     options="{'no_create': True, 'no_create_edit': True}"
                                 />
-                        <!-- # TODO: Find a more elegant way to restrict the value_ids -->
-                        <field
+                                <!-- # TODO: Find a more elegant way to restrict the value_ids -->
+                                <field
+                                    invisible="True"
                                     name="attr_line_val_ids"
                                     widget="many2many_tags"
-                                    invisible="True"
                                 />
-                        <field
-                                    name="value_ids"
-                                    widget="many2many_tags"
+                                <field
                                     attrs="{'readonly': [('attribute_line_id','=',False)]}"
-                                    domain="[('id','in',attr_line_val_ids)]"
-                                    options="{'no_create': True, 'no_create_edit': True}"
                                     context="{'show_attribute': False}"
-                                />
-                        <field
-                                    name="domain_id"
-                                    context="{'product_tmpl_id': product_tmpl_id or active_id or parent.id, 'product_attribute_ids': template_attribute_ids}"
-                                />
-                        <field name="product_tmpl_id" invisible="1" />
-                        <field name="template_attribute_ids" invisible="1" />
-
-                    </tree>
-                </field>
-                <separator
-                            colspan="4"
-                            string="Configuration Steps"
-                            name="configurator_steps"
-                        />
-                <field
-                            name="config_step_line_ids"
-                            attrs="{'readonly': [('attribute_line_ids','=',[])]}"
-                        >
-                    <tree string="Configuration Steps" editable="bottom">
-                        <field name="sequence" widget="handle" />
-                        <field name="config_step_id" />
-                        <field
-                                    name="attribute_line_ids"
-                                    domain="[('product_tmpl_id', '=', parent.id)]"
+                                    domain="[('id','in',attr_line_val_ids)]"
+                                    name="value_ids"
                                     options="{'no_create': True, 'no_create_edit': True}"
                                     widget="many2many_tags"
                                 />
-                    </tree>
-                </field>
-                <separator
+                                <field
+                                    context="{'product_tmpl_id': product_tmpl_id or active_id or parent.id, 'product_attribute_ids': template_attribute_ids}"
+                                    name="domain_id"
+                                />
+                                <field invisible="1" name="product_tmpl_id" />
+                                <field invisible="1" name="template_attribute_ids" />
+                            </tree>
+                        </field>
+                        <separator
                             colspan="4"
-                            string="Configuration Images"
+                            name="configurator_steps"
+                            string="Configuration Steps"
+                        />
+                        <field
+                            attrs="{'readonly': [('attribute_line_ids','=',[])]}"
+                            name="config_step_line_ids"
+                        >
+                            <tree editable="bottom" string="Configuration Steps">
+                                <field name="sequence" widget="handle" />
+                                <field name="config_step_id" />
+                                <field
+                                    domain="[('product_tmpl_id', '=', parent.id)]"
+                                    name="attribute_line_ids"
+                                    options="{'no_create': True, 'no_create_edit': True}"
+                                    widget="many2many_tags"
+                                />
+                            </tree>
+                        </field>
+                        <separator
+                            colspan="4"
                             name="configurator_images"
+                            string="Configuration Images"
                         />
-                <field name="config_image_ids">
-                    <tree editable="bottom" string="Configuration Images">
-                        <field name="sequence" widget="handle" />
-                        <field name="name" />
-                        <field
-                                    name="value_ids"
-                                    widget="many2many_tags"
+                        <field name="config_image_ids">
+                            <tree editable="bottom" string="Configuration Images">
+                                <field name="sequence" widget="handle" />
+                                <field name="name" />
+                                <field
                                     context="{'_cfg_product_tmpl_id': parent.id}"
-                                />
-                        <field name="image_1920" widget="image" height="30px" />
-                    </tree>
-                </field>
-                <field name="attribute_line_val_ids" invisible="1" />
-                <field name="attribute_value_line_ids" invisible="1">
-                    <tree
-                                string="Attribute value lines"
-                                editable="bottom"
-                                context="{'default_product_tmpl_id': self.id}"
-                            >
-                        <field name="product_tmpl_id" invisible="1" />
-                        <field name="attribute_id" invisible="1" />
-                        <field name="sequence" widget="handle" />
-                        <field
-                                    name="value_id"
-                                    domain="[('id', 'in', parent.attribute_line_val_ids)]"
-                                />
-                        <field
                                     name="value_ids"
-                                    domain="[
-                                ('id', 'in', parent.attribute_line_val_ids),
-                                ('attribute_id', '!=', attribute_id)
-                               ]"
                                     widget="many2many_tags"
                                 />
-                    </tree>
-                </field>
-                <separator
-                            string="Variant Name"
+                                <field height="30px" name="image_1920" widget="image" />
+                            </tree>
+                        </field>
+                        <field invisible="1" name="attribute_line_val_ids" />
+                        <field invisible="1" name="attribute_value_line_ids">
+                            <tree
+                                context="{'default_product_tmpl_id': self.id}"
+                                editable="bottom"
+                                string="Attribute value lines"
+                            >
+                                <field invisible="1" name="product_tmpl_id" />
+                                <field invisible="1" name="attribute_id" />
+                                <field name="sequence" widget="handle" />
+                                <field
+                                    domain="[('id', 'in', parent.attribute_line_val_ids)]"
+                                    name="value_id"
+                                />
+                                <field
+                                    domain="[                                 ('id', 'in', parent.attribute_line_val_ids),                                 ('attribute_id', '!=', attribute_id)                                ]"
+                                    name="value_ids"
+                                    widget="many2many_tags"
+                                />
+                            </tree>
+                        </field>
+                        <separator
                             colspan="4"
                             groups="product_configurator.group_product_configurator_manager"
+                            string="Variant Name"
                         />
-                    <field
-                            name="mako_tmpl_name"
+                        <field
                             groups="product_configurator.group_product_configurator_manager"
+                            name="mako_tmpl_name"
                         />
-                </page>
-            </xpath>
-
-            <xpath expr="//field[@name='default_code']" position="attributes">
-                <attribute
+                    </page>
+                </xpath>
+                <xpath expr="//field[@name='default_code']" position="attributes">
+                    <attribute
                         name="attrs"
                     >{'invisible': [('config_ok','=',True)]}</attribute>
-            </xpath>
-
-        </field>
-    </record>
-
-    <record id="product_template_search_view" model="ir.ui.view">
-        <field name="name">product.configurator.product.template.search.view</field>
-        <field name="model">product.template</field>
-        <field name="inherit_id" ref="product.product_template_search_view" />
-        <field name="arch" type="xml">
-            <xpath expr="//filter[@name='filter_to_sell']" position="after">
-                <separator />
-                <filter
-                        string="Standard Products"
-                        name="filter_standard_products"
+                </xpath>
+            </field>
+        </record>
+        <record id="product_template_search_view" model="ir.ui.view">
+            <field name="name">product.configurator.product.template.search.view</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_search_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='filter_to_sell']" position="after">
+                    <separator />
+                    <filter
                         domain="[('config_ok','=',False)]"
+                        name="filter_standard_products"
+                        string="Standard Products"
                     />
-                <filter
-                        string="Configurable Products"
-                        name="filter_config_ok"
+                    <filter
                         domain="[('config_ok','=',True)]"
+                        name="filter_config_ok"
+                        string="Configurable Products"
                     />
-            </xpath>
-        </field>
-    </record>
-
-    <record id="template_view_tree_configurable" model="ir.ui.view">
-        <field name="name">product.template.product.tree</field>
-        <field name="model">product.template</field>
-        <field name="inherit_id" ref="product.product_template_tree_view" />
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='default_code']" position="attributes">
-                <attribute
+                </xpath>
+            </field>
+        </record>
+        <record id="template_view_tree_configurable" model="ir.ui.view">
+            <field name="name">product.template.product.tree</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_tree_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='default_code']" position="attributes">
+                    <attribute
                         name="invisible"
                     >context.get('default_config_ok', 0)</attribute>
-            </xpath>
-        </field>
-    </record>
-
-    <record id="product_template_kanban_view_inherited" model="ir.ui.view">
-        <field name="name">Product.template.product.kanban</field>
-        <field name="model">product.template</field>
-        <field name="inherit_id" ref="product.product_template_kanban_view" />
-        <field name="arch" type="xml">
-            <xpath expr="//kanban" position="inside">
-                <field name="config_ok" />
-            </xpath>
-            <xpath expr="//div/div[2]" position="before">
-                <div
+                </xpath>
+            </field>
+        </record>
+        <record id="product_template_kanban_view_inherited" model="ir.ui.view">
+            <field name="name">Product.template.product.kanban</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_kanban_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//kanban" position="inside">
+                    <field name="config_ok" />
+                </xpath>
+                <xpath expr="//div/div[2]" position="before">
+                    <div
+                        attrs="{'invisible': [('config_ok', '=', False)]}"
                         class="pull-right"
                         groups="product_configurator.group_product_configurator"
-                        attrs="{'invisible': [('config_ok', '=', False)]}"
                     >
-                    <a name="configure_product" type="object">
-                        <i class="fa fa-wrench fa-lg" />
-                    </a>
-                </div>
-            </xpath>
-        </field>
-    </record>
-
-    <record id="product_form_view_custom_vals_inherit" model="ir.ui.view">
-        <field name="name">product.configurator.form.view.custom.vals</field>
-        <field name="model">product.product</field>
-        <field name="inherit_id" ref="product.product_normal_form_view" />
-        <field name="arch" type="xml">
-            <xpath expr='//header' position="inside">
-                <button
-                        string="Variant Prices"
-                        type="object"
-                        name="get_product_attribute_values_action"
-                        attrs="{'invisible': ['|', ('product_template_attribute_value_ids', '=', False), ('config_ok', '=', False)]}"
-                        groups="product_configurator.group_product_configurator_manager"
-                    />
-                <button
-                        name="reconfigure_product"
-                        groups="product_configurator.group_product_configurator"
-                        class="oe_highlight"
-                        type="object"
-                        string="Reconfigure Product"
-                        attrs="{'invisible': [('config_ok','=',False)]}"
-                    />
-            </xpath>
-            <xpath expr="//button[@name='toggle_config']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//div[@name='options']" position="inside">
-                <field
+                        <a name="configure_product" type="object">
+                            <i class="fa fa-wrench fa-lg" title="Configure Product" />
+                        </a>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+        <!-- <record id="product_form_view_custom_vals_inherit" model="ir.ui.view">
+            <field name="name">product.configurator.form.view.custom.vals</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button attrs="{'invisible': ['|', ('product_template_attribute_value_ids', '=', False), ('config_ok', '=', False)]}" groups="product_configurator.group_product_configurator_manager" name="get_product_attribute_values_action" string="Variant Prices" type="object"/>
+                    <button attrs="{'invisible': [('config_ok','=',False)]}" class="oe_highlight" groups="product_configurator.group_product_configurator" name="reconfigure_product" string="Reconfigure Product" type="object"/>
+                </xpath>
+                <xpath expr="//div[@name='options']" position="inside">
+                    <field attrs="{'invisible': [('config_ok', '=', False)]}" name="config_preset_ok"/>
+                    <label attrs="{'invisible': [('config_ok', '=', False)]}" for="config_preset_ok"/>
+                </xpath>
+            </field>
+        </record> -->
+        <record id="product_variant_easy_edit_view_inherit" model="ir.ui.view">
+            <field name="name">product.product.view.form.easy</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_variant_easy_edit_view" />
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='active']" position="after">
+                    <field invisible="1" name="config_ok" />
+                    <field
+                        attrs="{'invisible': [('config_ok', '=', False)]}"
                         name="config_preset_ok"
-                        attrs="{'invisible': [('config_ok', '=', False)]}"
                     />
-                <label
-                        for="config_preset_ok"
-                        attrs="{'invisible': [('config_ok', '=', False)]}"
-                    />
-            </xpath>
-        </field>
-    </record>
-
-    <record id="product_variant_easy_edit_view_inherit" model="ir.ui.view">
-        <field name="name">product.product.view.form.easy</field>
-        <field name="model">product.product</field>
-        <field name="inherit_id" ref="product.product_variant_easy_edit_view" />
-        <field name="mode">primary</field>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='active']" position="after">
-                <field name="config_ok" invisible="1" />
-                <field
-                        name="config_preset_ok"
-                        attrs="{'invisible': [('config_ok', '=', False)]}"
-                    />
-            </xpath>
-            <xpath expr="//field[@name='weight']" position="attributes">
-                <attribute
+                </xpath>
+                <xpath expr="//field[@name='weight']" position="attributes">
+                    <attribute
                         name="attrs"
                     >{'readonly': [('config_ok', '=', True)]}</attribute>
-            </xpath>
-        </field>
-    </record>
-
-    <record id="product_kanban_view_inherited" model="ir.ui.view">
-        <field name="name">Product Kanban</field>
-        <field name="model">product.product</field>
-        <field name="inherit_id" ref="product.product_kanban_view" />
-        <field name="arch" type="xml">
-            <xpath expr="//kanban" position="inside">
-                <field name="config_ok" />
-            </xpath>
-            <xpath
+                </xpath>
+            </field>
+        </record>
+        <record id="product_kanban_view_inherited" model="ir.ui.view">
+            <field name="name">Product Kanban</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_kanban_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//kanban" position="inside">
+                    <field name="config_ok" />
+                </xpath>
+                <xpath
                     expr="//div/div[2]/strong[hasclass('o_kanban_record_title')]"
                     position="after"
                 >
-                <div
+                    <div
+                        attrs="{'invisible': [('config_ok', '=', False)]}"
                         class="pull-right"
                         groups="product_configurator.group_product_configurator"
-                        attrs="{'invisible': [('config_ok', '=', False)]}"
                     >
-                    <a
+                        <a
+                            class="fa fa-repeat fa-lg"
                             name="reconfigure_product"
                             type="object"
-                            class="fa fa-repeat fa-lg"
-                        >
-                    </a>
-                </div>
-            </xpath>
-        </field>
-    </record>
-</data>
+                        />
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
 </odoo>
