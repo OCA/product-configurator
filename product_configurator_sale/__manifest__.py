@@ -5,7 +5,7 @@
     "summary": "Product configuration interface modules for Sale",
     "author": "Pledra",
     "license": "AGPL-3",
-    "website": "http://www.pledra.com/",
+    "website": "https://github.com/OCA/product-configurator",
     "depends": ["sale_management", "product_configurator"],
     "data": ["data/menu_product.xml", "views/sale_view.xml"],
     "demo": ["demo/res_partner_demo.xml"],

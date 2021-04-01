@@ -7,15 +7,11 @@ class ProductConfiguratorSale(models.TransientModel):
     _inherit = "product.configurator"
     _description = "Product Configurator Sale"
 
-    order_id = fields.Many2one(
-        comodel_name="sale.order", required=True, readonly=True
-    )
-    order_line_id = fields.Many2one(
-        comodel_name="sale.order.line", readonly=True
-    )
+    order_id = fields.Many2one(comodel_name="sale.order", required=True, readonly=True)
+    order_line_id = fields.Many2one(comodel_name="sale.order.line", readonly=True)
 
     def _get_order_line_vals(self, product_id):
-        """ Hook to allow custom line values to be put on the newly
+        """Hook to allow custom line values to be put on the newly
         created or edited lines."""
         product = self.env["product.product"].browse(product_id)
         line_vals = {"product_id": product_id, "order_id": self.order_id.id}
