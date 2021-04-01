@@ -33,7 +33,7 @@ class SaleOrderLine(models.Model):
     )
 
     def reconfigure_product(self):
-        """ Creates and launches a product configurator wizard with a linked
+        """Creates and launches a product configurator wizard with a linked
         template and variant in order to re-configure a existing product. It is
         esetially a shortcut to pre-fill configuration data of a variant"""
         wizard_model = "product.configurator.sale"
