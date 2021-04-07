@@ -3,12 +3,11 @@
     <record id="sale.product_template_action" model="ir.actions.act_window">
         <field
             name="context"
-        >{"search_default_filter_to_sell":1, "search_default_filter_standard_products": 1, "sale_multi_pricelist_product_template": 1}</field>
+        >{&quot;search_default_filter_to_sell&quot;:1, &quot;search_default_filter_standard_products&quot;: 1, &quot;sale_multi_pricelist_product_template&quot;: 1}</field>
     </record>
-
     <record id="product.product_normal_action_sell" model="ir.actions.act_window">
         <field
             name="context"
-        >{"search_default_filter_to_sell":1, "search_default_filter_standard_products": 1}</field>
+        >{&quot;search_default_filter_to_sell&quot;:1, &quot;search_default_filter_standard_products&quot;: 1}</field>
     </record>
 </odoo>
