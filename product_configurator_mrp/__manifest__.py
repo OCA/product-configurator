@@ -5,7 +5,7 @@
     "summary": "BOM Support for configurable products",
     "author": "Pledra",
     "license": "AGPL-3",
-    "website": "http://www.pledra.com/",
+    "website": "https://github.com/OCA/product-configurator",
     "depends": ["mrp", "product_configurator"],
     "data": [
         "data/menu_product.xml",

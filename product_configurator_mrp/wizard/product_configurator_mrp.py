@@ -1,6 +1,6 @@
-from odoo import fields, models, _
-from odoo.tools.safe_eval import safe_eval
+from odoo import _, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools.safe_eval import safe_eval
 
 
 class ProductConfiguratorMrp(models.TransientModel):
@@ -39,7 +39,7 @@ class ProductConfiguratorMrp(models.TransientModel):
         return mrp_action
 
     def _get_order_vals(self, product_id):
-        """ Hook to allow custom line values to be put on the newly
+        """Hook to allow custom line values to be put on the newly
         created or edited lines."""
 
         line_vals = {
@@ -68,11 +68,7 @@ class ProductConfiguratorMrp(models.TransientModel):
                 _(
                     "There is no BOM associated with selected product. "
                     "Please inform to administrator/manager. [Product: %s]"
-                    % (
-                        self.env["product.product"]
-                        .browse(res["res_id"])
-                        .display_name
-                    )
+                    % (self.env["product.product"].browse(res["res_id"]).display_name)
                 )
             )
 

@@ -7,10 +7,7 @@ class ProductConfigSession(models.Model):
     def create_get_bom(self, variant, product_tmpl_id=None, values=None):
         if values is None:
             values = {}
-        if (
-            product_tmpl_id is None
-            or variant.product_tmpl_id != product_tmpl_id
-        ):
+        if product_tmpl_id is None or variant.product_tmpl_id != product_tmpl_id:
             product_tmpl_id = variant.product_tmpl_id
 
         model_name = "mrp.bom"
@@ -39,9 +36,7 @@ class ProductConfigSession(models.Model):
             specs = self.get_onchange_specifications(model=bom_line_model)
             updates = mrpBomLine.onchange(bom_line_vals, ["product_id"], specs)
             values = updates.get("value", {})
-            values = self.get_vals_to_write(
-                values=values, model=bom_line_model
-            )
+            values = self.get_vals_to_write(values=values, model=bom_line_model)
             values.update(bom_line_vals)
             bom_lines.append((0, 0, values))
 
@@ -66,7 +61,5 @@ class ProductConfigSession(models.Model):
         variant = super(ProductConfigSession, self).create_get_variant(
             value_ids=value_ids, custom_vals=custom_vals
         )
-        self.create_get_bom(
-            variant=variant, product_tmpl_id=self.product_tmpl_id
-        )
+        self.create_get_bom(variant=variant, product_tmpl_id=self.product_tmpl_id)
         return variant
