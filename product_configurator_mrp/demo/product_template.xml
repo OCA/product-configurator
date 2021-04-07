@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 <data>
 
@@ -6,7 +6,10 @@
 
     <record id="product_configurator.bmw_2_series" model="product.template">
         <field name="type">product</field>
-        <field name="route_ids" eval="[(6, 0, [ref('stock.route_warehouse0_mto'), ref('mrp.route_warehouse0_manufacture')])]"/>
+        <field
+                name="route_ids"
+                eval="[(6, 0, [ref('stock.route_warehouse0_mto'), ref('mrp.route_warehouse0_manufacture')])]"
+            />
     </record>
 
     <record id="product_configurator.product_bmw_sport_line" model="product.product">
@@ -17,11 +20,17 @@
         <field name="type">product</field>
     </record>
 
-    <record id="product_configurator.product_bmw_model_sport_line" model="product.product">
+    <record
+            id="product_configurator.product_bmw_model_sport_line"
+            model="product.product"
+        >
         <field name="type">product</field>
     </record>
 
-    <record id="product_configurator.product_bmw_model_luxury_line" model="product.product">
+    <record
+            id="product_configurator.product_bmw_model_luxury_line"
+            model="product.product"
+        >
         <field name="type">product</field>
     </record>
 
@@ -29,15 +38,24 @@
         <field name="type">product</field>
     </record>
 
-    <record id="product_configurator.product_bmw_model_advantage" model="product.product">
+    <record
+            id="product_configurator.product_bmw_model_advantage"
+            model="product.product"
+        >
         <field name="type">product</field>
     </record>
 
-    <record id="product_configurator.product_2_series_transmission_steptronic" model="product.product">
+    <record
+            id="product_configurator.product_2_series_transmission_steptronic"
+            model="product.product"
+        >
         <field name="type">product</field>
     </record>
 
-    <record id="product_configurator.product_2_series_transmission_steptronic_sport" model="product.product">
+    <record
+            id="product_configurator.product_2_series_transmission_steptronic_sport"
+            model="product.product"
+        >
         <field name="type">product</field>
     </record>
 
@@ -53,7 +71,10 @@
         <field name="type">product</field>
     </record>
 
-    <record id="product_configurator.product_2_series_smoker_package" model="product.product">
+    <record
+            id="product_configurator.product_2_series_smoker_package"
+            model="product.product"
+        >
         <field name="type">product</field>
     </record>
 
@@ -69,11 +90,17 @@
         <field name="type">product</field>
     </record>
 
-    <record id="product_configurator.product_engine_m235i_coupe" model="product.product">
+    <record
+            id="product_configurator.product_engine_m235i_coupe"
+            model="product.product"
+        >
         <field name="type">product</field>
     </record>
 
-    <record id="product_configurator.product_engine_m2351_xdrive_coupe" model="product.product">
+    <record
+            id="product_configurator.product_engine_m2351_xdrive_coupe"
+            model="product.product"
+        >
         <field name="type">product</field>
     </record>
 
@@ -85,7 +112,10 @@
         <field name="type">product</field>
     </record>
 
-    <record id="product_configurator.product_engine_220d_xdrive_coupe" model="product.product">
+    <record
+            id="product_configurator.product_engine_220d_xdrive_coupe"
+            model="product.product"
+        >
         <field name="type">product</field>
     </record>
 

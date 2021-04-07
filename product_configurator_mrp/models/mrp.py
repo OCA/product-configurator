@@ -32,7 +32,7 @@ class MrpProduction(models.Model):
         return configurator_obj.with_context(ctx).get_wizard_action()
 
     def reconfigure_product(self):
-        """ Creates and launches a product configurator wizard with a linked
+        """Creates and launches a product configurator wizard with a linked
         template and variant in order to re-configure a existing product. It is
         esetially a shortcut to pre-fill configuration data of a variant"""
         wizard_model = "product.configurator.mrp"
@@ -58,9 +58,9 @@ class MrpBomLine(models.Model):
     _inherit = "mrp.bom.line"
 
     def _skip_bom_line(self, product):
-        """ Control if a BoM line should be produce, can be inherited for add
+        """Control if a BoM line should be produce, can be inherited for add
         custom control. It currently checks that all variant values are in the
-        product. """
+        product."""
         if not self.bom_id.config_ok:
             return super(MrpBomLine, self)._skip_bom_line(product=product)
         if not self.config_set_id.configuration_ids:
