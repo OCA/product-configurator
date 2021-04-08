@@ -1,12 +1,9 @@
 odoo.define("product_configurator_mrp.KanbanController", function (require) {
     "use strict";
 
-    var core = require("web.core");
     var KanbanController = require("web.KanbanController");
     var KanbanView = require("web.KanbanView");
     var viewRegistry = require("web.view_registry");
-
-    var qweb = core.qweb;
 
     var ConfigKanbanController = KanbanController.extend({
         buttons_template: "ConfigKanbanView.buttons",
@@ -28,7 +25,7 @@ odoo.define("product_configurator_mrp.KanbanController", function (require) {
             }
         },
 
-        _onConfigure: function (ev) {
+        _onConfigure: function () {
             var self = this;
             return this._rpc({
                 model: "mrp.production",

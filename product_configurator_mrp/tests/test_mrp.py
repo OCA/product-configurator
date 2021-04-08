@@ -1,3 +1,6 @@
+# Copyright (C) 2021 Open Source Integrators
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 from datetime import datetime
 
 from odoo.addons.product_configurator.tests.test_product_configurator_test_cases import (
