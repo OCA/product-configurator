@@ -1,11 +1,8 @@
 odoo.define("product_configurator_mrp.ListController", function (require) {
     "use strict";
-    var core = require("web.core");
     var ListController = require("web.ListController");
     var ListView = require("web.ListView");
     var viewRegistry = require("web.view_registry");
-
-    var qweb = core.qweb;
 
     var ConfigListController = ListController.extend({
         buttons_template: "ConfigListView.buttons",
@@ -27,7 +24,7 @@ odoo.define("product_configurator_mrp.ListController", function (require) {
             }
         },
 
-        _onConfigure: function (ev) {
+        _onConfigure: function () {
             var self = this;
             return this._rpc({
                 model: "mrp.production",
