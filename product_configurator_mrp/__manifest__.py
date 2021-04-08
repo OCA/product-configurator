@@ -1,9 +1,12 @@
+# Copyright (C) 2021 Open Source Integrators
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 {
     "name": "Product Configurator Manufacturing",
-    "version": "13.0.1.0.0",
+    "version": "14.0.1.0.0",
     "category": "Manufacturing",
     "summary": "BOM Support for configurable products",
-    "author": "Pledra",
+    "author": "Pledra, Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "website": "https://github.com/OCA/product-configurator",
     "depends": ["mrp", "product_configurator"],
@@ -15,7 +18,7 @@
     ],
     "demo": ["demo/product_template.xml"],
     "qweb": ["static/src/xml/mrp_production_views.xml"],
-    "test": [],
     "installable": True,
     "auto_install": False,
+    "development_status": "Beta",
 }
