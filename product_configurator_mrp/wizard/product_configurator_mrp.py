@@ -1,3 +1,6 @@
+# Copyright (C) 2021 Open Source Integrators
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 from odoo import _, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval
@@ -72,6 +75,10 @@ class ProductConfiguratorMrp(models.TransientModel):
                 )
             )
 
+        move_finished_lst = []
+        move_finished_lst.append(values.get("move_finished_ids")[1])
+        values.pop("move_finished_ids")
+        values.update({"move_finished_ids": move_finished_lst})
         if self.order_id:
             self.order_id.write(values)
             mrp_order = self.order_id

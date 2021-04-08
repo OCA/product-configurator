@@ -14,28 +14,30 @@ odoo.define("product_configurator_mrp.FormController", function (require) {
             "click .o_form_button_create_config": "_onConfigure",
         }),
 
-        renderButtons: function ($node) {
+        renderButtons: function () {
             var self = this;
             var $footer = this.footerToButtons ? this.renderer.$("footer") : null;
             var mustRenderFooterButtons = $footer && $footer.length;
             self._super.apply(this, arguments);
             if (mustRenderFooterButtons) {
             } else if (
-                    this.$buttons &&
-                    self.modelName == "mrp.production" &&
-                    self.initialState.context.custom_create_variant
-                ) {
-                    var button_create = this.$buttons.find(".o_form_button_create");
-                    button_create.after(
-                        qweb.render("ConfigFormView.buttons", {widget: this})
-                    );
-                    this.$buttons
-                        .find(".o_form_button_create_config")
-                        .css("display", "inline");
-                }
+                this.$buttons &&
+                self.modelName == "mrp.production" &&
+                self.initialState.context.custom_create_variant
+            ) {
+                var button_create = this.$buttons.find(".o_form_button_create");
+                button_create.after(
+                    qweb.render("ConfigFormView.buttons", {
+                        widget: this,
+                    })
+                );
+                this.$buttons
+                    .find(".o_form_button_create_config")
+                    .css("display", "inline");
+            }
         },
 
-        _onConfigure: function (ev) {
+        _onConfigure: function () {
             var self = this;
             return this._rpc({
                 model: "mrp.production",

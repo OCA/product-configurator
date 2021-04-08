@@ -29,7 +29,7 @@
                     />
                 </div>
             </xpath>
-            <xpath expr="//field[@name='finished_move_line_ids']/.." position="after">
+            <page name="finished_products" position="after">
                 <page string="Custom Values" name="custom_values">
                     <field name="custom_value_ids" readonly="True" force_save="True">
                         <tree>
@@ -39,7 +39,7 @@
                         </tree>
                     </field>
                 </page>
-            </xpath>
+            </page>
         </field>
     </record>
 
