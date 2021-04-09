@@ -1,23 +1,24 @@
-from odoo.tests.common import TransactionCase
 from odoo import SUPERUSER_ID
+from odoo.tests.common import TransactionCase
 
 
 class Wizard(TransactionCase):
-
     def setUp(self):
         super(Wizard, self).setUp()
 
-        self.sale_order_id = self.env.ref('sale.sale_order_3')
-        self.cfg_tmpl = self.env.ref('product_configurator.bmw_2_series')
-        self.cfg_wizard = self.env['product.configurator.sale'].create({
-            'product_tmpl_id': self.cfg_tmpl.id,
-            'order_id': self.sale_order_id.id,
-            'user_id': SUPERUSER_ID
-        })
+        self.sale_order_id = self.env.ref("sale.sale_order_3")
+        self.cfg_tmpl = self.env.ref("product_configurator.bmw_2_series")
+        self.cfg_wizard = self.env["product.configurator.sale"].create(
+            {
+                "product_tmpl_id": self.cfg_tmpl.id,
+                "order_id": self.sale_order_id.id,
+                "user_id": SUPERUSER_ID,
+            }
+        )
 
         self.cfg_session = self.cfg_wizard.config_session_id
 
-        self.attr_vals = self.cfg_tmpl.attribute_line_ids.mapped('value_ids')
+        self.attr_vals = self.cfg_tmpl.attribute_line_ids.mapped("value_ids")
 
         self.attr_val_ext_ids = {
             v: k for k, v in self.attr_vals.get_external_id().items()
@@ -29,15 +30,13 @@ class Wizard(TransactionCase):
 
         value_ids = []
 
-        attr_val_prefix = 'product_configurator.product_attribute_value_%s'
+        attr_val_prefix = "product_configurator.product_attribute_value_%s"
 
         for ext_id in ext_ids:
             if ext_id in self.attr_val_ext_ids:
                 value_ids.append(self.attr_val_ext_ids[ext_id])
             elif attr_val_prefix % ext_id in self.attr_val_ext_ids:
-                value_ids.append(
-                    self.attr_val_ext_ids[attr_val_prefix % ext_id]
-                )
+                value_ids.append(self.attr_val_ext_ids[attr_val_prefix % ext_id])
 
         return value_ids
 
@@ -46,13 +45,20 @@ class Wizard(TransactionCase):
         MO created from the order uses the bom stored on the order line"""
 
         conf = [
-            'gasoline', '228i', 'model_luxury_line', 'silver', 'rims_384',
-            'tapistry_black', 'steptronic', 'smoker_package', 'tow_hook'
+            "gasoline",
+            "228i",
+            "model_luxury_line",
+            "silver",
+            "rims_384",
+            "tapistry_black",
+            "steptronic",
+            "smoker_package",
+            "tow_hook",
         ]
 
         attr_val_ids = set(self.get_attr_val_ids(conf))
 
-        field_prefix = self.cfg_wizard._prefixes['field_prefix']
+        field_prefix = self.cfg_wizard._prefixes["field_prefix"]
 
         while self.cfg_wizard:
             state = self.cfg_wizard.state
@@ -67,7 +73,7 @@ class Wizard(TransactionCase):
                 lambda cfg_step: cfg_step.id == step_id
             )
 
-            attr_lines = cfg_step.mapped('attribute_line_ids')
+            attr_lines = cfg_step.mapped("attribute_line_ids")
 
             vals = {}
 
@@ -83,15 +89,15 @@ class Wizard(TransactionCase):
                             vals[field_name] = [(0, 0, [])]
                         vals[field_name][0][2].append(attr_val.id)
                     else:
-                        vals.update({
-                            field_name: attr_val.id,
-                        })
+                        vals.update(
+                            {
+                                field_name: attr_val.id,
+                            }
+                        )
 
             self.cfg_wizard.write(vals)
 
-        order_line = self.sale_order_id.order_line.filtered(
-            lambda x: x.config_ok
-        )
+        order_line = self.sale_order_id.order_line.filtered(lambda x: x.config_ok)
         bom = order_line.bom_id
 
         self.assertTrue(bom, "Sale order line has no bom linked")
@@ -103,10 +109,13 @@ class Wizard(TransactionCase):
 
         production_order = order_line.move_ids.created_production_id
 
-        self.assertTrue(production_order,
-                        "There was no production order created after sales "
-                        "order confirmation")
+        self.assertTrue(
+            production_order,
+            "There was no production order created after sales " "order confirmation",
+        )
 
-        self.assertTrue(production_order.bom_id == bom,
-                        "Manufacturing order does not use the bom_id stored "
-                        "on the sale order line")
+        self.assertTrue(
+            production_order.bom_id == bom,
+            "Manufacturing order does not use the bom_id stored "
+            "on the sale order line",
+        )

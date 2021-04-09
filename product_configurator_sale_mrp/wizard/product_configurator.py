@@ -3,7 +3,7 @@ from odoo import models
 
 class ProductConfiguratorSale(models.TransientModel):
 
-    _inherit = 'product.configurator.sale'
+    _inherit = "product.configurator.sale"
 
     def _get_order_line_vals(self, product_id):
         """Add the config session related bom_id to the sale order line"""
