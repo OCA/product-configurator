@@ -1,10 +1,12 @@
-from odoo import api, models
+# Copyright (C) 2021 Open Source Integrators
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+from odoo import models
 
 
 class ProcurementRule(models.Model):
     _inherit = "procurement.rule"
 
-    @api.multi
     def _get_matching_bom(self, product_id, values):
         moves = values.get("move_dest_ids")
         bom_id = moves[0].sale_line_id.bom_id if moves else None
