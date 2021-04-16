@@ -1250,6 +1250,33 @@ class ProductConfigSession(models.Model):
         )
         return extra_attribute_line_ids
 
+    def check_attributes_configuration(
+        self, attribute_line_ids, custom_vals, value_ids, final=True
+    ):
+        for line in attribute_line_ids:
+            # Validate custom values
+            attr = line.attribute_id
+            if attr.id in custom_vals:
+                attr.validate_custom_val(custom_vals[attr.id])
+            if final:
+                common_vals = set(value_ids) & set(line.value_ids.ids)
+                custom_val = custom_vals.get(attr.id)
+                avail_val_ids = self.values_available(
+                    line.value_ids.ids,
+                    value_ids,
+                    product_tmpl_id=self.product_tmpl_id,
+                )
+                if (
+                    line.required
+                    and avail_val_ids
+                    and not common_vals
+                    and not custom_val
+                ):
+                    # TODO: Verify custom value type to be correct
+                    raise ValidationError(
+                        _("Required attribute '%s' is empty" % (attr.name))
+                    )
+
     @api.model
     def validate_configuration(
         self,
@@ -1288,30 +1315,9 @@ class ProductConfigSession(models.Model):
         attribute_line_ids += self.get_extra_attribute_line_ids(
             product_template_id=product_tmpl
         )
-        for line in attribute_line_ids:
-            # Validate custom values
-            attr = line.attribute_id
-            if attr.id in custom_vals:
-                attr.validate_custom_val(custom_vals[attr.id])
-            if final:
-                common_vals = set(value_ids) & set(line.value_ids.ids)
-                custom_val = custom_vals.get(attr.id)
-                avail_val_ids = self.values_available(
-                    line.value_ids.ids,
-                    value_ids,
-                    product_tmpl_id=self.product_tmpl_id,
-                )
-                if (
-                    line.required
-                    and avail_val_ids
-                    and not common_vals
-                    and not custom_val
-                ):
-                    # TODO: Verify custom value type to be correct
-                    raise ValidationError(
-                        _("Required attribute '%s' is empty" % (attr.name))
-                    )
-
+        self.check_attributes_configuration(
+            attribute_line_ids, custom_vals, value_ids, final=True
+        )
         # Check if all all the values passed are not restricted
         avail_val_ids = self.values_available(
             value_ids, value_ids, product_tmpl_id=product_tmpl_id
