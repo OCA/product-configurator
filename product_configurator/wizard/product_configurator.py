@@ -4,9 +4,8 @@ from odoo import _, api, fields, models, tools
 from odoo.exceptions import UserError, ValidationError
 
 from odoo.addons.base.models.ir_model import FIELD_TYPES
-from odoo.addons.base.models.ir_ui_view import (
+from odoo.addons.base.models.ir_ui_view import (  # transfer_modifiers_to_node,
     transfer_field_to_modifiers,
-    transfer_modifiers_to_node,
     transfer_node_to_modifiers,
 )
 
@@ -577,37 +576,15 @@ class ProductConfigurator(models.TransientModel):
         )
         # Daniel: This looks looks a duplicate call, but I'm not sure
         # But after removing it the wizard can now be rendered
-        # https://github.com/pledra/odoo-product-configurator/commit/c943081811f73b421ccbdbe773355048a25754dc
+        # https://github.com/pledra/odoo-product-configurator/commit/
+        # c943081811f73b421ccbdbe773355048a25754dc
         # transfer_modifiers_to_node(modifiers=modifiers, node=node)
 
-    @api.model
-    def add_dynamic_fields(self, res, dynamic_fields, wiz):
-        """Create the configuration view using the dynamically generated
-        fields in fields_get()
-        """
+    def prepare_attrs_initial(
+        self, attr_lines, field_prefix, custom_field_prefix, dynamic_fields, wiz
+    ):
 
-        field_prefix = self._prefixes.get("field_prefix")
-        custom_field_prefix = self._prefixes.get("custom_field_prefix")
-
-        try:
-            # Search for view container hook and add dynamic view and fields
-            xml_view = etree.fromstring(res["arch"])
-            xml_static_form = xml_view.xpath("//group[@name='static_form']")[0]
-            xml_dynamic_form = etree.Element("group", colspan="2", name="dynamic_form")
-            xml_parent = xml_static_form.getparent()
-            xml_parent.insert(xml_parent.index(xml_static_form) + 1, xml_dynamic_form)
-            xml_dynamic_form = xml_view.xpath("//group[@name='dynamic_form']")[0]
-        except Exception:
-            raise UserError(
-                _("There was a problem rendering the view " "(dynamic_form not found)")
-            )
-
-        # Get all dynamic fields inserted via fields_get method
-        attr_lines = wiz.product_tmpl_id.attribute_line_ids.sorted()
-
-        # Loop over the dynamic fields and add them to the view one by one
         for attr_line in attr_lines:
-
             attribute_id = attr_line.attribute_id.id
             field_name = field_prefix + str(attribute_id)
             custom_field = custom_field_prefix + str(attribute_id)
@@ -686,6 +663,45 @@ class ProductConfigurator(models.TransientModel):
 
                     if attr_line.required and not attr_line.custom:
                         attrs["required"].append((dependee_field, "in", list(val_ids)))
+            return attrs, field_name, custom_field, config_steps, cfg_step_ids
+
+    @api.model
+    def add_dynamic_fields(self, res, dynamic_fields, wiz):
+        """Create the configuration view using the dynamically generated
+        fields in fields_get()
+        """
+
+        field_prefix = self._prefixes.get("field_prefix")
+        custom_field_prefix = self._prefixes.get("custom_field_prefix")
+
+        try:
+            # Search for view container hook and add dynamic view and fields
+            xml_view = etree.fromstring(res["arch"])
+            xml_static_form = xml_view.xpath("//group[@name='static_form']")[0]
+            xml_dynamic_form = etree.Element("group", colspan="2", name="dynamic_form")
+            xml_parent = xml_static_form.getparent()
+            xml_parent.insert(xml_parent.index(xml_static_form) + 1, xml_dynamic_form)
+            xml_dynamic_form = xml_view.xpath("//group[@name='dynamic_form']")[0]
+        except Exception:
+            raise UserError(
+                _("There was a problem rendering the view " "(dynamic_form not found)")
+            )
+
+        # Get all dynamic fields inserted via fields_get method
+        attr_lines = wiz.product_tmpl_id.attribute_line_ids.sorted()
+
+        # Loop over the dynamic fields and add them to the view one by one
+
+        for attr_line in attr_lines:
+            (
+                attrs,
+                field_name,
+                custom_field,
+                config_steps,
+                cfg_step_ids,
+            ) = self.prepare_attrs_initial(
+                attr_line, field_prefix, custom_field_prefix, dynamic_fields, wiz
+            )
 
             # Create the new field in the view
             node = etree.Element(
