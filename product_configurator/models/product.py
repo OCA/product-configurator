@@ -11,13 +11,6 @@ from odoo.tools.safe_eval import safe_eval
 _logger = logging.getLogger(__name__)
 
 
-class ProductProduct(models.Model):
-    _inherit = "product.product"
-
-    def toggle_config(self):
-        return self.product_tmpl_id.toggle_config()
-
-
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
@@ -388,6 +381,9 @@ class ProductTemplate(models.Model):
 class ProductProduct(models.Model):
     _inherit = "product.product"
     _rec_name = "config_name"
+
+    def toggle_config(self):
+        return self.product_tmpl_id.toggle_config()
 
     def _get_conversions_dict(self):
         conversions = {"float": float, "integer": int}
