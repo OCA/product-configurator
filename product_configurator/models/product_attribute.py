@@ -64,7 +64,6 @@ class ProductAttribute(models.Model):
     custom_type = fields.Selection(
         selection=CUSTOM_TYPES,
         string="Field Type",
-        size=64,
         help="The type of the custom field generated in the frontend",
     )
     description = fields.Text(string="Description", translate=True)

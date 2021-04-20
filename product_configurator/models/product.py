@@ -480,7 +480,9 @@ class ProductProduct(models.Model):
         """Store weight in dummy field"""
         self.weight_dummy = self.weight
 
-    config_name = fields.Char(string="Name", size=256, compute="_compute_config_name")
+    config_name = fields.Char(
+        string="Configuration Name", compute="_compute_config_name"
+    )
     weight_extra = fields.Float(
         string="Weight Extra", compute="_compute_product_weight_extra"
     )
