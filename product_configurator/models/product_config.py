@@ -1316,7 +1316,7 @@ class ProductConfigSession(models.Model):
             product_template_id=product_tmpl
         )
         self.check_attributes_configuration(
-            attribute_line_ids, custom_vals, value_ids, final=True
+            attribute_line_ids, custom_vals, value_ids, final=final
         )
         # Check if all all the values passed are not restricted
         avail_val_ids = self.values_available(
