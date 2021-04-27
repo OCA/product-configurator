@@ -1,4 +1,5 @@
-/* Add one more option to boolean_button form widget (displayed in the product.template form view) */
+/* Add one more option to boolean_button form widget
+ * (displayed in the product.template form view) */
 odoo.define("product_configurator.FieldBooleanButton", function (require) {
     "use strict";
     var basic_fields = require("web.basic_fields");
