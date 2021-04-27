@@ -1,1 +1,0 @@
-#Odoo Product Configurator
