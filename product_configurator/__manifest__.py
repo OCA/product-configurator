@@ -32,6 +32,7 @@
     "images": ["static/description/cover.png"],
     "post_init_hook": "post_init_hook",
     "qweb": ["static/xml/create_button.xml"],
+    "development_status": "Beta",
     "installable": True,
     "application": True,
     "auto_install": False,
