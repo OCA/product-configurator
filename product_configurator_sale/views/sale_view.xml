@@ -36,6 +36,7 @@
                     icon="fa-cogs"
                     name="reconfigure_product"
                     type="object"
+                    title="Reconfigure"
                 />
                 <field name="config_session_id" />
             </xpath>
