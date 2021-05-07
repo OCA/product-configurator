@@ -1,5 +1,4 @@
-/* Add one more option to boolean_button form widget
- * (displayed in the product.template form view) */
+/* Add one more option to boolean_button form widget (displayed in the product.template form view) */
 odoo.define("product_configurator.FieldBooleanButton", function (require) {
     "use strict";
     var basic_fields = require("web.basic_fields");
@@ -49,11 +48,11 @@ odoo.define("product_configurator.FieldBooleanButton", function (require) {
     });
 
     FormController.include({
-        renderButtons: function () {
+        renderButtons: function ($node) {
             var self = this;
             this._super.apply(this, arguments);
             if (
-                self.modelName === "product.product" &&
+                self.modelName == "product.product" &&
                 self.initialState.context.custom_create_variant
             ) {
                 this.$buttons.find(".o_form_button_create").css("display", "none");
@@ -64,7 +63,7 @@ odoo.define("product_configurator.FieldBooleanButton", function (require) {
             var self = this;
             var attrs = event.data.attrs;
             if (event.data.attrs.context) {
-                var btn_ctx = pyUtils.eval("context", event.data.attrs);
+                var btn_ctx = pyUtils.eval("context", event.data.attrs.context);
                 var record_ctx = self.model.get(event.data.record.id).context;
                 self.model.localData[event.data.record.id].context = _.extend(
                     {},
@@ -84,11 +83,11 @@ odoo.define("product_configurator.FieldBooleanButton", function (require) {
         },
     });
     ListController.include({
-        renderButtons: function () {
+        renderButtons: function ($node) {
             var self = this;
             this._super.apply(this, arguments);
             if (
-                self.modelName === "product.product" &&
+                self.modelName == "product.product" &&
                 self.initialState.context.custom_create_variant
             ) {
                 this.$buttons.find(".o_list_button_add").css("display", "none");
@@ -96,11 +95,11 @@ odoo.define("product_configurator.FieldBooleanButton", function (require) {
         },
     });
     KanbanController.include({
-        renderButtons: function () {
+        renderButtons: function ($node) {
             var self = this;
             this._super.apply(this, arguments);
             if (
-                self.modelName === "product.product" &&
+                self.modelName == "product.product" &&
                 self.initialState.context.custom_create_variant
             ) {
                 this.$buttons.find(".o-kanban-button-new").css("display", "none");

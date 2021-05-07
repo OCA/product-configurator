@@ -114,11 +114,12 @@ class ProductTemplate(models.Model):
         help="Generate Name based on Mako Template",
         copy=True,
     )
+
     # We are calculating weight of variants based on weight of
     # product-template so that no need of compute and inverse on this
     weight = fields.Float(
         compute="_compute_weight",
-        inverse="_set_weight",  # pylint: disable=C8110
+        inverse="_set_weight",
         search="_search_weight",
         store=False,
     )
@@ -313,11 +314,7 @@ class ProductTemplate(models.Model):
         )
         user_root = self.env.ref("base.user_root")
         user_admin = self.env.ref("base.user_admin")
-        if (
-            config_manager
-            or self.env.user.id in [user_root.id, user_admin.id]
-            or self.env.su
-        ):
+        if config_manager or self.env.user.id in [user_root.id, user_admin.id]:
             return True
         raise ValidationError(
             _(
@@ -381,9 +378,6 @@ class ProductTemplate(models.Model):
 class ProductProduct(models.Model):
     _inherit = "product.product"
     _rec_name = "config_name"
-
-    def toggle_config(self):
-        return self.product_tmpl_id.toggle_config()
 
     def _get_conversions_dict(self):
         conversions = {"float": float, "integer": int}
@@ -481,7 +475,7 @@ class ProductProduct(models.Model):
         self.weight_dummy = self.weight
 
     config_name = fields.Char(
-        string="Configuration Name", compute="_compute_config_name"
+        string="Config Name", size=256, compute="_compute_config_name"
     )
     weight_extra = fields.Float(
         string="Weight Extra", compute="_compute_product_weight_extra"
