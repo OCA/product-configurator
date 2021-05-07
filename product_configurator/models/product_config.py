@@ -51,7 +51,7 @@ class ProductConfigDomain(models.Model):
             )
         return computed_domain
 
-    name = fields.Char(string="Name", required=True)
+    name = fields.Char(string="Name", required=True, size=256)
     domain_line_ids = fields.One2many(
         comodel_name="product.config.domain.line",
         inverse_name="domain_id",
@@ -90,6 +90,7 @@ class ProductConfigDomainLine(models.Model):
 
         return andor
 
+    @api.depends("attribute_id")
     def _compute_template_attribute_value_ids(self):
         for domain in self:
             domain.template_attribute_value_ids = (
@@ -110,14 +111,6 @@ class ProductConfigDomainLine(models.Model):
             and (template_lines.mapped("value_ids") & attribute_values)
             or attribute_values
         )
-
-    @api.onchange("attribute_id")
-    def onchange_attribute_id(self):
-        allowed_value_ids = self._get_allowed_attribute_value_ids()
-        return {
-            "domain": {"value_ids": [("id", "in", allowed_value_ids.ids)]},
-            "value": {"value_ids": False},
-        }
 
     template_attribute_value_ids = fields.Many2many(
         comodel_name="product.attribute.value",
@@ -207,6 +200,7 @@ class ProductConfigLine(models.Model):
     )
     value_ids = fields.Many2many(
         comodel_name="product.attribute.value",
+        relation="cfg_line_attr_val_id_rel",
         column1="cfg_line_id",
         column2="attr_val_id",
         string="Values",
@@ -240,7 +234,7 @@ class ProductConfigImage(models.Model):
     _description = "Product Config Image"
     _order = "sequence"
 
-    name = fields.Char("Name", required=True, translate=True)
+    name = fields.Char("Name", size=128, required=True, translate=True)
     product_tmpl_id = fields.Many2one(
         comodel_name="product.template",
         string="Product",
@@ -280,7 +274,7 @@ class ProductConfigStep(models.Model):
     # TODO: Prevent values which have dependencies to be set in a
     #       step with higher sequence than the dependency
 
-    name = fields.Char(string="Name", required=True, translate=True)
+    name = fields.Char(string="Name", size=128, required=True, translate=True)
 
 
 class ProductConfigStepLine(models.Model):
@@ -678,7 +672,7 @@ class ProductConfigSession(models.Model):
         try:
             self.validate_configuration(final=False)
         except ValidationError as ex:
-            raise ValidationError(ex.name)
+            raise ValidationError(_("%s" % ex.name))
         except Exception:
             raise ValidationError(_("Invalid Configuration"))
         return res
@@ -709,7 +703,7 @@ class ProductConfigSession(models.Model):
                 # TODO: Remove if cond when PR with
                 # raise error on github is merged
             except ValidationError as ex:
-                raise ValidationError(ex.name)
+                raise ValidationError(_("%s" % ex.name))
             except Exception:
                 raise ValidationError(
                     _("Default values provided generate an invalid " "configuration")
@@ -739,7 +733,7 @@ class ProductConfigSession(models.Model):
         try:
             self.validate_configuration()
         except ValidationError as ex:
-            raise ValidationError(ex.name)
+            raise ValidationError(_("%s" % ex.name))
         except Exception:
             raise ValidationError(_("Invalid Configuration"))
 
@@ -1250,33 +1244,6 @@ class ProductConfigSession(models.Model):
         )
         return extra_attribute_line_ids
 
-    def check_attributes_configuration(
-        self, attribute_line_ids, custom_vals, value_ids, final=True
-    ):
-        for line in attribute_line_ids:
-            # Validate custom values
-            attr = line.attribute_id
-            if attr.id in custom_vals:
-                attr.validate_custom_val(custom_vals[attr.id])
-            if final:
-                common_vals = set(value_ids) & set(line.value_ids.ids)
-                custom_val = custom_vals.get(attr.id)
-                avail_val_ids = self.values_available(
-                    line.value_ids.ids,
-                    value_ids,
-                    product_tmpl_id=self.product_tmpl_id,
-                )
-                if (
-                    line.required
-                    and avail_val_ids
-                    and not common_vals
-                    and not custom_val
-                ):
-                    # TODO: Verify custom value type to be correct
-                    raise ValidationError(
-                        _("Required attribute '%s' is empty" % (attr.name))
-                    )
-
     @api.model
     def validate_configuration(
         self,
@@ -1315,9 +1282,30 @@ class ProductConfigSession(models.Model):
         attribute_line_ids += self.get_extra_attribute_line_ids(
             product_template_id=product_tmpl
         )
-        self.check_attributes_configuration(
-            attribute_line_ids, custom_vals, value_ids, final=final
-        )
+        for line in attribute_line_ids:
+            # Validate custom values
+            attr = line.attribute_id
+            if attr.id in custom_vals:
+                attr.validate_custom_val(custom_vals[attr.id])
+            if final:
+                common_vals = set(value_ids) & set(line.value_ids.ids)
+                custom_val = custom_vals.get(attr.id)
+                avail_val_ids = self.values_available(
+                    line.value_ids.ids,
+                    value_ids,
+                    product_tmpl_id=self.product_tmpl_id,
+                )
+                if (
+                    line.required
+                    and avail_val_ids
+                    and not common_vals
+                    and not custom_val
+                ):
+                    # TODO: Verify custom value type to be correct
+                    raise ValidationError(
+                        _("Required attribute '%s' is empty" % (attr.name))
+                    )
+
         # Check if all all the values passed are not restricted
         avail_val_ids = self.values_available(
             value_ids, value_ids, product_tmpl_id=product_tmpl_id
