@@ -4,8 +4,9 @@ from odoo import _, api, fields, models, tools
 from odoo.exceptions import UserError, ValidationError
 
 from odoo.addons.base.models.ir_model import FIELD_TYPES
-from odoo.addons.base.models.ir_ui_view import (  # transfer_modifiers_to_node,
+from odoo.addons.base.models.ir_ui_view import (
     transfer_field_to_modifiers,
+    transfer_modifiers_to_node,
     transfer_node_to_modifiers,
 )
 
@@ -176,6 +177,9 @@ class ProductConfigurator(models.TransientModel):
 
     def get_onchange_vals(self, cfg_val_ids, config_session_id=None):
         """Onchange hook to add / modify returned values by onchange method"""
+        if not config_session_id:
+            config_session_id = self.config_session_id
+
         # Remove None from cfg_val_ids if exist
         cfg_val_ids = [val for val in cfg_val_ids if val]
 
@@ -548,7 +552,7 @@ class ProductConfigurator(models.TransientModel):
         return res
 
     @api.model
-    def setup_modifiers(self, node, field=None, context=None, in_tree_view=False):
+    def setup_modifiers(self, node, field=None, context=None, current_node_path=None):
         """Processes node attributes and field descriptors to generate
         the ``modifiers`` node attribute and set it on the provided node.
 
@@ -558,7 +562,7 @@ class ProductConfigurator(models.TransientModel):
         :type node: lxml.etree._Element
         :param dict field: field descriptor corresponding to the provided node
         :param dict context: execution context used to evaluate node attributes
-        :param bool in_tree_view: triggers the ``column_invisible`` code
+        :param bool current_node_path: triggers the ``column_invisible`` code
                                   path (separate from ``invisible``): in
                                   tree view there are two levels of
                                   invisibility, cell content (a column is
@@ -572,19 +576,41 @@ class ProductConfigurator(models.TransientModel):
         if field is not None:
             transfer_field_to_modifiers(field=field, modifiers=modifiers)
         transfer_node_to_modifiers(
-            node=node, modifiers=modifiers, context=context, current_node_path=None
+            node=node,
+            modifiers=modifiers,
+            context=context,
+            current_node_path=current_node_path,
         )
-        # Daniel: This looks looks a duplicate call, but I'm not sure
-        # But after removing it the wizard can now be rendered
-        # https://github.com/pledra/odoo-product-configurator/commit/
-        # c943081811f73b421ccbdbe773355048a25754dc
-        # transfer_modifiers_to_node(modifiers=modifiers, node=node)
+        transfer_modifiers_to_node(modifiers=modifiers, node=node)
 
-    def prepare_attrs_initial(
-        self, attr_lines, field_prefix, custom_field_prefix, dynamic_fields, wiz
-    ):
+    @api.model
+    def add_dynamic_fields(self, res, dynamic_fields, wiz):
+        """Create the configuration view using the dynamically generated
+        fields in fields_get()
+        """
 
+        field_prefix = self._prefixes.get("field_prefix")
+        custom_field_prefix = self._prefixes.get("custom_field_prefix")
+
+        try:
+            # Search for view container hook and add dynamic view and fields
+            xml_view = etree.fromstring(res["arch"])
+            xml_static_form = xml_view.xpath("//group[@name='static_form']")[0]
+            xml_dynamic_form = etree.Element("group", colspan="2", name="dynamic_form")
+            xml_parent = xml_static_form.getparent()
+            xml_parent.insert(xml_parent.index(xml_static_form) + 1, xml_dynamic_form)
+            xml_dynamic_form = xml_view.xpath("//group[@name='dynamic_form']")[0]
+        except Exception:
+            raise UserError(
+                _("There was a problem rendering the view " "(dynamic_form not found)")
+            )
+
+        # Get all dynamic fields inserted via fields_get method
+        attr_lines = wiz.product_tmpl_id.attribute_line_ids.sorted()
+
+        # Loop over the dynamic fields and add them to the view one by one
         for attr_line in attr_lines:
+
             attribute_id = attr_line.attribute_id.id
             field_name = field_prefix + str(attribute_id)
             custom_field = custom_field_prefix + str(attribute_id)
@@ -598,7 +624,7 @@ class ProductConfigurator(models.TransientModel):
             )
 
             # attrs property for dynamic fields
-            attrs = {"readonly": ["|"], "required": [], "invisible": ["|"]}
+            attrs = {"readonly": [], "required": [], "invisible": []}
 
             if config_steps:
                 cfg_step_ids = [str(id) for id in config_steps.ids]
@@ -663,46 +689,11 @@ class ProductConfigurator(models.TransientModel):
 
                     if attr_line.required and not attr_line.custom:
                         attrs["required"].append((dependee_field, "in", list(val_ids)))
-            return attrs, field_name, custom_field, config_steps, cfg_step_ids
 
-    @api.model
-    def add_dynamic_fields(self, res, dynamic_fields, wiz):
-        """Create the configuration view using the dynamically generated
-        fields in fields_get()
-        """
-
-        field_prefix = self._prefixes.get("field_prefix")
-        custom_field_prefix = self._prefixes.get("custom_field_prefix")
-
-        try:
-            # Search for view container hook and add dynamic view and fields
-            xml_view = etree.fromstring(res["arch"])
-            xml_static_form = xml_view.xpath("//group[@name='static_form']")[0]
-            xml_dynamic_form = etree.Element("group", colspan="2", name="dynamic_form")
-            xml_parent = xml_static_form.getparent()
-            xml_parent.insert(xml_parent.index(xml_static_form) + 1, xml_dynamic_form)
-            xml_dynamic_form = xml_view.xpath("//group[@name='dynamic_form']")[0]
-        except Exception:
-            raise UserError(
-                _("There was a problem rendering the view " "(dynamic_form not found)")
-            )
-
-        # Get all dynamic fields inserted via fields_get method
-        attr_lines = wiz.product_tmpl_id.attribute_line_ids.sorted()
-
-        # Loop over the dynamic fields and add them to the view one by one
-
-        for attr_line in attr_lines:
-            (
-                attrs,
-                field_name,
-                custom_field,
-                config_steps,
-                cfg_step_ids,
-            ) = self.prepare_attrs_initial(
-                attr_line, field_prefix, custom_field_prefix, dynamic_fields, wiz
-            )
-
+            if len(attrs["readonly"]) > 1 and attrs["readonly"][0] != "|":
+                attrs["readonly"].insert(0, "|")
+            if len(attrs["invisible"]) > 1 and attrs["invisible"][0] != "|":
+                attrs["invisible"].insert(0, "|")
             # Create the new field in the view
             node = etree.Element(
                 "field",
@@ -754,6 +745,12 @@ class ProductConfigurator(models.TransientModel):
                 # TODO: Add a field2widget mapper
                 if attr_line.attribute_id.custom_type == "color":
                     widget = "color"
+
+                if len(attrs["invisible"]) > 1 and attrs["invisible"][0] != "|":
+                    attrs["invisible"].insert(0, "|")
+                if len(attrs["readonly"]) > 1 and attrs["readonly"][0] != "|":
+                    attrs["readonly"].insert(0, "|")
+
                 node = etree.Element(
                     "field", name=custom_field, attrs=str(attrs), widget=widget
                 )
@@ -866,59 +863,6 @@ class ProductConfigurator(models.TransientModel):
         """Prevent database storage of dynamic fields and instead write values
         to database persistent value_ids field"""
 
-        # Get current database value_ids (current configuration)
-        field_prefix = self._prefixes.get("field_prefix")
-        custom_field_prefix = self._prefixes.get("custom_field_prefix")
-
-        custom_ext_id = "product_configurator.custom_attribute_value"
-        custom_val = self.env.ref(custom_ext_id)
-
-        attr_val_dict = {}
-        custom_val_dict = {}
-
-        for attr_line in self.product_tmpl_id.attribute_line_ids:
-            attr_id = attr_line.attribute_id.id
-            field_name = field_prefix + str(attr_id)
-            custom_field_name = custom_field_prefix + str(attr_id)
-
-            if field_name not in vals and custom_field_name not in vals:
-                continue
-
-            # Add attribute values from the client except custom attribute
-            # If a custom value is being written, but field name is not in
-            #   the write dictionary, then it must be a custom value!
-            if vals.get(field_name, custom_val.id) != custom_val.id:
-                if attr_line.multi and isinstance(vals[field_name], list):
-                    if not vals[field_name]:
-                        field_val = None
-                    else:
-                        field_val = vals[field_name][0][2]
-                elif not attr_line.multi and isinstance(vals[field_name], int):
-                    field_val = vals[field_name]
-                else:
-                    raise UserError(
-                        _(
-                            "An error occursed while parsing value for "
-                            "attribute %s" % attr_line.attribute_id.name
-                        )
-                    )
-                attr_val_dict.update({attr_id: field_val})
-                # Ensure there is no custom value stored if we have switched
-                # from custom value to selected attribute value.
-                if attr_line.custom:
-                    custom_val_dict.update({attr_id: False})
-            elif attr_line.custom:
-                val = vals.get(custom_field_name, False)
-                if attr_line.attribute_id.custom_type == "binary":
-                    # TODO: Add widget that enables multiple file uploads
-                    val = [{"name": "custom", "datas": vals[custom_field_name]}]
-                custom_val_dict.update({attr_id: val})
-                # Ensure there is no standard value stored if we have switched
-                # from selected value to custom value.
-                attr_val_dict.update({attr_id: False})
-
-        self.config_session_id.update_config(attr_val_dict, custom_val_dict)
-
         # Remove all dynamic fields from write values
         self.config_session_id.update_session_configuration_value(
             vals=vals, product_tmpl_id=self.product_tmpl_id
@@ -944,6 +888,7 @@ class ProductConfigurator(models.TransientModel):
         wizard_action = self.with_context(
             allow_preset_selection=False
         ).get_wizard_action(wizard=self)
+
         if not self.product_tmpl_id:
             return wizard_action
 
@@ -952,49 +897,13 @@ class ProductConfigurator(models.TransientModel):
                 _("Product Template does not have any attribute lines defined")
             )
 
-        cfg_step_lines = self.product_tmpl_id.config_step_line_ids
-        if not cfg_step_lines:
-            if (self.value_ids or self.custom_value_ids) and not self.state == "select":
-                return self.action_config_done()
-            elif (
-                not (self.value_ids or self.custom_value_ids)
-                and not self.state == "select"
-            ):
-                raise UserError(
-                    _(
-                        "You must select at least one\
-                    attribute in order to configure a product"
-                    )
-                )
-            else:
-                self.state = "configure"
-                return wizard_action
-
-        adjacent_steps = self.config_session_id.get_adjacent_steps()
-        next_step = adjacent_steps.get("next_step")
-        open_step_lines = self.config_session_id.get_open_step_lines()
-        open_step_line_ids = [str(line_id) for line_id in open_step_lines.ids]
-
-        session_config_step = self.config_session_id.config_step
-        if (
-            session_config_step
-            and self.state != session_config_step
-            and session_config_step in open_step_line_ids
-        ):
-            next_step = self.config_session_id.config_step
-        else:
-            next_step = str(next_step.id) if next_step else None
-        if next_step:
-            self.state = next_step
-            self.config_session_id.config_step = next_step
-        elif not (self.value_ids or self.custom_value_ids):
-            raise UserError(
-                _(
-                    "You must select at least one\
-                    attribute in order to configure a product"
-                )
-            )
-        else:
+        next_step = self.config_session_id.get_next_step(
+            state=self.state,
+            product_tmpl_id=self.product_tmpl_id,
+            value_ids=self.value_ids,
+            custom_value_ids=self.custom_value_ids,
+        )
+        if not next_step:
             return self.action_config_done()
         return self.open_step(step=next_step)
 
@@ -1121,25 +1030,25 @@ class ProductConfigurator(models.TransientModel):
         return action
 
 
-class ProductConfiguratorCustomValue(models.TransientModel):
-    _name = "product.configurator.custom.value"
-    _description = "Product Configurator Custom Value"
+# class ProductConfiguratorCustomValue(models.TransientModel):
+#     _name = "product.configurator.custom.value"
+#     _description = "Product Configurator Custom Value"
 
-    attachment_ids = fields.Many2many(
-        comodel_name="ir.attachment",
-        column1="config_attachment",
-        column2="attachment_id",
-        string="Attachments",
-    )
-    attribute_id = fields.Many2one(
-        string="Attribute", comodel_name="product.attribute", required=True
-    )
-    user_id = fields.Many2one(
-        string="User",
-        comodel_name="res.users",
-        related="wizard_id.create_uid",
-        required=True,
-    )
-    value = fields.Char(string="Value")
-    wizard_id = fields.Many2one(comodel_name="product.configurator", string="Wizard")
-    # TODO: Current value ids to save frontend/backend session?
+#     attachment_ids = fields.Many2many(
+#         comodel_name="ir.attachment",
+#         column1="config_attachment",
+#         column2="attachment_id",
+#         string="Attachments",
+#     )
+#     attribute_id = fields.Many2one(
+#         string="Attribute", comodel_name="product.attribute", required=True
+#     )
+#     user_id = fields.Many2one(
+#         string="User",
+#         comodel_name="res.users",
+#         related="wizard_id.create_uid",
+#         required=True,
+#     )
+#     value = fields.Char(string="Value")
+#     wizard_id = fields.Many2one(comodel_name="product.configurator", string="Wizard")
+# TODO: Current value ids to save frontend/backend session?

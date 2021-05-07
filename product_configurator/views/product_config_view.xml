@@ -49,11 +49,7 @@
                         <field name="domain_line_ids">
                             <tree editable="bottom">
                                 <field name="sequence" widget="handle" />
-                                <!-- <field
-                                        name="attribute_id"
-                                        domain="[('id', context.get('product_attribute_ids') and 'in' or '!=', context.get('product_attribute_ids', False))]"
-                                        options="{'no_create': True, 'no_create_edit': True}"
-                                    /> -->
+
                                 <field
                                         name="attribute_id"
                                         options="{'no_create': True, 'no_create_edit': True}"
@@ -64,13 +60,55 @@
                                         widget="many2many_tags"
                                         options="{'no_create': True, 'no_create_edit': True}"
                                         context="{'show_attribute': False}"
-                                        domain="[('id', 'in', template_attribute_value_ids)]"
+                                        domain="[('attribute_id', '=', attribute_id)]"
                                     />
                                 <field name="operator" />
+                            </tree>
+                        </field>
+                    </page>
+                    <page string="Inherited">
+                        <field name="implied_ids" />
+                    </page>
+                </notebook>
+            </form>
+        </field>
+    </record>
+
+    <!-- Created seprate view for the template -->
+    <record id="product_config_domain_form_view_template" model="ir.ui.view">
+        <field name="name">product.configurator.domain.form.template</field>
+        <field name="model">product.config.domain</field>
+        <field name="arch" type="xml">
+            <form string="Configuration Restrictions">
+                <group>
+                    <group>
+                        <field name="name" />
+                    </group>
+                </group>
+                <notebook>
+                    <page string="Rules">
+                        <field name="domain_line_ids">
+                            <tree editable="bottom">
+                                <field name="sequence" widget="handle" />
+
+                                <field
+                                        name="attribute_id"
+                                        domain="[('id', 'in', context.get('product_attribute_ids', []))]"
+                                        options="{'no_create': True, 'no_create_edit': True}"
+                                    />
+                                <field name="condition" />
                                 <field
                                         name="template_attribute_value_ids"
                                         invisible="1"
                                     />
+                                <field
+                                        name="value_ids"
+                                        widget="many2many_tags"
+                                        options="{'no_create': True, 'no_create_edit': True}"
+                                        context="{'show_attribute': False}"
+                                        domain="[('id', 'in', template_attribute_value_ids)]"
+                                    />
+                                <field name="operator" />
                             </tree>
                         </field>
                     </page>
