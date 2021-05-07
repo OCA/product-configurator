@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem
+        name="Configurator"
+        id="menu_product_configurable"
+        groups="product_configurator.group_product_configurator_manager"
+        web_icon="product_configurator,static/description/icon.png"
+        sequence="20"
+    >
+        <menuitem
+            id="menu_product_configurable_product_main"
+            name="Configurable Products"
+            sequence="10"
+        >
+            <menuitem
+                action="product_configurable_template_action"
+                id="menu_product_configurable_template_action"
+                sequence="20"
+            />
+            <menuitem
+                id="menu_product_configurable_variants_action"
+                action="product_configurable_variant_action"
+                name="Configurable Variants"
+                sequence="25"
+            />
+        </menuitem>
+        <menuitem
+            id="menu_product_configurable_settings"
+            name="Configuration"
+            sequence="20"
+        >
+            <menuitem
+                id="menu_action_product_configurator_configuration"
+                action="action_product_configurator_configuration"
+                name="Settings"
+                active="False"
+                sequence="0"
+            />
+            <menuitem
+                id="menu_product_config_steps_action"
+                action="product_config_steps_action"
+                name="Configuration Steps"
+                sequence="30"
+            />
+            <menuitem
+                id="menu_product_config_domain_action"
+                action="product_config_domain_action"
+                name="Configuration Restrictions"
+                sequence="40"
+            />
+            <menuitem
+                id="menu_product_config_session"
+                action="product_config_session"
+                name="Configuration Sessions"
+                sequence="50"
+            />
+        </menuitem>
+    </menuitem>
+</odoo>
