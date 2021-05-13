@@ -4,10 +4,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 14.0+e\n"
+"Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-19 12:39+0000\n"
-"PO-Revision-Date: 2020-02-19 12:39+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -122,6 +120,11 @@ msgid "228i Coupé"
 msgstr ""
 
 #. module: product_configurator
+#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_kanban_view_inherited
+msgid "<i class=\"fa fa-wrench fa-lg\" title=\"Configure Product\"/>"
+msgstr ""
+
+#. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute__active
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value__active
 msgid "Active"
@@ -177,7 +180,6 @@ msgstr ""
 
 #. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value__attachment_ids
-#: model:ir.model.fields,field_description:product_configurator.field_product_configurator_custom_value__attachment_ids
 msgid "Attachments"
 msgstr ""
 
@@ -185,7 +187,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_line__attribute_id
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line__attribute_id
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value__attribute_id
-#: model:ir.model.fields,field_description:product_configurator.field_product_configurator_custom_value__attribute_id
 msgid "Attribute"
 msgstr ""
 
@@ -223,7 +224,7 @@ msgid "Attribute Value"
 msgstr ""
 
 #. module: product_configurator
-#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_form_view
+#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_only_form_view_inherited
 msgid "Attribute Value Dependencies"
 msgstr ""
 
@@ -266,7 +267,7 @@ msgid "Attribute value image (Display on website for radio buttons)"
 msgstr ""
 
 #. module: product_configurator
-#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_form_view
+#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_only_form_view_inherited
 msgid "Attribute value lines"
 msgstr ""
 
@@ -407,7 +408,7 @@ msgstr ""
 #. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_product__config_image_ids
 #: model:ir.model.fields,field_description:product_configurator.field_product_template__config_image_ids
-#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_form_view
+#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_only_form_view_inherited
 msgid "Configuration Images"
 msgstr ""
 
@@ -418,10 +419,16 @@ msgid "Configuration Lines"
 msgstr ""
 
 #. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_product__config_name
+msgid "Configuration Name"
+msgstr ""
+
+#. module: product_configurator
 #: model:ir.actions.act_window,name:product_configurator.product_config_domain_action
 #: model:ir.ui.menu,name:product_configurator.menu_product_config_domain_action
 #: model_terms:ir.ui.view,arch_db:product_configurator.product_config_domain_form_view
-#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_form_view
+#: model_terms:ir.ui.view,arch_db:product_configurator.product_config_domain_form_view_template
+#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_only_form_view_inherited
 msgid "Configuration Restrictions"
 msgstr ""
 
@@ -463,7 +470,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:product_configurator.product_config_steps_action
 #: model:ir.model.fields,field_description:product_configurator.field_product_configurator__config_step_ids
 #: model:ir.ui.menu,name:product_configurator.menu_product_config_steps_action
-#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_form_view
+#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_only_form_view_inherited
 msgid "Configuration Steps"
 msgstr ""
 
@@ -476,12 +483,12 @@ msgstr ""
 #. module: product_configurator
 #: model:ir.ui.menu,name:product_configurator.menu_product_configurable
 #: model_terms:ir.ui.view,arch_db:product_configurator.product_attribute_form_view
-#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_form_view
+#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_only_form_view_inherited
 msgid "Configurator"
 msgstr ""
 
 #. module: product_configurator
-#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_form_view
+#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_only_form_view_inherited
 msgid "Configure Product"
 msgstr ""
 
@@ -551,7 +558,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step__create_uid
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line__create_uid
 #: model:ir.model.fields,field_description:product_configurator.field_product_configurator__create_uid
-#: model:ir.model.fields,field_description:product_configurator.field_product_configurator_custom_value__create_uid
 msgid "Created by"
 msgstr ""
 
@@ -566,7 +572,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step__create_date
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line__create_date
 #: model:ir.model.fields,field_description:product_configurator.field_product_configurator__create_date
-#: model:ir.model.fields,field_description:product_configurator.field_product_configurator_custom_value__create_date
 msgid "Created on"
 msgstr ""
 
@@ -649,6 +654,9 @@ msgid "Diesel"
 msgstr ""
 
 #. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_ir_ui_view__display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute__display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value__display_name
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_line__display_name
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain__display_name
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line__display_name
@@ -659,7 +667,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step__display_name
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line__display_name
 #: model:ir.model.fields,field_description:product_configurator.field_product_configurator__display_name
-#: model:ir.model.fields,field_description:product_configurator.field_product_configurator_custom_value__display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_product__display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_template__display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_attribute_line__display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_attribute_value__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -748,6 +759,9 @@ msgid "Generate Name based on Mako Template"
 msgstr ""
 
 #. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_ir_ui_view__id
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute__id
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value__id
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_line__id
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain__id
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line__id
@@ -758,7 +772,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step__id
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line__id
 #: model:ir.model.fields,field_description:product_configurator.field_product_configurator__id
-#: model:ir.model.fields,field_description:product_configurator.field_product_configurator_custom_value__id
+#: model:ir.model.fields,field_description:product_configurator.field_product_product__id
+#: model:ir.model.fields,field_description:product_configurator.field_product_template__id
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_attribute_line__id
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_attribute_value__id
 msgid "ID"
 msgstr ""
 
@@ -792,6 +809,7 @@ msgstr ""
 #. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain__implied_ids
 #: model_terms:ir.ui.view,arch_db:product_configurator.product_config_domain_form_view
+#: model_terms:ir.ui.view,arch_db:product_configurator.product_config_domain_form_view_template
 msgid "Inherited"
 msgstr ""
 
@@ -824,6 +842,9 @@ msgid "Is this attribute required?"
 msgstr ""
 
 #. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_ir_ui_view____last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute____last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value____last_update
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_line____last_update
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain____last_update
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line____last_update
@@ -834,7 +855,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step____last_update
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line____last_update
 #: model:ir.model.fields,field_description:product_configurator.field_product_configurator____last_update
-#: model:ir.model.fields,field_description:product_configurator.field_product_configurator_custom_value____last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_product____last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_template____last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_attribute_line____last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_attribute_value____last_update
 msgid "Last Modified on"
 msgstr ""
 
@@ -849,7 +873,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step__write_uid
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line__write_uid
 #: model:ir.model.fields,field_description:product_configurator.field_product_configurator__write_uid
-#: model:ir.model.fields,field_description:product_configurator.field_product_configurator_custom_value__write_uid
 msgid "Last Updated by"
 msgstr ""
 
@@ -864,7 +887,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step__write_date
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line__write_date
 #: model:ir.model.fields,field_description:product_configurator.field_product_configurator__write_date
-#: model:ir.model.fields,field_description:product_configurator.field_product_configurator_custom_value__write_date
 msgid "Last Updated on"
 msgstr ""
 
@@ -981,11 +1003,6 @@ msgid "Multi"
 msgstr ""
 
 #. module: product_configurator
-#: model:ir.model.fields,field_description:product_configurator.field_product_product__config_name
-msgid "Configuration Name"
-msgstr ""
-
-#. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain__name
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_image__name
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value__name
@@ -1099,11 +1116,6 @@ msgid "Product Configurator"
 msgstr ""
 
 #. module: product_configurator
-#: model:ir.model,name:product_configurator.model_product_configurator_custom_value
-msgid "Product Configurator Custom Value"
-msgstr ""
-
-#. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_configurator__product_img
 msgid "Product Img"
 msgstr ""
@@ -1211,6 +1223,7 @@ msgstr ""
 
 #. module: product_configurator
 #: model_terms:ir.ui.view,arch_db:product_configurator.product_config_domain_form_view
+#: model_terms:ir.ui.view,arch_db:product_configurator.product_config_domain_form_view_template
 msgid "Rules"
 msgstr ""
 
@@ -1270,7 +1283,6 @@ msgstr ""
 
 #. module: product_configurator
 #: model:ir.actions.act_window,name:product_configurator.action_product_configurator_configuration
-#: model:ir.ui.menu,name:product_configurator.menu_action_general_configuration
 #: model:ir.ui.menu,name:product_configurator.menu_action_product_configurator_configuration
 msgid "Settings"
 msgstr ""
@@ -1402,11 +1414,6 @@ msgid "There was a problem rendering the view (dynamic_form not found)"
 msgstr ""
 
 #. module: product_configurator
-#: model:ir.model.fields,help:product_configurator.field_product_product__price_extra
-msgid "This is the sum of the extra price of all attributes"
-msgstr ""
-
-#. module: product_configurator
 #: model_terms:ir.ui.view,arch_db:product_configurator.product_configurator_form
 msgid ""
 "To reset/change the Preset Please close and start the configuration again"
@@ -1490,7 +1497,6 @@ msgstr ""
 #. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_session__user_id
 #: model:ir.model.fields,field_description:product_configurator.field_product_configurator__user_id
-#: model:ir.model.fields,field_description:product_configurator.field_product_configurator_custom_value__user_id
 #: model:res.groups,name:product_configurator.group_product_configurator
 msgid "User"
 msgstr ""
@@ -1509,7 +1515,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_session__value_ids
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value__value
 #: model:ir.model.fields,field_description:product_configurator.field_product_configurator__value_ids
-#: model:ir.model.fields,field_description:product_configurator.field_product_configurator_custom_value__value
 #: model_terms:ir.ui.view,arch_db:product_configurator.product_attribute_value_form_view
 msgid "Value"
 msgstr ""
@@ -1548,18 +1553,13 @@ msgid ""
 msgstr ""
 
 #. module: product_configurator
-#: model:ir.model.fields,field_description:product_configurator.field_product_product__price_extra
-msgid "Variant Extra Price"
-msgstr ""
-
-#. module: product_configurator
-#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_form_view
+#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_only_form_view_inherited
 msgid "Variant Name"
 msgstr ""
 
 #. module: product_configurator
 #: model_terms:ir.ui.view,arch_db:product_configurator.product_form_view_custom_vals_inherit
-#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_form_view
+#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_only_form_view_inherited
 msgid "Variant Prices"
 msgstr ""
 
@@ -1572,6 +1572,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator.field_product_product__mako_tmpl_name
 #: model:ir.model.fields,field_description:product_configurator.field_product_template__mako_tmpl_name
 msgid "Variant name"
+msgstr ""
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_ir_ui_view
+msgid "View"
 msgstr ""
 
 #. module: product_configurator
@@ -1592,11 +1597,6 @@ msgstr ""
 msgid ""
 "When checking for variants with the same configuration, do we include this "
 "field in the search?"
-msgstr ""
-
-#. module: product_configurator
-#: model:ir.model.fields,field_description:product_configurator.field_product_configurator_custom_value__wizard_id
-msgid "Wizard"
 msgstr ""
 
 #. module: product_configurator
