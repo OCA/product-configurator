@@ -51,7 +51,7 @@ class ProductConfigDomain(models.Model):
             )
         return computed_domain
 
-    name = fields.Char(string="Name", required=True, size=256)
+    name = fields.Char(string="Name", required=True)
     domain_line_ids = fields.One2many(
         comodel_name="product.config.domain.line",
         inverse_name="domain_id",
@@ -234,7 +234,7 @@ class ProductConfigImage(models.Model):
     _description = "Product Config Image"
     _order = "sequence"
 
-    name = fields.Char("Name", size=128, required=True, translate=True)
+    name = fields.Char("Name", required=True, translate=True)
     product_tmpl_id = fields.Many2one(
         comodel_name="product.template",
         string="Product",
@@ -274,7 +274,7 @@ class ProductConfigStep(models.Model):
     # TODO: Prevent values which have dependencies to be set in a
     #       step with higher sequence than the dependency
 
-    name = fields.Char(string="Name", size=128, required=True, translate=True)
+    name = fields.Char(string="Name", required=True, translate=True)
 
 
 class ProductConfigStepLine(models.Model):
