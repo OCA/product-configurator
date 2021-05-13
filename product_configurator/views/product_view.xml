@@ -56,7 +56,7 @@
                     >
                     <field
                             name="config_ok"
-                            options='{"active": "Configurable", "inactive": "Standard"}'
+                            options="{&quot;active&quot;: &quot;Configurable&quot;, &quot;inactive&quot;: &quot;Standard&quot;}"
                             widget="boolean_button"
                         />
                 </button>
