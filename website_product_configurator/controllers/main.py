@@ -1,11 +1,12 @@
-from odoo import http
 import json
+
+from odoo import http, models
+from odoo.exceptions import UserError, ValidationError
 from odoo.http import request
-from odoo.addons.website_sale.controllers.main import WebsiteSale
+from odoo.tools.safe_eval import safe_eval
+
 from odoo.addons.http_routing.models.ir_http import slug
-from odoo.tools import safe_eval
-from odoo import models
-from odoo.exceptions import ValidationError, UserError
+from odoo.addons.website_sale.controllers.main import WebsiteSale
 
 
 def get_pricelist():
@@ -25,9 +26,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
     def get_config_session(self, product_tmpl_id):
         cfg_session_obj = request.env["product.config.session"]
         cfg_session = False
-        product_config_sessions = request.session.get(
-            "product_config_session", {}
-        )
+        product_config_sessions = request.session.get("product_config_session", {})
         is_public_user = request.env.user.has_group("base.group_public")
         cfg_session_id = product_config_sessions.get(product_tmpl_id.id)
         if cfg_session_id:
@@ -40,15 +39,10 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 force_create=is_public_user,
                 user_id=request.env.user.id,
             )
-            product_config_sessions.update(
-                {product_tmpl_id.id: cfg_session.id}
-            )
+            product_config_sessions.update({product_tmpl_id.id: cfg_session.id})
             request.session["product_config_session"] = product_config_sessions
 
-        if (
-            cfg_session.user_id.has_group("base.group_public")
-            and not is_public_user
-        ):
+        if cfg_session.user_id.has_group("base.group_public") and not is_public_user:
             cfg_session.user_id = request.env.user
         return cfg_session
 
@@ -73,11 +67,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 return request.redirect(error_page)
         # Render the configuration template based on the configuration session
         config_form = self.render_form(
-            cfg_session,
-            product=product,
-            category=category,
-            search=search,
-            **kwargs
+            cfg_session, product=product, category=category, search=search, **kwargs
         )
 
         return config_form
@@ -250,8 +240,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             "price": config_session_id.price,
             "value_ids": [[6, False, config_session_id.value_ids.ids]],
             "attribute_line_ids": [
-                [4, line.id, False]
-                for line in product_tmpl_id.attribute_line_ids
+                [4, line.id, False] for line in product_tmpl_id.attribute_line_ids
             ],
         }
         config_fields.update(form_vals)
@@ -313,9 +302,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 product_tmpl_id = val.get("value")
 
         if product_tmpl_id:
-            product_template_id = product_template_id.browse(
-                int(product_tmpl_id)
-            )
+            product_template_id = product_template_id.browse(int(product_tmpl_id))
         return product_template_id
 
     def get_extra_attribute_line_ids(self, product_template_id):
@@ -324,9 +311,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
         extra_attribute_line_ids = (
             product_template_id.attribute_line_ids
-            - product_template_id.config_step_line_ids.mapped(
-                "attribute_line_ids"
-            )
+            - product_template_id.config_step_line_ids.mapped("attribute_line_ids")
         )
         return extra_attribute_line_ids
 
@@ -352,9 +337,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
         # prepare dictionary in formate needed to pass in onchage
         form_values = self.get_orm_form_vals(form_values, config_session_id)
-        config_vals = self._prepare_configurator_values(
-            form_values, config_session_id
-        )
+        config_vals = self._prepare_configurator_values(form_values, config_session_id)
 
         # call onchange
         specs = product_configurator_obj._onchange_spec()
@@ -370,9 +353,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         # get open step lines according to current configuation
         value_ids = updates["value"].get("value_ids")
         if not value_ids:
-            value_ids = self.get_current_configuration(
-                form_values, config_session_id
-            )
+            value_ids = self.get_current_configuration(form_values, config_session_id)
         try:
             open_cfg_step_line_ids = (
                 config_session_id.sudo().get_open_step_lines(value_ids).ids
@@ -384,16 +365,12 @@ class ProductConfigWebsiteSale(WebsiteSale):
         open_cfg_step_line_ids = [
             "%s" % (step_id) for step_id in open_cfg_step_line_ids
         ]
-        extra_attr_line_ids = self.get_extra_attribute_line_ids(
-            product_template_id
-        )
+        extra_attr_line_ids = self.get_extra_attribute_line_ids(product_template_id)
         if extra_attr_line_ids:
             open_cfg_step_line_ids.append("configure")
 
         # configuration images
-        config_image_ids = config_session_id._get_config_image(
-            value_ids=value_ids
-        )
+        config_image_ids = config_session_id._get_config_image(value_ids=value_ids)
         if not config_image_ids:
             config_image_ids = product_template_id
 
@@ -419,7 +396,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         param: current_step: (string) next step of configuration wizard
             (in case when someone click on step directly instead
             of clicking on next button)
-        return: (string) next step """
+        return: (string) next step"""
         config_session_id = config_session_id.sudo()
         extra_attr_line_ids = self.get_extra_attribute_line_ids(
             config_session_id.product_tmpl_id
@@ -442,11 +419,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 )
             except (UserError, ValidationError) as Ex:
                 return {"error": Ex}
-        if (
-            not next_step
-            and extra_attr_line_ids
-            and current_step != "configure"
-        ):
+        if not next_step and extra_attr_line_ids and current_step != "configure":
             next_step = "configure"
 
         if not next_step:
@@ -506,10 +479,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                     return {"next_step": result.get("next_step")}
                 elif result.get("error", False):
                     return {"error": result.get("error")}
-            if not (
-                config_session_id.value_ids
-                or config_session_id.custom_value_ids
-            ):
+            if not (config_session_id.value_ids or config_session_id.custom_value_ids):
                 return {
                     "error": (
                         "You must select at least one "
@@ -561,16 +531,14 @@ class ProductConfigWebsiteSale(WebsiteSale):
         )
         pricelist = get_pricelist()
         product_config_session = request.session.get("product_config_session")
-        if product_config_session and product_config_session.get(
-            product_tmpl_id.id
-        ):
+        if product_config_session and product_config_session.get(product_tmpl_id.id):
 
             # Bizzappdev end code
             del product_config_session[product_tmpl_id.id]
             request.session["product_config_session"] = product_config_session
 
-        reconfigure_product_url = (
-            "/product_configurator/reconfigure/%s" % slug(product_id)
+        reconfigure_product_url = "/product_configurator/reconfigure/%s" % slug(
+            product_id
         )
         values = {
             "product_variant": product_id,
@@ -581,13 +549,10 @@ class ProductConfigWebsiteSale(WebsiteSale):
             "vals": vals,
             "reconfigure_product_url": reconfigure_product_url,
         }
-        return request.render(
-            "website_product_configurator.cfg_product", values
-        )
+        return request.render("website_product_configurator.cfg_product", values)
 
     @http.route(
-        "/product_configurator/reconfigure/"
-        '<model("product.product"):product_id>',
+        "/product_configurator/reconfigure/" '<model("product.product"):product_id>',
         type="http",
         auth="public",
         website=True,
@@ -596,17 +561,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
         try:
             product_tmpl_id = product_id.product_tmpl_id
 
-            cfg_session = self.get_config_session(
-                product_tmpl_id=product_tmpl_id
-            )
+            cfg_session = self.get_config_session(product_tmpl_id=product_tmpl_id)
             tmpl_value_ids = product_id.product_template_attribute_value_ids
-            cfg_session.value_ids = tmpl_value_ids.mapped(
-                "product_attribute_value_id"
-            )
-            cfg_session.session_product_id = product_id.id
-            return request.redirect(
-                "/shop/product/%s" % (slug(product_tmpl_id))
-            )
+            cfg_session.value_ids = tmpl_value_ids.mapped("product_attribute_value_id")
+            cfg_session.product_id = product_id.id
+            return request.redirect("/shop/product/%s" % (slug(product_tmpl_id)))
         except Exception:
             error_code = 1
             return request.redirect(
@@ -633,14 +592,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         vals = {"message": message, "error": error}
         return request.render("website_product_configurator.error_page", vals)
 
-    @http.route(
-        ["/shop/cart/update"],
-        type="http",
-        auth="public",
-        methods=["GET", "POST"],
-        website=True,
-        csrf=False,
-    )
+    @http.route()
     def cart_update(self, product_id, add_qty=1, set_qty=0, **kw):
         """This route is called when adding a product to cart (no options)."""
         sale_order = request.website.sale_get_order(force_create=True)
