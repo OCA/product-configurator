@@ -1,7 +1,8 @@
 import logging
-from odoo import api, models, _
-from odoo.http import request
+
+from odoo import _, api, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.http import request
 
 _logger = logging.getLogger(__name__)
 
@@ -9,6 +10,7 @@ _logger = logging.getLogger(__name__)
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
+    # flake8: noqa: C901
     def _cart_update(
         self, product_id=None, line_id=None, add_qty=0, set_qty=0, **kwargs
     ):
@@ -20,9 +22,7 @@ class SaleOrder(models.Model):
             self.env["sale.order.line"].sudo().with_context(product_context)
         )
         # change lang to get correct name of attributes/values
-        product_with_context = self.env["product.product"].with_context(
-            product_context
-        )
+        product_with_context = self.env["product.product"].with_context(product_context)
         product = product_with_context.browse(int(product_id))
 
         if not product.product_tmpl_id.config_ok:
@@ -37,9 +37,7 @@ class SaleOrder(models.Model):
         # Config session map
         config_session_id = kwargs.get("config_session_id", False)
         if not config_session_id and line_id:
-            order_line = self._cart_find_product_line(
-                product_id, line_id, **kwargs
-            )[:1]
+            order_line = self._cart_find_product_line(product_id, line_id, **kwargs)[:1]
             config_session_id = order_line.config_session_id.id
         if config_session_id:
             config_session_id = int(config_session_id)
@@ -79,9 +77,7 @@ class SaleOrder(models.Model):
                 )
             )
         if line_id is not False:
-            order_line = self._cart_find_product_line(
-                product_id, line_id, **kwargs
-            )[:1]
+            order_line = self._cart_find_product_line(product_id, line_id, **kwargs)[:1]
 
         # Create line if no line with product_id can be located
         if not order_line:
@@ -94,9 +90,7 @@ class SaleOrder(models.Model):
                 )
 
             product_id = product.id
-            values = self._website_product_id_change(
-                self.id, product_id, qty=1
-            )
+            values = self._website_product_id_change(self.id, product_id, qty=1)
 
             # create the line
             order_line = SaleOrderLineSudo.create(values)
@@ -106,9 +100,7 @@ class SaleOrder(models.Model):
             except ValidationError as e:
                 # The validation may occur in backend
                 # eg: taxcloud) but should fail silently in frontend
-                _logger.debug(
-                    "ValidationError occurs during tax compute. %s" % (e)
-                )
+                _logger.debug("ValidationError occurs during tax compute. %s" % (e))
             if add_qty:
                 add_qty -= 1
 
@@ -124,13 +116,12 @@ class SaleOrder(models.Model):
             order_line.unlink()
             if linked_line:
                 # update description of the parent
-                linked_product = product_with_context.browse(
-                    linked_line.product_id.id
-                )
-                linked_line.name = linked_line.\
-                    get_sale_order_line_multiline_description_sale(
+                linked_product = product_with_context.browse(linked_line.product_id.id)
+                linked_line.name = (
+                    linked_line.get_sale_order_line_multiline_description_sale(
                         linked_product
                     )
+                )
         else:
             # update line
             no_variant_attributes_price_extra = [
@@ -153,12 +144,12 @@ class SaleOrder(models.Model):
                         "quantity": quantity,
                         "date": order.date_order,
                         "pricelist": order.pricelist_id.id,
-                        "force_company": order.company_id.id,
+                        "company_id": order.company_id.id,
                     }
                 )
-                product_with_context = self.env[
-                    "product.product"
-                ].with_context(product_context)
+                product_with_context = self.env["product.product"].with_context(
+                    product_context
+                )
                 product = product_with_context.browse(product_id)
                 values["price_unit"] = self.env[
                     "account.tax"
@@ -173,26 +164,22 @@ class SaleOrder(models.Model):
 
             # link a product to the sales order
             if kwargs.get("linked_line_id"):
-                linked_line = SaleOrderLineSudo.browse(
-                    kwargs["linked_line_id"]
-                )
+                linked_line = SaleOrderLineSudo.browse(kwargs["linked_line_id"])
                 order_line.write({"linked_line_id": linked_line.id})
-                linked_product = product_with_context.browse(
-                    linked_line.product_id.id
-                )
-                linked_line.name = linked_line.\
-                    get_sale_order_line_multiline_description_sale(
+                linked_product = product_with_context.browse(linked_line.product_id.id)
+                linked_line.name = (
+                    linked_line.get_sale_order_line_multiline_description_sale(
                         linked_product
                     )
+                )
             # Generate the description with everything. This is done after
             # creating because the following related fields have to be set:
             # - product_no_variant_attribute_value_ids
             # - product_custom_attribute_value_ids
             # - linked_line_id
-            order_line.name = order_line.\
-                get_sale_order_line_multiline_description_sale(
-                    product
-                )
+            order_line.name = order_line.get_sale_order_line_multiline_description_sale(
+                product
+            )
 
         option_lines = self.order_line.filtered(
             lambda l: l.linked_line_id.id == order_line.id
@@ -211,13 +198,9 @@ class SaleOrder(models.Model):
             current_sale_line = self.env.context.get("current_sale_line")
             sale_line = False
             if current_sale_line:
-                sale_line = self.env["sale.order.line"].browse(
-                    int(current_sale_line)
-                )
+                sale_line = self.env["sale.order.line"].browse(int(current_sale_line))
             if sale_line:
-                session_map = (
-                    (sale_line.product_id.id, sale_line.cfg_session_id.id),
-                )
+                session_map = ((sale_line.product_id.id, sale_line.cfg_session_id.id),)
             ctx["product_sessions"] = session_map
         if isinstance(session_map, tuple):
             session_map = dict(session_map)
@@ -235,8 +218,7 @@ class SaleOrder(models.Model):
         return values
 
     def _cart_find_product_line(self, product_id=None, line_id=None, **kwargs):
-        """Include Config session in search.
-        """
+        """Include Config session in search."""
         order_line = super(SaleOrder, self)._cart_find_product_line(
             product_id=product_id, line_id=line_id, **kwargs
         )
@@ -272,9 +254,7 @@ class SaleOrderLine(models.Model):
     def _onchange_discount(self):
         if self.config_session_id:
             self = self.with_context(
-                product_sessions=(
-                    (self.product_id.id, self.config_session_id.id),
-                )
+                product_sessions=((self.product_id.id, self.config_session_id.id),)
             )
         return super(SaleOrderLine, self)._onchange_discount()
 
@@ -293,9 +273,7 @@ class SaleOrderLine(models.Model):
             self = self.with_context(product_sessions=session_map)
         super(SaleOrderLine, self).product_uom_change()
 
-    def _get_real_price_currency(
-        self, product, rule_id, qty, uom, pricelist_id
-    ):
+    def _get_real_price_currency(self, product, rule_id, qty, uom, pricelist_id):
         if not product.config_ok:
             return super(SaleOrderLine, self)._get_real_price_currency(
                 product=product,
@@ -310,10 +288,7 @@ class SaleOrderLine(models.Model):
             PricelistItem = self.env["product.pricelist.item"]
             pricelist_item = PricelistItem.browse(rule_id)
             currency_id = pricelist_item.pricelist_id.currency_id
-            if (
-                pricelist_item.base == "pricelist"
-                and pricelist_item.base_pricelist_id
-            ):
+            if pricelist_item.base == "pricelist" and pricelist_item.base_pricelist_id:
                 product_currency = pricelist_item.base_pricelist_id.currency_id
         product_currency = (
             product_currency

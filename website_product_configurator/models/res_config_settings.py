@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import api, fields, models
 
 
 class ResConfigSettings(models.TransientModel):
@@ -21,11 +21,8 @@ class ResConfigSettings(models.TransientModel):
             return False
 
         website_tmpl_id = self.env.ref(xml_id)
-        if (
-            website_tmpl_id.exists() and
-            website_tmpl_id.inherit_id != self.env.ref(
-                "website_product_configurator.config_form_base"
-            )
+        if website_tmpl_id.exists() and website_tmpl_id.inherit_id != self.env.ref(
+            "website_product_configurator.config_form_base"
         ):
             return False
         return website_tmpl_id
