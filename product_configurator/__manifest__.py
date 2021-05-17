@@ -6,7 +6,7 @@
     "author": "Pledra, Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "website": "https://github.com/OCA/product-configurator",
-    "depends": ["account", "stock"],
+    "depends": ["account"],
     "data": [
         "security/configurator_security.xml",
         "security/ir.model.access.csv",
