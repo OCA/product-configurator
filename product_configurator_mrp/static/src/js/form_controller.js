@@ -22,7 +22,7 @@ odoo.define("product_configurator_mrp.FormController", function (require) {
             if (mustRenderFooterButtons) {
             } else if (
                 this.$buttons &&
-                self.modelName == "mrp.production" &&
+                self.modelName === "mrp.production" &&
                 self.initialState.context.custom_create_variant
             ) {
                 var button_create = this.$buttons.find(".o_form_button_create");

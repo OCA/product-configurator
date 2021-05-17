@@ -14,6 +14,7 @@
         "data/menu_product.xml",
         "views/assets.xml",
         "views/mrp_view.xml",
+        "security/configurator_security.xml",
         "security/ir.model.access.csv",
     ],
     "demo": ["demo/product_template.xml"],
