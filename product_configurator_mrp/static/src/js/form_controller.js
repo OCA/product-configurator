@@ -19,8 +19,8 @@ odoo.define("product_configurator_mrp.FormController", function (require) {
             var $footer = this.footerToButtons ? this.renderer.$("footer") : null;
             var mustRenderFooterButtons = $footer && $footer.length;
             self._super.apply(this, arguments);
-            if (mustRenderFooterButtons) {
-            } else if (
+            if (mustRenderFooterButtons);
+            else if (
                 this.$buttons &&
                 self.modelName === "mrp.production" &&
                 self.initialState.context.custom_create_variant
