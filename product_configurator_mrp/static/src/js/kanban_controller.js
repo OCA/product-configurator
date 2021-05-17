@@ -16,7 +16,7 @@ odoo.define("product_configurator_mrp.KanbanController", function (require) {
             self._super.apply(this, arguments);
             if (
                 this.$buttons &&
-                self.modelName == "mrp.production" &&
+                self.modelName === "mrp.production" &&
                 self.initialState.context.custom_create_variant
             ) {
                 this.$buttons
