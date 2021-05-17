@@ -495,6 +495,10 @@ class ProductProduct(models.Model):
     # product preset
     config_preset_ok = fields.Boolean(string="Is Preset")
 
+    def toggle_config(self):
+        for record in self:
+            record.config_ok = not record.config_ok
+
     def get_product_attribute_values_action(self):
         self.ensure_one()
         action = self.env.ref("product.product_attribute_value_action").read()[0]
