@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
     <!-- configuration start -->
-
     <record id="mrp_production_form_view_config" model="ir.ui.view">
         <field name="name">product.config.mrp.form.view</field>
         <field name="model">mrp.production</field>
