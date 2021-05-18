@@ -44,9 +44,10 @@ class ProductConfiguratorMrp(models.TransientModel):
     def _get_order_vals(self, product_id):
         """Hook to allow custom line values to be put on the newly
         created or edited lines."""
-
+        product = self.env["product.product"].browse(product_id)
         line_vals = {
-            "product_id": product_id,
+            "product_id": product.id,
+            "product_uom_id": product.uom_id.id,
             "config_session_id": self.config_session_id.id,
         }
         return line_vals
@@ -75,15 +76,17 @@ class ProductConfiguratorMrp(models.TransientModel):
                 )
             )
 
-        move_finished_lst = []
-        move_finished_lst.append(values.get("move_finished_ids")[1])
-        values.pop("move_finished_ids")
-        values.update({"move_finished_ids": move_finished_lst})
         if self.order_id:
-            self.order_id.write(values)
+            self.order_id.write(line_vals)
             mrp_order = self.order_id
         else:
-            mrp_order = self.order_id.create(values)
+            mrp_order = self.order_id.create(line_vals)
+        mrp_order.onchange_product_id()
+        mrp_order._onchange_bom_id()
+        mrp_order._onchange_date_planned_start()
+        mrp_order._onchange_move_raw()
+        mrp_order._onchange_move_finished()
+        mrp_order._onchange_location()
         mrp_action = self.get_mrp_production_action()
         mrp_action.update({"res_id": mrp_order.id})
         return mrp_action
