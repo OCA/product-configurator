@@ -515,7 +515,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             or cfg_session_id.user_id != request.env.user
             or cfg_session_id.state != "done"
         ):
-            return request.render("website.404")
+            return request.render("website.page_404")
         product_id = cfg_session_id.product_id
         product_tmpl_id = product_id.product_tmpl_id
 
