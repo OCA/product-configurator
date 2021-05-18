@@ -547,7 +547,7 @@
                                         class="image_config_attr_value_radio"
                                         for="'%s%s' % (field_prefix, line.attribute_id.id)"
                                         t-att-data-val-id="value.id"
-                                        t-attf-style="background-image:url(/web/image?model=product.attribute.value&amp;id={{value.id}}&amp;field=image);"
+                                        t-attf-style="background-image:url(/web/image/product.attribute.value/{{value.id}}/image);"
                                         t-att-enabled="value.id in available_value_ids and True or False"
                                         t-att-title="value.name"
                                     >
@@ -576,7 +576,7 @@
                                         class="image_config_attr_value_radio"
                                         for="'%s%s' % (field_prefix, line.attribute_id.id)"
                                         t-att-data-val-id="custom_val_id.id"
-                                        t-attf-style="background-image:url(/web/image?model=product.attribute.value&amp;{{custom_val_id.id}}&amp;field=image);"
+                                        t-attf-style="background-image:url(/web/image/product.attribute.value/{{custom_val_id.id}}/image);"
                                         t-att-enabled="custom_val_id.id in available_value_ids and True or False"
                                         t-att-title="custom_val_id.name"
                                     >
