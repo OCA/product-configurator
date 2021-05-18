@@ -62,14 +62,6 @@
                 </button>
             </div>
             <xpath
-                    expr="//header/button[@name='action_update_quantity_on_hand']"
-                    position="attributes"
-                >
-                <attribute
-                        name="attrs"
-                    >{'invisible': ['|', ('product_variant_count', '&lt;', 1), ('type', '!=', 'product')]}</attribute>
-            </xpath>
-            <xpath
                     expr="//label[@for='purchase_ok' or @for='sale_ok']"
                     position="after"
                 >
