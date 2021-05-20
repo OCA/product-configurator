@@ -264,6 +264,12 @@ class ProductTemplate(models.Model):
     def configure_product(self):
         """launches a product configurator wizard with a linked
         template in order to configure new product."""
+        if not self.config_step_line_ids:
+            raise ValidationError(
+                _(
+                    "Missing configuration steps, please add configuration steps to the product template"
+                )
+            )
         return self.with_context(product_tmpl_id_readonly=True).create_config_wizard(
             click_next=False
         )
