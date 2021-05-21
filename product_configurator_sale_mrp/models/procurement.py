@@ -4,14 +4,14 @@
 from odoo import models
 
 
-class ProcurementRule(models.Model):
-    _inherit = "procurement.rule"
+class StockRule(models.Model):
+    _inherit = "stock.rule"
 
-    def _get_matching_bom(self, product_id, values):
+    def _get_matching_bom(self, product_id, company_id, values):
         moves = values.get("move_dest_ids")
         bom_id = moves[0].sale_line_id.bom_id if moves else None
         if bom_id:
             values.update(bom_id=bom_id)
-        return super(ProcurementRule, self)._get_matching_bom(
-            product_id=product_id, values=values
+        return super(StockRule, self)._get_matching_bom(
+            product_id=product_id, company_id=company_id, values=values
         )
