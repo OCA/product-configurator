@@ -67,7 +67,7 @@ odoo.define("product_configurator.FieldBooleanButton", function (require) {
             if (event.data.attrs.context) {
              	var record_ctx = self.model.get(event.data.record.id).context;
                 var btn_ctx = pyUtils.eval(
-               		"context", 
+               		'context', 
                 	record_ctx,
                 	event.data.attrs.context
                 );
