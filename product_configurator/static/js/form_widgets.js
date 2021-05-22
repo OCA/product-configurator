@@ -62,11 +62,15 @@ odoo.define("product_configurator.FieldBooleanButton", function (require) {
         /* eslint-disable no-unused-vars*/
 
         _onButtonClicked: function (event) {
-            var self =  this;
+            var self = this;
             var attrs = event.data.attrs;
             if (event.data.attrs.context) {
              	var record_ctx = self.model.get(event.data.record.id).context;
-                var btn_ctx = pyUtils.eval("context", record_ctx,event.data.attrs.context);
+                var btn_ctx = pyUtils.eval(
+               		"context", 
+                	record_ctx,
+                	event.data.attrs.context
+                );
                 self.model.localData[event.data.record.id].context = _.extend(
                     {},
                     btn_ctx,
