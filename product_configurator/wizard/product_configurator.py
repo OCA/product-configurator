@@ -589,6 +589,7 @@ class ProductConfigurator(models.TransientModel):
     
         # TODO: Initializing variable to correct when there are no defined steps
         cfg_step_ids = []
+        
         for attr_line in attr_lines:
 
             attribute_id = attr_line.attribute_id.id
