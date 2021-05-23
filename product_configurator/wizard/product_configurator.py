@@ -586,6 +586,7 @@ class ProductConfigurator(models.TransientModel):
     def prepare_attrs_initial(
         self, attr_lines, field_prefix, custom_field_prefix, dynamic_fields, wiz
     ):
+    
         # TODO: Initializing variable to correct when there are no defined steps
         cfg_step_ids = []
         for attr_line in attr_lines:
