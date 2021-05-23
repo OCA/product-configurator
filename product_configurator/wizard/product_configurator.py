@@ -587,7 +587,7 @@ class ProductConfigurator(models.TransientModel):
         self, attr_lines, field_prefix, custom_field_prefix, dynamic_fields, wiz
     ):
 
-        #Initializing the variable cfg_step_ids
+        # Initializing the variable cfg_step_ids
         cfg_step_ids = []
 
         for attr_line in attr_lines:
