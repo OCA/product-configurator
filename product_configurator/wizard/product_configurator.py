@@ -588,7 +588,7 @@ class ProductConfigurator(models.TransientModel):
     ):
 
         # Initializing cfg_step_ids field
-        cfg_step_ids = []
+        cfg_step_ids = list()
 
         for attr_line in attr_lines:
 
