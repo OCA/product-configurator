@@ -141,17 +141,25 @@
         </field>
     </record>
 
-    <record model="ir.actions.act_window" id="action_mrp_bom_line_config_set">
+    <record id="action_mrp_bom_line_config_set" model="ir.actions.act_window">
         <field name="name">Product Attribute Sets</field>
         <field name="res_model">mrp.bom.line.configuration.set</field>
         <field name="view_mode">tree,form</field>
     </record>
 
     <menuitem
-        action="action_mrp_bom_line_config_set"
         id="menu_mrp_bom_line_config_set"
+        action="action_mrp_bom_line_config_set"
         parent="mrp.menu_mrp_bom"
         sequence="20"
+    />
+
+    <menuitem
+        id="product_menu_mrp_bom_line_config_set"
+        action="action_mrp_bom_line_config_set"
+        name="Configuration Sets"
+        parent="product_configurator.menu_product_configurable_settings"
+        sequence="45"
     />
 
 </odoo>

@@ -80,6 +80,11 @@ msgid "Configuration Set"
 msgstr ""
 
 #. module: product_configurator_mrp
+#: model:ir.ui.menu,name:product_configurator_mrp.product_menu_mrp_bom_line_config_set
+msgid "Configuration Sets"
+msgstr ""
+
+#. module: product_configurator_mrp
 #: model:ir.model.fields,field_description:product_configurator_mrp.field_product_configurator_mrp__config_step_name
 msgid "Configuration Step"
 msgstr ""
