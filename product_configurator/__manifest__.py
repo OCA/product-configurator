@@ -1,6 +1,6 @@
 {
     "name": "Product Configurator",
-    "version": "14.0.1.2.1",
+    "version": "14.0.1.2.2",
     "category": "Generic Modules/Base",
     "summary": "Base for product configuration interface modules",
     "author": "Pledra, Odoo Community Association (OCA)",
