@@ -23,7 +23,7 @@
                         class="oe_highlight"
                         type="object"
                         string="Reconfigure"
-                        attrs="{'invisible': [('config_ok','=',False)]}"
+                        attrs="{'invisible': ['|', ('config_ok','=',False), ('state', '!=', 'draft')]}"
                     />
                 </div>
             </xpath>
