@@ -1224,13 +1224,25 @@ class ProductConfigSession(models.Model):
             config_lines = product_tmpl.config_line_ids.filtered(
                 lambda l: attr_val_id in l.value_ids.ids
             )
-            domains = config_lines.mapped("domain_id").compute_domain()
-            avail = self.validate_domains_against_sels(domains, value_ids, custom_vals)
-            if avail:
-                avail_val_ids.append(attr_val_id)
-            elif attr_val_id in value_ids:
-                value_ids.remove(attr_val_id)
-
+            if len(config_lines) > 1:
+                for config in config_lines:
+                    domain = config.domain_id.compute_domain()
+                    avalable = self.validate_domains_against_sels(
+                        domain, value_ids, custom_vals
+                    )
+                    if avalable:
+                        avail_val_ids.append(attr_val_id)
+                    elif attr_val_id in value_ids:
+                        value_ids.remove(attr_val_id)
+            else:
+                domains = config_lines.mapped("domain_id").compute_domain()
+                avail = self.validate_domains_against_sels(
+                    domains, value_ids, custom_vals
+                )
+                if avail:
+                    avail_val_ids.append(attr_val_id)
+                elif attr_val_id in value_ids:
+                    value_ids.remove(attr_val_id)
         return avail_val_ids
 
     @api.model
