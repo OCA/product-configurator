@@ -22,4 +22,5 @@
     "installable": True,
     "auto_install": False,
     "development_status": "Beta",
+    "maintainers": ["pcatinean"],
 }
