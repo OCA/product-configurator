@@ -25,4 +25,6 @@
     "images": ["static/description/cover.png"],
     "application": True,
     "installable": True,
+    "development_status": "Beta",
+    "maintainers": ["pcatinean"],
 }
