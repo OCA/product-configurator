@@ -10,5 +10,7 @@
     "data": ["views/templates.xml", "views/assets.xml"],
     "application": True,
     "installable": True,
+    "development_status": "Beta",
+    "maintainers": ["pcatinean"],
     "auto_install": False,
 }
