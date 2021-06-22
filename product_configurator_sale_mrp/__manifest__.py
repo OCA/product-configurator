@@ -3,7 +3,7 @@
 
 {
     "name": "Product Configurator Sales Manufacturing",
-    "version": "14.0.1.0.1",
+    "version": "14.0.1.0.2",
     "category": "Manufacturing",
     "summary": "BOM Support for sales wizard",
     "author": "Pledra, Odoo Community Association (OCA)",
