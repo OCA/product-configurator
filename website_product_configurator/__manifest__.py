@@ -24,7 +24,7 @@
     "demo": ["demo/product_template_demo.xml"],
     "images": ["static/description/cover.png"],
     "application": True,
-    "installable": True,
+    "installable": False,
     "development_status": "Beta",
     "maintainers": ["pcatinean"],
 }

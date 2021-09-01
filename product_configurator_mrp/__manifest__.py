@@ -19,7 +19,7 @@
     ],
     "demo": ["demo/product_template.xml"],
     "qweb": ["static/src/xml/mrp_production_views.xml"],
-    "installable": True,
+    "installable": False,
     "auto_install": False,
     "development_status": "Beta",
     "maintainers": ["pcatinean"],

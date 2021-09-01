@@ -17,7 +17,7 @@
         "views/product_view.xml",
     ],
     "demo": ["demo/product_template.xml"],
-    "installable": True,
+    "installable": False,
     "development_status": "Beta",
     "maintainers": ["pcatinean"],
     "auto_install": False,

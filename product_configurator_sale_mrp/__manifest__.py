@@ -10,8 +10,8 @@
     "license": "AGPL-3",
     "website": "https://github.com/OCA/product-configurator",
     "depends": ["sale_mrp", "product_configurator_sale", "product_configurator_mrp"],
-    "installable": True,
-    "auto_install": True,
+    "installable": False,
+    "auto_install": False,
     "development_status": "Beta",
     "maintainers": ["pcatinean"],
 }

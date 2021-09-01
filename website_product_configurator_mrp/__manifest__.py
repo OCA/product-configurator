@@ -10,7 +10,7 @@
     "depends": ["product_configurator_mrp", "website_product_configurator"],
     "data": ["views/templates.xml", "views/assets.xml"],
     "application": True,
-    "installable": True,
+    "installable": False,
     "development_status": "Beta",
     "maintainers": ["pcatinean"],
     "auto_install": False,

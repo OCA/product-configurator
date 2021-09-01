@@ -15,7 +15,7 @@
         "views/sale_view.xml",
     ],
     "demo": ["demo/res_partner_demo.xml"],
-    "installable": True,
+    "installable": False,
     "auto_install": False,
     "development_status": "Beta",
     "maintainers": ["pcatinean"],

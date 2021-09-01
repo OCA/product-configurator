@@ -15,6 +15,6 @@
         "views/product_view.xml",
     ],
     "development_status": "Beta",
-    "installable": True,
+    "installable": False,
     "application": False,
 }
