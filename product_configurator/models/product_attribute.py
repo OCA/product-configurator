@@ -196,13 +196,13 @@ class ProductAttributeLine(models.Model):
                     )
                 )
 
-    @api.constrains("active", "value_ids", "attribute_id")
+    @api.constrains("value_ids", "attribute_id")
     def _check_valid_values(self):
         """Overwrite to save attribute line without
         values when custom is true"""
         for ptal in self:
             # Customization
-            if ptal.active and not ptal.value_ids and not ptal.custom:
+            if not ptal.value_ids and not ptal.custom:
                 # Old code
                 # if ptal.active and not ptal.value_ids:
                 # Customization End
@@ -373,7 +373,7 @@ class ProductAttributePrice(models.Model):
     # Leverage product.template.attribute.value to compute the extra weight
     # each attribute adds
 
-    weight_extra = fields.Float(string="Attribute Weight Extra", digits="Stock Weight")
+    weight_extra = fields.Float(string="Attribute Weight Extra", digits=(16, 4))
 
 
 class ProductAttributeValueLine(models.Model):

@@ -125,7 +125,7 @@ class ProductTemplate(models.Model):
     )
     weight_dummy = fields.Float(
         string="Manual Weight",
-        digits="Stock Weight",
+        digits=(16, 4),
         help="Manual setting of product template weight",
     )
 
@@ -138,7 +138,7 @@ class ProductTemplate(models.Model):
 
     def _set_weight(self):
         for product_tmpl in self:
-            product_tmpl.weight_dummy = product_tmpl.weight
+            # product_tmpl.weight_dummy = product_tmpl.weight
             if not product_tmpl.config_ok:
                 super(ProductTemplate, product_tmpl)._set_weight()
 
@@ -484,7 +484,7 @@ class ProductProduct(models.Model):
     weight_extra = fields.Float(
         string="Weight Extra", compute="_compute_product_weight_extra"
     )
-    weight_dummy = fields.Float(string="Manual Weight", digits="Stock Weight")
+    weight_dummy = fields.Float(string="Manual Weight", digits=(16, 4))
     weight = fields.Float(
         compute="_compute_product_weight",
         inverse="_inverse_product_weight",
@@ -598,7 +598,7 @@ class ProductProduct(models.Model):
             products_to_update += cfg_product
         return products_to_update
 
-    @api.depends_context("product_sessions")
+    # @api.depends_context("product_sessions")
     def _compute_product_price(self):
         session_map = self.env.context.get("product_sessions", ())
         if isinstance(session_map, tuple):

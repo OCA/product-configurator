@@ -3,6 +3,9 @@ from ast import literal_eval
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.misc import formatLang
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class ProductConfigDomain(models.Model):
@@ -230,11 +233,12 @@ class ProductConfigLine(models.Model):
 
 class ProductConfigImage(models.Model):
     _name = "product.config.image"
-    _inherit = ["image.mixin"]
+    # _inherit = ["image.mixin"]
     _description = "Product Config Image"
     _order = "sequence"
 
     name = fields.Char("Name", required=True, translate=True)
+    image = fields.Binary("Image")
     product_tmpl_id = fields.Many2one(
         comodel_name="product.template",
         string="Product",
@@ -335,7 +339,7 @@ class ProductConfigSession(models.Model):
                 price = session.get_cfg_price()
             else:
                 price = 0.00
-            session.price = price
+            # session.price = price
 
     def get_custom_value_id(self):
         """Return record set of attribute value 'custom'"""
@@ -467,7 +471,7 @@ class ProductConfigSession(models.Model):
         compute="_compute_cfg_price",
         string="Price",
         store=True,
-        digits="Product Price",
+        digits=(16, 4),
     )
     currency_id = fields.Many2one(
         comodel_name="res.currency",
@@ -481,7 +485,7 @@ class ProductConfigSession(models.Model):
         default="draft",
     )
     weight = fields.Float(
-        string="Weight", compute="_compute_cfg_weight", digits="Stock Weight"
+        string="Weight", compute="_compute_cfg_weight", digits=(16, 4)
     )
     # Product preset
     product_preset_id = fields.Many2one(
@@ -709,6 +713,7 @@ class ProductConfigSession(models.Model):
                     _("Default values provided generate an invalid " "configuration")
                 )
             vals.update({"value_ids": [(6, 0, default_val_ids)]})
+        # import pdb; pdb.set_trace()
         return super(ProductConfigSession, self).create(vals)
 
     def create_get_variant(self, value_ids=None, custom_vals=None):
@@ -865,7 +870,7 @@ class ProductConfigSession(models.Model):
         config_image_id = self._get_config_image(
             value_ids=value_ids, custom_vals=custom_vals
         )
-        return config_image_id.image_1920
+        return config_image_id.image
 
     @api.model
     def get_variant_vals(self, value_ids=None, custom_vals=None, **kwargs):
@@ -895,7 +900,7 @@ class ProductConfigSession(models.Model):
             "product_tmpl_id": self.product_tmpl_id.id,
             "product_template_attribute_value_ids": [(6, 0, ptav_ids.ids)],
             "taxes_id": [(6, 0, self.product_tmpl_id.taxes_id.ids)],
-            "image_1920": image,
+            "image": image,
         }
         return vals
 
@@ -1457,6 +1462,7 @@ class ProductConfigSession(models.Model):
             parent_id=parent_id,
             user_id=user_id,
         )
+        _logger.info(vals)
         return self.create(vals)
 
     # TODO: Disallow duplicates

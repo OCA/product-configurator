@@ -8,7 +8,7 @@
         <field name="name">Coupé Red</field>
         <field name="product_tmpl_id" ref="bmw_2_series" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/2-series-coupe.jpg"
             />
@@ -24,7 +24,7 @@
         <field name="name">Coupé Silver</field>
         <field name="product_tmpl_id" ref="bmw_2_series" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/2-series-coupe-silver.jpg"
             />
@@ -40,7 +40,7 @@
         <field name="name">Coupé Black</field>
         <field name="product_tmpl_id" ref="bmw_2_series" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/2-series-coupe-black.jpg"
             />
@@ -56,7 +56,7 @@
         <field name="name">Coupé Red Rims 384</field>
         <field name="product_tmpl_id" ref="bmw_2_series" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/2-series-coupe-red-star-spoke-384.jpg"
             />
@@ -73,7 +73,7 @@
         <field name="name">Coupé Red Rims 387</field>
         <field name="product_tmpl_id" ref="bmw_2_series" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/2-series-coupe-red-star-spoke-387.jpg"
             />
@@ -90,7 +90,7 @@
         <field name="name">Coupé Silver Rims 384</field>
         <field name="product_tmpl_id" ref="bmw_2_series" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/2-series-coupe-silver-star-spoke-384.jpg"
             />
@@ -107,7 +107,7 @@
         <field name="name">Coupé Silver Rims 387</field>
         <field name="product_tmpl_id" ref="bmw_2_series" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/2-series-coupe-silver-star-spoke-387.jpg"
             />
@@ -124,7 +124,7 @@
         <field name="name">Coupé Black Rims 384</field>
         <field name="product_tmpl_id" ref="bmw_2_series" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/2-series-coupe-black-star-spoke-384.jpg"
             />
@@ -141,7 +141,7 @@
         <field name="name">Coupé Black Rims 387</field>
         <field name="product_tmpl_id" ref="bmw_2_series" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/2-series-coupe-black-star-spoke-387.jpg"
             />

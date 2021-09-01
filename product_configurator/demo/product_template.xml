@@ -18,7 +18,7 @@
         <field name="categ_id" ref="product_category_bmw" />
         <field name="list_price" eval="25000" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/2-series-coupe.jpg"
             />
@@ -31,7 +31,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="0" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-sport-line.jpg"
             />
@@ -42,7 +42,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="0" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-luxury-line.jpg"
             />
@@ -53,7 +53,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="2666" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-sport-line.jpg"
             />
@@ -64,7 +64,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="3844" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-luxury-line.jpg"
             />
@@ -75,7 +75,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="4526" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-m-sport.jpg"
             />
@@ -86,7 +86,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="992" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-advantage.jpg"
             />
@@ -97,7 +97,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="0" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-transmission-steptronic.jpg"
             />
@@ -108,7 +108,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="156" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-transmission-steptronic-sport.jpg"
             />
@@ -119,7 +119,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="842" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-sunroof.jpg"
             />
@@ -130,7 +130,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="0" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-armrest.jpg"
             />
@@ -141,7 +141,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="842" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-towhook.jpg"
             />
@@ -152,7 +152,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="32" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-smoker-package.jpg"
             />
@@ -163,7 +163,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="4078" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-engine.jpg"
             />
@@ -174,7 +174,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="7240" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-engine.jpg"
             />
@@ -185,7 +185,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="12634" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-engine.jpg"
             />
@@ -196,7 +196,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="23236" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-engine.jpg"
             />
@@ -207,7 +207,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="23236" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-engine.jpg"
             />
@@ -218,7 +218,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="7116" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-engine.jpg"
             />
@@ -229,7 +229,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="9596" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-engine.jpg"
             />
@@ -240,7 +240,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="16181" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-engine.jpg"
             />
@@ -251,7 +251,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="16987" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-engine.jpg"
             />
@@ -262,7 +262,7 @@
         <field name="type">consu</field>
         <field name="lst_price" eval="726" />
         <field
-                name="image_1920"
+                name="image"
                 type="base64"
                 file="product_configurator/static/img/product-paint-silver.jpg"
             />

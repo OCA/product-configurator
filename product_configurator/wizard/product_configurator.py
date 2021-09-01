@@ -4,7 +4,7 @@ from odoo import _, api, fields, models, tools
 from odoo.exceptions import UserError, ValidationError
 
 from odoo.addons.base.models.ir_model import FIELD_TYPES
-from odoo.addons.base.models.ir_ui_view import (
+from odoo.osv.orm import (
     transfer_field_to_modifiers,
     transfer_modifiers_to_node,
     transfer_node_to_modifiers,
@@ -579,7 +579,7 @@ class ProductConfigurator(models.TransientModel):
             node=node,
             modifiers=modifiers,
             context=context,
-            current_node_path=current_node_path,
+            in_tree_view=current_node_path,
         )
         transfer_modifiers_to_node(modifiers=modifiers, node=node)
 

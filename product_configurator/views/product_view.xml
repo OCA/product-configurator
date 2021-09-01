@@ -214,7 +214,7 @@
                                     widget="many2many_tags"
                                     context="{'_cfg_product_tmpl_id': parent.id}"
                                 />
-                        <field name="image_1920" widget="image" height="30px" />
+                        <field name="image" widget="image" height="30px" />
                     </tree>
                 </field>
                 <field name="attribute_line_val_ids" invisible="1" />
@@ -324,6 +324,7 @@
         <field name="inherit_id" ref="product.product_normal_form_view" />
         <field name="arch" type="xml">
             <xpath expr='//header' position="inside">
+                <field name="product_template_attribute_value_ids" invisible="1"/>
                 <button
                         string="Variant Prices"
                         type="object"
