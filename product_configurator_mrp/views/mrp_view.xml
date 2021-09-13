@@ -27,7 +27,7 @@
                     />
                 </div>
             </xpath>
-            <page name="finished_products" position="after">
+            <xpath expr="//notebook/page[2]" position="after">
                 <page string="Custom Values" name="custom_values">
                     <field name="custom_value_ids" readonly="True" force_save="True">
                         <tree>
@@ -37,7 +37,7 @@
                         </tree>
                     </field>
                 </page>
-            </page>
+            </xpath>
         </field>
     </record>
 
@@ -66,7 +66,7 @@
     <record id="mrp.mrp_production_action" model="ir.actions.act_window">
         <field
             name="context"
-        >{"search_default_todo": True, "default_company_id": allowed_company_ids[0], "custom_create_variant": True}</field>
+        >{"search_default_todo": True, "default_company_id": context.get('company_id'), "custom_create_variant": True}</field>
     </record>
 
     <record id="mrp_bom_form_view" model="ir.ui.view">
@@ -87,7 +87,7 @@
             </xpath>
 
             <xpath
-                expr="//field[@name='bom_product_template_attribute_value_ids']"
+                expr="//field[@name='attribute_value_ids']"
                 position="attributes"
             >
                 <attribute
@@ -96,7 +96,7 @@
             </xpath>
 
              <xpath
-                expr="//field[@name='bom_product_template_attribute_value_ids']"
+                expr="//field[@name='attribute_value_ids']"
                 position="after"
             >
                 <field
