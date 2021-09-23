@@ -40,6 +40,12 @@
                 />
                 <field name="config_session_id" />
             </xpath>
+            <!--
+            The line form extension was removed.
+            Cases were found where it was causing install errors on other modules,
+            that were extending order line (for example sale-workflow/sale_product_approval,
+            adding a column after the sales order name field.
+
             <xpath
                 expr="//form//notebook//field[@name='order_line']/form/field[@name='name']"
                 position="after"
@@ -55,6 +61,7 @@
                     </field>
                 </div>
             </xpath>
+            -->
         </field>
     </record>
 </odoo>
