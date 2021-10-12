@@ -611,15 +611,3 @@ class ProductProduct(models.Model):
             )
             cfg_product.price = product_session.price
         super(ProductProduct, standard_products)._compute_product_price()
-
-    def price_compute(self, price_type, uom=False, currency=False, company=False):
-        standard_products = self.filtered(lambda a: not a.config_ok)
-        res = {}
-        if standard_products:
-            res = super(ProductProduct, standard_products).price_compute(
-                price_type, uom=uom, currency=currency, company=company
-            )
-        config_products = self - standard_products
-        for config_product in config_products:
-            res[config_product.id] = config_product.price
-        return res
