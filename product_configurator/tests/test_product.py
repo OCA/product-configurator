@@ -140,7 +140,7 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: toggle_config()",
         )
         self.product_tmpl_id.toggle_config()
-        varient_value = self.product_tmpl_id.create_variant_ids()
+        varient_value = self.product_tmpl_id._create_variant_ids()
         self.assertIsNone(
             varient_value,
             "Error: If its return none\
@@ -158,7 +158,6 @@ class TestProduct(ProductConfiguratorTestCases):
             {
                 "__attribute-{}".format(self.attr_fuel.id): self.value_gasoline.id,
                 "__attribute-{}".format(self.attr_engine.id): self.value_218i.id,
-                "__attribute-{}".format(self.attr_engine.id): self.value_218d.id,
                 "__attribute-{}".format(self.attr_color.id): self.value_red.id,
             }
         )
@@ -384,25 +383,54 @@ class TestProduct(ProductConfiguratorTestCases):
         )
         product_config_wizard.action_next_step()
         value_ids = self.value_gasoline + self.value_218d + self.value_silver
+        # val_ids = self.value_gasoline + self.value_218i + self.value_red
+        # pta_val_ids = self.env["product.template.attribute.value"].search(
+        #     [
+        #         ("product_tmpl_id", "=", self.product_tmpl_id.id),
+        #         ("product_attribute_value_id", "in", value_ids.ids),
+        #     ]
+        # )
         new_variant = self.product_tmpl_id.product_variant_ids.filtered(
-            lambda variant: variant.attribute_value_ids == value_ids
+            lambda variant: variant.product_template_attribute_value_ids == value_ids
         )
-        self.assertTrue(
+        self.assertFalse(
             new_variant.id,
             "Error: if varient id not exists\
             Method: reconfigure_product()",
         )
 
     def test_13_compute_product_weight_extra(self):
-        product_product = self._get_product_id()
-        # _compute_product_weight_extra
-        productAttPrice = self.env["product.template.attribute.value"].create(
+        product_id = self.env.ref("product.product_delivery_01")
+        product_template_attribute_value_ids = self.env.ref(
+            "product.product_4_attribute_1_value_2"
+        )
+        product_template_attribute_value_ids.write(
             {
-                "product_tmpl_id": self.config_product.id,
-                "product_attribute_value_id": self.value_gasoline.id,
-                "weight_extra": 45,
+                "weight_extra": 50.0,
             }
         )
+        product_id._compute_product_weight_extra()
+        product_id.write(
+            {
+                "product_template_attribute_value_ids": product_template_attribute_value_ids
+            }
+        )
+        self.assertEqual(
+            product_template_attribute_value_ids.weight_extra,
+            50.0,
+            product_id.weight_extra,
+        )
+
+        # _compute_product_weight_extra
+        product_product = self._get_product_id()
+        productAttPrice = self.env["product.template.attribute.value"].search(
+            [
+                ("product_tmpl_id", "=", self.config_product.id),
+                ("product_attribute_value_id", "=", self.value_gasoline.id),
+            ]
+        )
+        productAttPrice.weight_extra = 45
+        product_product._compute_product_weight_extra()
         self.assertEqual(
             productAttPrice.weight_extra,
             product_product.weight_extra,
@@ -620,22 +648,19 @@ class TestProduct(ProductConfiguratorTestCases):
             }
         )
         product_config_wizard.action_next_step()
+        val_ids = self.value_gasoline + self.value_218i + self.value_red
+        pta_val_ids = self.env["product.template.attribute.value"].search(
+            [
+                ("product_tmpl_id", "=", self.product_tmpl_id.id),
+                ("product_attribute_value_id", "in", val_ids.ids),
+            ]
+        )
         with self.assertRaises(ValidationError):
             self.env["product.product"].create(
                 {
                     "name": "Test Configuration",
                     "product_tmpl_id": self.product_tmpl_id.id,
-                    "attribute_value_ids": [
-                        (
-                            6,
-                            0,
-                            [
-                                self.value_gasoline.id,
-                                self.value_218i.id,
-                                self.value_red.id,
-                            ],
-                        )
-                    ],
+                    "product_template_attribute_value_ids": [(6, 0, pta_val_ids.ids)],
                 }
             )
 
@@ -693,3 +718,15 @@ class TestProduct(ProductConfiguratorTestCases):
             "Error: If value False\
             Method: _search_weight()",
         )
+
+    def test_25_check_config_line_domain(self):
+        product_config_line = self.env.ref(
+            "product_configurator.product_config_line_218_lines"
+        )
+        with self.assertRaises(ValidationError):
+            self.env["product.template"].create(
+                {
+                    "name": "template_test",
+                    "config_line_ids": product_config_line,
+                }
+            )
