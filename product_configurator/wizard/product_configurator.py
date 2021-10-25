@@ -913,12 +913,11 @@ class ProductConfigurator(models.TransientModel):
             raise ValidationError(
                 _("Product Template does not have any attribute lines defined")
             )
-
         next_step = self.config_session_id.get_next_step(
             state=self.state,
             product_tmpl_id=self.product_tmpl_id,
-            value_ids=self.value_ids,
-            custom_value_ids=self.custom_value_ids,
+            value_ids=self.config_session_id.value_ids,
+            custom_value_ids=self.config_session_id.custom_value_ids,
         )
         if not next_step:
             return self.action_config_done()
