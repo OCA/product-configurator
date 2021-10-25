@@ -617,7 +617,7 @@
                 <t t-set="curr_pl" t-value="website.get_current_pricelist()" />
                 <t
                     t-set="price"
-                    t-value="product_variant.with_context(product_sessions=((product_variant.id, cfg_session_id.id),), pricelist=curr_pl.id).price"
+                    t-value="product_variant.with_context(pricelist=curr_pl.id).price"
                 />
                 <b
                     class="oe_price"
@@ -963,31 +963,6 @@
                 class="btn btn-outline-primary btn-lg mt16 d-block d-sm-inline-block"
                 href="#"
             ><i class="fa fa-bolt" /> Buy Now</a>
-        </xpath>
-    </template>
-
-    <template
-        id="cart_lines_json_price"
-        inherit_id="website_sale.cart_lines"
-        name="Shopping Cart Lines"
-    >
-        <xpath
-            expr="//table[hasclass('js_cart_lines')]//tbody//td[hasclass('td-price')]"
-            position="attributes"
-        >
-            <attribute name="t-if">not line.config_session_id</attribute>
-        </xpath>
-        <xpath
-            expr="//table[hasclass('js_cart_lines')]//tbody//td[hasclass('td-price')]"
-            position="after"
-        >
-            <td t-if="line.config_session_id" class="text-center td-price" name="price">
-                <span
-                    t-field="line.with_context(product_sessions=((line.product_id.id, line.config_session_id.id),)).product_id.price"
-                    style="white-space: nowrap;"
-                    t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}"
-                />
-            </td>
         </xpath>
     </template>
 
