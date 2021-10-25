@@ -661,7 +661,6 @@ class ProductConfigSession(models.Model):
     def write(self, vals):
         """Validate configuration when writing new values to session"""
         # TODO: Issue warning when writing to value_ids or custom_val_ids
-
         res = super(ProductConfigSession, self).write(vals)
         if not self.product_tmpl_id:
             return res
