@@ -1,6 +1,6 @@
 import logging
 
-from odoo import _, api, models
+from odoo import _, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.http import request
 
@@ -46,11 +46,9 @@ class SaleOrder(models.Model):
                     config_session_id
                 )
                 product = config_session.product_id
-            session_map = ((product.id, config_session_id),)
             ctx = {
                 "current_sale_line": line_id,
                 "default_config_session_id": config_session_id,
-                "product_sessions": session_map,
             }
             self = self.with_context(ctx)
             SaleOrderLineSudo = SaleOrderLineSudo.with_context(ctx)
@@ -191,32 +189,6 @@ class SaleOrder(models.Model):
             "option_ids": list(set(option_lines.ids)),
         }
 
-    def _website_product_id_change(self, order_id, product_id, qty=0):
-        session_map = self.env.context.get("product_sessions", ())
-        ctx = self._context.copy()
-        if not session_map:
-            current_sale_line = self.env.context.get("current_sale_line")
-            sale_line = False
-            if current_sale_line:
-                sale_line = self.env["sale.order.line"].browse(int(current_sale_line))
-            if sale_line:
-                session_map = ((sale_line.product_id.id, sale_line.cfg_session_id.id),)
-            ctx["product_sessions"] = session_map
-        if isinstance(session_map, tuple):
-            session_map = dict(session_map)
-
-        self = self.with_context(ctx)
-        values = super(SaleOrder, self)._website_product_id_change(
-            order_id=order_id, product_id=product_id, qty=qty
-        )
-        if session_map.get(product_id, False):
-            config_session = self.env["product.config.session"].browse(
-                session_map.get(product_id)
-            )
-            if not config_session.exists():
-                return values
-        return values
-
     def _cart_find_product_line(self, product_id=None, line_id=None, **kwargs):
         """Include Config session in search."""
         order_line = super(SaleOrder, self)._cart_find_product_line(
@@ -227,11 +199,6 @@ class SaleOrder(models.Model):
             return order_line
 
         config_session_id = kwargs.get("config_session_id", False)
-        if not config_session_id:
-            session_map = self.env.context.get("product_sessions", ())
-            if isinstance(session_map, tuple):
-                session_map = dict(session_map)
-            config_session_id = session_map.get(product_id, False)
         if not config_session_id:
             return order_line
 
@@ -247,31 +214,6 @@ class SaleOrderLine(models.Model):
     def create(self, vals):
         res = super(SaleOrderLine, self).create(vals)
         return res
-
-    @api.onchange(
-        "product_id", "price_unit", "product_uom", "product_uom_qty", "tax_id"
-    )
-    def _onchange_discount(self):
-        if self.config_session_id:
-            self = self.with_context(
-                product_sessions=((self.product_id.id, self.config_session_id.id),)
-            )
-        return super(SaleOrderLine, self)._onchange_discount()
-
-    def _get_display_price(self, product):
-        if self.config_session_id:
-            session_map = ((self.product_id.id, self.config_session_id.id),)
-            self = self.with_context(product_sessions=session_map)
-            product = product.with_context(product_sessions=session_map)
-        res = super(SaleOrderLine, self)._get_display_price(product=product)
-        return res
-
-    @api.onchange("product_uom", "product_uom_qty")
-    def product_uom_change(self):
-        if self.config_session_id:
-            session_map = ((self.product_id.id, self.config_session_id.id),)
-            self = self.with_context(product_sessions=session_map)
-        super(SaleOrderLine, self).product_uom_change()
 
     def _get_real_price_currency(self, product, rule_id, qty, uom, pricelist_id):
         if not product.config_ok:
