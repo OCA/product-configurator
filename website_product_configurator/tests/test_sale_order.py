@@ -33,9 +33,6 @@ class TestSaleOrder(TestProductConfiguratorValues):
                 ],
             }
         )
-        self.sale_order.order_line._onchange_discount()
-        self.sale_order.order_line._get_display_price(self.product)
-        self.sale_order.order_line.product_uom_change()
 
     def test_cart_update(self):
         product_id = (
@@ -60,6 +57,47 @@ class TestSaleOrder(TestProductConfiguratorValues):
         self.assertEqual(cart_update.get("line_id"), self.sale_order.order_line.id)
         self.assertEqual(
             cart_update.get("quantity"), self.sale_order.order_line.product_uom_qty
+        )
+
+        self.sale_order.write({"order_line": False})
+        self.sale_order._cart_update(
+            product_id=product_id,
+            set_qty=1,
+            add_qty=1,
+        )
+        self.assertTrue(self.sale_order.order_line, "No Sale Order Line created.")
+
+        self.sale_order._cart_update(
+            product_id=product_id,
+            line_id=self.sale_order.order_line.id,
+            set_qty=-1,
+            add_qty=1,
+        )
+        self.assertFalse(
+            self.sale_order.order_line,
+            "Order Line is exist for quantity is less than equal zero.",
+        )
+
+        self.sale_order._cart_update(
+            line_id=self.sale_order.order_line.id,
+            product_id=product_id,
+            add_qty="test",
+        )
+        self.assertEqual(
+            self.sale_order.order_line.product_uom_qty,
+            1,
+            "If wrong value is added then 1 quantity is deducted from Order Line.",
+        )
+
+        self.sale_order._cart_update(
+            line_id=self.sale_order.order_line.id,
+            product_id=product_id,
+            set_qty="test",
+        )
+        self.assertEqual(
+            self.sale_order.order_line.product_uom_qty,
+            1,
+            "If wrong value is added then Order Line quantity as it is.",
         )
 
     def test_get_real_price_currency(self):

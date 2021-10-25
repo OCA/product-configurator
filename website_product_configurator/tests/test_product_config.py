@@ -26,6 +26,17 @@ class TestProductConfigStepLine(TestProductConfiguratorValues):
             "We do not return the correct view_id",
         )
 
+        # set template id false
+        self.env["ir.config_parameter"].sudo().set_param(
+            "product_configurator.default_configuration_step_website_view_id", False
+        )
+        dafault_template_xml_id = self.configStepLine.get_website_template()
+        self.assertEqual(
+            dafault_template_xml_id,
+            "website_product_configurator.config_form_select",
+            "Default Template xml id is not set.",
+        )
+
 
 class TestProductConfig(TestProductConfiguratorValues):
     def test_remove_inactive_config_sessions(self):
