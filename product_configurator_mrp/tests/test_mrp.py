@@ -15,10 +15,12 @@ class TestMrp(ProductConfiguratorTestCases):
         self.mrpBomConfig = self.env["mrp.bom.line.configuration"]
         self.mrpBom = self.env["mrp.bom"]
         self.mrpBomLine = self.env["mrp.bom.line"]
+        self.mrpRoutingWorkcenter = self.env["mrp.routing.workcenter"]
         self.productProduct = self.env["product.product"]
         self.productTemplate = self.env["product.template"]
         self.mrpProduction = self.env["mrp.production"]
         self.product_id = self.env.ref("product.product_product_3")
+        self.workcenter_id = self.env.ref("mrp.mrp_workcenter_3")
 
         # create bom
         self.bom_id = self.mrpBom.create(
@@ -35,6 +37,14 @@ class TestMrp(ProductConfiguratorTestCases):
                 "bom_id": self.bom_id.id,
                 "product_id": self.product_id.id,
                 "product_qty": 1.00,
+            }
+        )
+        # create BOM operations line
+        self.mrpRoutingWorkcenter.create(
+            {
+                "bom_id": self.bom_id.id,
+                "name": "Operation 1",
+                "workcenter_id": self.workcenter_id.id,
             }
         )
 
