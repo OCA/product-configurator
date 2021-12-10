@@ -26,5 +26,5 @@
     "application": True,
     "installable": True,
     "development_status": "Beta",
-    "maintainers": ["pcatinean"],
+    "maintainers": ["PCatinean"],
 }
