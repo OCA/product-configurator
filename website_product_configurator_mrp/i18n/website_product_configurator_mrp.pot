@@ -15,10 +15,9 @@ msgstr ""
 
 #. module: website_product_configurator_mrp
 #: model_terms:ir.ui.view,arch_db:website_product_configurator_mrp.cfg_session
-msgid "Assembled"
-msgstr ""
-
-#. module: website_product_configurator_mrp
-#: model_terms:ir.ui.view,arch_db:website_product_configurator_mrp.cfg_session
-msgid "Kit"
+msgid ""
+"<select name=\"assembly\" class=\"form-control\">\n"
+"                        <option value=\"assembled\">Assembled</option>\n"
+"                        <option value=\"kit\">Kit</option>\n"
+"                    </select>"
 msgstr ""
