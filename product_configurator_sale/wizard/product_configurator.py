@@ -1,7 +1,7 @@
 # Copyright (C) 2021 Open Source Integrators
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class ProductConfiguratorSale(models.TransientModel):
@@ -52,3 +52,33 @@ class ProductConfiguratorSale(models.TransientModel):
         else:
             self.order_id.write({"order_line": [(0, 0, values)]})
         return
+
+    @api.model
+    def create(self, vals):
+        if self.env.context.get("default_order_line_id", False):
+            sale_line = self.env["sale.order.line"].browse(
+                self.env.context["default_order_line_id"]
+            )
+            if sale_line.custom_value_ids:
+                vals["custom_value_ids"] = self._get_custom_values(
+                    sale_line.config_session_id
+                )
+        res = super(ProductConfiguratorSale, self).create(vals)
+        return res
+
+    def _get_custom_values(self, session):
+        custom_values = [(5,)] + [
+            (
+                0,
+                0,
+                {
+                    "attribute_id": value_custom.attribute_id.id,
+                    "value": value_custom.value,
+                    "attachment_ids": [
+                        (4, attach.id) for attach in value_custom.attachment_ids
+                    ],
+                },
+            )
+            for value_custom in session.custom_value_ids
+        ]
+        return custom_values
