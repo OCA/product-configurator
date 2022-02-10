@@ -69,28 +69,23 @@ class ProductConfigSession(models.Model):
                     for config in parent_bom_line.config_set_id.configuration_ids:
                         # Add bom lines if config values are part of attr_values
                         if set(config.value_ids.ids).issubset(set(attr_values.ids)):
-                            for (
-                                config_bom_line
-                            ) in parent_bom_line.config_set_id.bom_line_ids:
-                                if config_bom_line.bom_id.id == parent_bom.id:
-                                    parent_bom_line_vals = {
-                                        "product_id": config_bom_line.product_id.id,
-                                        "product_qty": config_bom_line.product_qty,
-                                    }
-                                    specs = self.get_onchange_specifications(
-                                        model="mrp.bom.line"
-                                    )
-                                    updates = mrpBomLine.onchange(
-                                        parent_bom_line_vals,
-                                        ["product_id", "product_qty"],
+                            if parent_bom_line.bom_id.id == parent_bom.id:
+                                parent_bom_line_vals = {
+                                    "product_id": parent_bom_line.product_id.id,
+                                "product_qty": config_bom_line.product_qty,}
+                                specs = self.get_onchange_specifications(
+                                    model="mrp.bom.line"
+                                )
+                                updates = mrpBomLine.onchange(
+                                    parent_bom_line_vals, ["product_id", "product_qty"],
                                         specs,
-                                    )
-                                    values = updates.get("value", {})
-                                    values = self.get_vals_to_write(
-                                        values=values, model="mrp.bom.line"
-                                    )
-                                    values.update(parent_bom_line_vals)
-                                    bom_lines.append((0, 0, values))
+                                )
+                                values = updates.get("value", {})
+                                values = self.get_vals_to_write(
+                                    values=values, model="mrp.bom.line"
+                                )
+                                values.update(parent_bom_line_vals)
+                                bom_lines.append((0, 0, values))
                 else:
                     parent_bom_line_vals = {
                         "product_id": parent_bom_line.product_id.id,
