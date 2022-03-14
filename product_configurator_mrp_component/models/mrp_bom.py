@@ -54,3 +54,12 @@ class MRPBoM(models.Model):
                             # If bom prod has all vals that conf comp has then add it
                             if all(att_val in prod_vals for att_val in bom_tmpl_values):
                                 bom.available_config_components = [(4, prod.id)]
+
+
+class MrpBomLine(models.Model):
+    _inherit = "mrp.bom.line"
+
+    config_ok = fields.Boolean(related="product_id.config_ok")
+    product_template_attribute_value_ids = fields.Many2many(
+        related="product_id.product_template_attribute_value_ids"
+    )
