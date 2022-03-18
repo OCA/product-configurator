@@ -14,6 +14,11 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: product_configurator_mrp_component
+#: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom_line__product_template_attribute_value_ids
+msgid "Attribute Values"
+msgstr ""
+
+#. module: product_configurator_mrp_component
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom__available_config_components
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom_line_config__available_config_components
 msgid "Available Config Components"
@@ -30,8 +35,18 @@ msgid "Bill of Material"
 msgstr ""
 
 #. module: product_configurator_mrp_component
+#: model:ir.model,name:product_configurator_mrp_component.model_mrp_bom_line
+msgid "Bill of Material Line"
+msgstr ""
+
+#. module: product_configurator_mrp_component
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom_line_config__bom_id
 msgid "BoM"
+msgstr ""
+
+#. module: product_configurator_mrp_component
+#: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom_line__config_ok
+msgid "Can be Configured"
 msgstr ""
 
 #. module: product_configurator_mrp_component
@@ -67,6 +82,7 @@ msgstr ""
 
 #. module: product_configurator_mrp_component
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom__display_name
+#: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom_line__display_name
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom_line_config__display_name
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_product_config_session__display_name
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_product_template__display_name
@@ -75,6 +91,7 @@ msgstr ""
 
 #. module: product_configurator_mrp_component
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom__id
+#: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom_line__id
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom_line_config__id
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_product_config_session__id
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_product_template__id
@@ -83,6 +100,7 @@ msgstr ""
 
 #. module: product_configurator_mrp_component
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom____last_update
+#: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom_line____last_update
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom_line_config____last_update
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_product_config_session____last_update
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_product_template____last_update
@@ -112,6 +130,11 @@ msgstr ""
 #. module: product_configurator_mrp_component
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom_line_config__product_uom_id
 msgid "Product Unit of Measure"
+msgstr ""
+
+#. module: product_configurator_mrp_component
+#: model_terms:ir.ui.view,arch_db:product_configurator_mrp_component.mrp_bom_configurable_components_inherit
+msgid "Product has been set to configurable."
 msgstr ""
 
 #. module: product_configurator_mrp_component
