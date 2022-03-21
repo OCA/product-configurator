@@ -52,7 +52,7 @@ class MRPBoM(models.Model):
                                 lambda m: m.attribute_id == attribute_line.attribute_id
                             )
                             # If bom prod has all vals that conf comp has then add it
-                            if all(att_val in prod_vals for att_val in bom_tmpl_values):
+                            if all(att_val in bom_tmpl_values for att_val in prod_vals):
                                 bom.available_config_components = [(4, prod.id)]
 
 
