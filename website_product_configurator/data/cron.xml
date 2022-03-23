@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding='UTF-8' ?>
-<odoo>
+<odoo noupdate="1">
     <record id="cron_delete_sessions_with_no_activity" model="ir.cron">
         <field name="name">Delete inactive config-sessions</field>
         <field name="active" eval="True" />

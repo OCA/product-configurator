@@ -14,7 +14,7 @@ class SaleOrder(models.Model):
     def _cart_update(
         self, product_id=None, line_id=None, add_qty=0, set_qty=0, **kwargs
     ):
-        """ Add or set product quantity, add_qty can be negative """
+        """Add or set product quantity, add_qty can be negative"""
         self.ensure_one()
         product_context = dict(self.env.context)
         product_context.setdefault("lang", self.sudo().partner_id.lang)
