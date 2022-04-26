@@ -888,12 +888,6 @@ class ProductConfigurator(models.TransientModel):
 
         return super(ProductConfigurator, self).write(vals)
 
-    def unlink(self):
-        """Remove parent configuration session along with wizard"""
-
-        self.mapped("config_session_id").unlink()
-        return super(ProductConfigurator, self).unlink()
-
     def action_next_step(self):
         """Proceeds to the next step of the configuration process. This usually
         implies the next configuration step (if any) defined via the
