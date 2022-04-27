@@ -19,8 +19,8 @@ class MRPBoM(models.Model):
     @api.depends("bom_line_config_ids", "product_tmpl_id")
     def _compute_available_config_components(self):
         """Compute list of products available for configurable components"""
-        if self.config_ok and not self.product_id:
-            for bom in self:
+        for bom in self:
+            if bom.config_ok and not bom.product_id:
                 bom.available_config_components = False
                 products = self.env["product.template"].search(
                     [
