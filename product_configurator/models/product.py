@@ -115,20 +115,13 @@ class ProductTemplate(models.Model):
         copy=True,
     )
 
-    # We are calculating weight of variants based on weight of
-    # product-template so that no need of compute and inverse on this
-    weight = fields.Float(
-        compute="_compute_weight",
-        inverse="_set_weight",  # pylint: disable=C8110
-        search="_search_weight",
-        store=False,
-    )
     weight_dummy = fields.Float(
         string="Manual Weight",
         digits="Stock Weight",
         help="Manual setting of product template weight",
     )
 
+    @api.depends("weight_dummy", "product_variant_ids", "product_variant_ids.weight")
     def _compute_weight(self):
         config_products = self.filtered(lambda template: template.config_ok)
         for product in config_products:
@@ -141,9 +134,6 @@ class ProductTemplate(models.Model):
             product_tmpl.weight_dummy = product_tmpl.weight
             if not product_tmpl.config_ok:
                 super(ProductTemplate, product_tmpl)._set_weight()
-
-    def _search_weight(self, operator, value):
-        return [("weight_dummy", operator, value)]
 
     def get_product_attribute_values_action(self):
         self.ensure_one()
@@ -465,6 +455,7 @@ class ProductProduct(models.Model):
                 product.mapped("product_template_attribute_value_ids.weight_extra")
             )
 
+    @api.depends("weight_dummy", "weight_extra", "product_tmpl_id.weight")
     def _compute_product_weight(self):
         for product in self:
             if product.config_ok:
@@ -472,9 +463,6 @@ class ProductProduct(models.Model):
                 product.weight = tmpl_weight + product.weight_extra
             else:
                 product.weight = product.weight_dummy
-
-    def _search_product_weight(self, operator, value):
-        return [("weight_dummy", operator, value)]
 
     def _inverse_product_weight(self):
         """Store weight in dummy field"""
@@ -484,14 +472,13 @@ class ProductProduct(models.Model):
         string="Configuration Name", compute="_compute_config_name"
     )
     weight_extra = fields.Float(
-        string="Weight Extra", compute="_compute_product_weight_extra"
+        string="Weight Extra", compute="_compute_product_weight_extra", store=True
     )
     weight_dummy = fields.Float(string="Manual Weight", digits="Stock Weight")
     weight = fields.Float(
         compute="_compute_product_weight",
         inverse="_inverse_product_weight",
-        search="_search_product_weight",
-        store=False,
+        store=True,
     )
 
     # product preset
