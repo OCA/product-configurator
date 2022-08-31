@@ -784,13 +784,19 @@ class ProductConfigurator(models.TransientModel):
             product = self.env["product.product"].browse(vals["product_id"])
             pta_value_ids = product.product_template_attribute_value_ids
             attr_value_ids = pta_value_ids.mapped("product_attribute_value_id")
-            vals.update(
-                {
-                    "product_tmpl_id": product.product_tmpl_id.id,
-                    "value_ids": [(6, 0, attr_value_ids.ids)],
-                }
-            )
-
+            if attr_value_ids:
+                vals.update(
+                    {
+                        "product_tmpl_id": product.product_tmpl_id.id,
+                        "value_ids": [(6, 0, attr_value_ids.ids)],
+                    }
+                )
+            else:
+                vals.update(
+                    {
+                        "product_tmpl_id": product.product_tmpl_id.id,
+                    }
+                )
         # Get existing session for this product_template or create a new one
         session = self.env["product.config.session"].create_get_session(
             product_tmpl_id=int(vals.get("product_tmpl_id"))
