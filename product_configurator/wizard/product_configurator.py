@@ -796,17 +796,17 @@ class ProductConfigurator(models.TransientModel):
                     }
                 )
         # Get existing session for this product_template or create a new one
-        session = self.env["product.config.session"].create_get_session(
-            product_tmpl_id=int(vals.get("product_tmpl_id"))
-        )
-        vals.update({"user_id": self.env.uid, "config_session_id": session.id})
+        session = vals.get("config_session_id", False)
+        if not session:
+            session = self.env["product.config.session"].create_get_session(
+                product_tmpl_id=int(vals.get("product_tmpl_id"))
+            )
+            vals.update({"user_id": self.env.uid, "config_session_id": session.id})
         wz_value_ids = vals.get("value_ids", [])
-        if session.value_ids and (
-            (wz_value_ids and not wz_value_ids[0][2]) or not wz_value_ids
-        ):
+        if not wz_value_ids:
             vals.update({"value_ids": [(6, 0, session.value_ids.ids)]})
         return super(ProductConfigurator, self).create(vals)
-
+    
     def read(self, fields=None, load="_classic_read"):
         """Remove dynamic fields from the fields list and update the
         returned values with the dynamic data stored in value_ids"""
