@@ -63,6 +63,10 @@ class ProductConfiguratorSale(models.TransientModel):
                 vals["custom_value_ids"] = self._get_custom_values(
                     sale_line.config_session_id
                 )
+            if sale_line.config_session_id:
+                vals["config_session_id"] = sale_line.config_session_id.id
+            if sale_line.config_session_id.value_ids:
+                vals["value_ids"] = [[6, False, sale_line.config_session_id.value_ids.ids]]
         res = super(ProductConfiguratorSale, self).create(vals)
         return res
 
