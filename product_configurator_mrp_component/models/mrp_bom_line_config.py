@@ -1,7 +1,7 @@
 # Copyright (C) 2022-Today Open Source Integrators
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class MRPBoMLineConfig(models.Model):
@@ -36,13 +36,3 @@ class MRPBoMLineConfig(models.Model):
         "product.template",
         related="bom_id.available_config_components",
     )
-
-
-class ProductTemplate(models.Model):
-    _inherit = "product.template"
-
-    @api.model
-    def name_search(self, name="", args=None, operator="ilike", limit=100):
-        domain = args or []
-        domain += ["|", ("name", operator, name), ("default_code", operator, name)]
-        return self.search(domain, limit=limit).name_get()
