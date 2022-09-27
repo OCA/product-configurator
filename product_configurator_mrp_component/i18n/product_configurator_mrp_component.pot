@@ -85,7 +85,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom_line__display_name
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom_line_config__display_name
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_product_config_session__display_name
-#: model:ir.model.fields,field_description:product_configurator_mrp_component.field_product_template__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -94,7 +93,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom_line__id
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom_line_config__id
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_product_config_session__id
-#: model:ir.model.fields,field_description:product_configurator_mrp_component.field_product_template__id
 msgid "ID"
 msgstr ""
 
@@ -103,7 +101,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom_line____last_update
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_mrp_bom_line_config____last_update
 #: model:ir.model.fields,field_description:product_configurator_mrp_component.field_product_config_session____last_update
-#: model:ir.model.fields,field_description:product_configurator_mrp_component.field_product_template____last_update
 msgid "Last Modified on"
 msgstr ""
 
@@ -120,11 +117,6 @@ msgstr ""
 #. module: product_configurator_mrp_component
 #: model:ir.model,name:product_configurator_mrp_component.model_product_config_session
 msgid "Product Config Session"
-msgstr ""
-
-#. module: product_configurator_mrp_component
-#: model:ir.model,name:product_configurator_mrp_component.model_product_template
-msgid "Product Template"
 msgstr ""
 
 #. module: product_configurator_mrp_component
