@@ -3,7 +3,7 @@
 
 {
     "name": "Product Configurator Manufacturing Components",
-    "version": "14.0.1.1.2",
+    "version": "14.0.1.1.3",
     "category": "Manufacturing",
     "summary": "BOM Support for configurable products",
     "author": "Pledra, Odoo Community Association (OCA)",
