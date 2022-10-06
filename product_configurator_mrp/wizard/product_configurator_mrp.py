@@ -83,6 +83,7 @@ class ProductConfiguratorMrp(models.TransientModel):
             mrp_order = self.order_id.create(line_vals)
         mrp_order.onchange_product_id()
         mrp_order._onchange_bom_id()
+        mrp_order._onchange_workorder_ids()
         mrp_order._onchange_date_planned_start()
         mrp_order._onchange_move_raw()
         mrp_order._onchange_move_finished()
