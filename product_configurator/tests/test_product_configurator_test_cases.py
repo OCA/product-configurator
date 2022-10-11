@@ -123,5 +123,4 @@ class ProductConfiguratorTestCases(TransactionCase):
                 ],
             }
         )
-
         return product_config_wizard.action_next_step()

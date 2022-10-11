@@ -579,7 +579,6 @@ class ProductConfigurator(models.TransientModel):
             node=node,
             modifiers=modifiers,
             context=context,
-            current_node_path=current_node_path,
         )
         transfer_modifiers_to_node(modifiers=modifiers, node=node)
 
@@ -686,10 +685,10 @@ class ProductConfigurator(models.TransientModel):
             xml_parent = xml_static_form.getparent()
             xml_parent.insert(xml_parent.index(xml_static_form) + 1, xml_dynamic_form)
             xml_dynamic_form = xml_view.xpath("//group[@name='dynamic_form']")[0]
-        except Exception:
+        except Exception as err:
             raise UserError(
                 _("There was a problem rendering the view " "(dynamic_form not found)")
-            )
+            ) from err
 
         # Get all dynamic fields inserted via fields_get method
         attr_lines = wiz.product_tmpl_id.attribute_line_ids.sorted()
@@ -838,15 +837,13 @@ class ProductConfigurator(models.TransientModel):
 
             custom_vals = self.custom_value_ids.filtered(
                 lambda x: x.attribute_id.id == attr_id
-            ).with_context({"show_attribute": False})
+            ).with_context(show_attribute=False)
             vals = attr_line.value_ids.filtered(
                 lambda v: v in self.value_ids
             ).with_context(
-                {
-                    "show_attribute": False,
-                    "show_price_extra": True,
-                    "active_id": self.product_tmpl_id.id,
-                }
+                show_attribute=False,
+                show_price_extra=True,
+                active_id=self.product_tmpl_id.id,
             )
 
             if not attr_line.custom and not vals:

@@ -1,6 +1,6 @@
 {
     "name": "Product Configurator",
-    "version": "14.0.1.2.6",
+    "version": "15.0.1.0.0",
     "category": "Generic Modules/Base",
     "summary": "Base for product configuration interface modules",
     "author": "Pledra, Odoo Community Association (OCA)",
@@ -15,12 +15,19 @@
         "data/product_attribute.xml",
         "data/ir_sequence_data.xml",
         "data/ir_config_parameter_data.xml",
-        "views/assets.xml",
         "views/product_view.xml",
         "views/product_attribute_view.xml",
         "views/product_config_view.xml",
         "wizard/product_configurator_view.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "/product_configurator/static/scss/form_widget.scss",
+            "/product_configurator/static/js/form_widgets.js",
+            "/product_configurator/static/js/data_manager.js",
+            "/product_configurator/static/js/relational_fields.js",
+        ]
+    },
     "demo": [
         "demo/product_template.xml",
         "demo/product_attribute.xml",
@@ -37,4 +44,5 @@
     "installable": True,
     "application": True,
     "auto_install": False,
+    "external_dependencies": {"python": ["mako"]},
 }
