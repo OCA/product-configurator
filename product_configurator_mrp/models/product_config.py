@@ -121,7 +121,9 @@ class ProductConfigSession(models.Model):
             mrp_bom_id = mrpBom.create(values)
             if mrp_bom_id and parent_bom:
                 for operation_line in parent_bom.operation_ids:
-                    operation_line.copy(default={"bom_id": mrp_bom_id.id})
+                    new_op = operation_line.copy(default={"bom_id": mrp_bom_id.id})
+                    for step in new_op.quality_point_ids:
+                        step.write({"product_ids": [(6, 0, [variant.id])]})
             return mrp_bom_id
         return False
 
