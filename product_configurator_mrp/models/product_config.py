@@ -122,6 +122,7 @@ class ProductConfigSession(models.Model):
             if mrp_bom_id and parent_bom:
                 for operation_line in parent_bom.operation_ids:
                     operation_line.copy(default={"bom_id": mrp_bom_id.id})
+            mrp_bom_id.set_bom_sequences(mrp_bom_id.product_tmpl_id)
             return mrp_bom_id
         return False
 

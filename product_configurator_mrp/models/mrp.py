@@ -56,6 +56,21 @@ class MrpBom(models.Model):
         readonly=True,
     )
 
+    def set_bom_sequences(self, product_tmpl_id=None):
+        # Set BoM Sequences. For MO, Odoo will look for the first BoM to use, which is
+        # usually the Master BoM without a variant. Setting the Master BoM sequence
+        # higher will ensure Odoo doesn't use the master BoM when it should use
+        # variant's BoM
+        related_boms = self.env["mrp.bom"].search(
+            [("product_tmpl_id", "=", product_tmpl_id.id)]
+        )
+        if related_boms:
+            for bom in related_boms:
+                if bom.product_id and bom.sequence == 0:
+                    bom.write({"sequence": 1})
+                elif not bom.product_id:
+                    bom.write({"sequence": len(related_boms)})
+
 
 class MrpBomLine(models.Model):
     _inherit = "mrp.bom.line"
