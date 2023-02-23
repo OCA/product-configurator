@@ -888,6 +888,7 @@ class ProductConfigSession(models.Model):
             [
                 ("product_tmpl_id", "=", self.product_tmpl_id.id),
                 ("product_attribute_value_id", "in", value_ids),
+                ("ptav_active", "=", True),
             ]
         )
         vals = {
