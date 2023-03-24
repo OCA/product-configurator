@@ -1,8 +1,11 @@
+import logging
 from ast import literal_eval
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.misc import formatLang
+
+_logger = logging.getLogger(__name__)
 
 
 class ProductConfigDomain(models.Model):
@@ -51,7 +54,7 @@ class ProductConfigDomain(models.Model):
             )
         return computed_domain
 
-    name = fields.Char(string="Name", required=True)
+    name = fields.Char(required=True)
     domain_line_ids = fields.One2many(
         comodel_name="product.config.domain.line",
         inverse_name="domain_id",
@@ -123,9 +126,7 @@ class ProductConfigDomainLine(models.Model):
     domain_id = fields.Many2one(
         comodel_name="product.config.domain", required=True, string="Rule"
     )
-    condition = fields.Selection(
-        selection=_get_domain_conditions, string="Condition", required=True
-    )
+    condition = fields.Selection(selection=_get_domain_conditions, required=True)
     value_ids = fields.Many2many(
         comodel_name="product.attribute.value",
         relation="product_config_domain_line_attr_rel",
@@ -141,7 +142,6 @@ class ProductConfigDomainLine(models.Model):
         required=True,
     )
     sequence = fields.Integer(
-        string="Sequence",
         default=1,
         help="Set the order of operations for evaluation domain lines",
     )
@@ -210,7 +210,7 @@ class ProductConfigLine(models.Model):
         required=True,
         string="Restrictions",
     )
-    sequence = fields.Integer(string="Sequence", default=10)
+    sequence = fields.Integer(default=10)
 
     @api.constrains("value_ids")
     def check_value_attributes(self):
@@ -234,14 +234,14 @@ class ProductConfigImage(models.Model):
     _description = "Product Config Image"
     _order = "sequence"
 
-    name = fields.Char("Name", required=True, translate=True)
+    name = fields.Char(required=True, translate=True)
     product_tmpl_id = fields.Many2one(
         comodel_name="product.template",
         string="Product",
         ondelete="cascade",
         required=True,
     )
-    sequence = fields.Integer(string="Sequence", default=10)
+    sequence = fields.Integer(default=10)
     value_ids = fields.Many2many(
         comodel_name="product.attribute.value", string="Configuration"
     )
@@ -258,13 +258,14 @@ class ProductConfigImage(models.Model):
                     product_tmpl_id=cfg_img.product_tmpl_id.id,
                     final=False,
                 )
-            except ValidationError:
+            except ValidationError as ex:
                 raise ValidationError(
                     _(
                         "Values entered for line '%s' generate "
-                        "a incompatible configuration" % cfg_img.name
+                        "a incompatible configuration"
                     )
-                )
+                    % cfg_img.name
+                ) from ex
 
 
 class ProductConfigStep(models.Model):
@@ -274,7 +275,7 @@ class ProductConfigStep(models.Model):
     # TODO: Prevent values which have dependencies to be set in a
     #       step with higher sequence than the dependency
 
-    name = fields.Char(string="Name", required=True, translate=True)
+    name = fields.Char(required=True, translate=True)
 
 
 class ProductConfigStepLine(models.Model):
@@ -301,7 +302,7 @@ class ProductConfigStepLine(models.Model):
         ondelete="cascade",
         required=True,
     )
-    sequence = fields.Integer(string="Sequence", default=10)
+    sequence = fields.Integer(default=10)
 
     @api.constrains("config_step_id")
     def _check_config_step(self):
@@ -366,8 +367,8 @@ class ProductConfigSession(models.Model):
         for step in cfg_session_step_lines:
             try:
                 cfg_step_line_ids.add(int(step))
-            except ValueError:
-                pass
+            except ValueError as ex:
+                _logger.warning(ex)
         cfg_step_lines = cfg_step_line_obj.browse(cfg_step_line_ids)
         for session in self:
             try:
@@ -376,8 +377,8 @@ class ProductConfigSession(models.Model):
                     lambda x: x.id == config_step
                 )
                 session.config_step_name = config_step_line.name
-            except Exception:
-                pass
+            except Exception as ex:
+                _logger.warning(ex)
             if not session.config_step_name:
                 session.config_step_name = session.config_step
 
@@ -398,7 +399,7 @@ class ProductConfigSession(models.Model):
 
         product_tmpl = self.product_tmpl_id
 
-        self = self.with_context({"active_id": product_tmpl.id})
+        self = self.with_context(active_id=product_tmpl.id)
 
         value_ids = self.flatten_val_ids(value_ids)
 
@@ -457,7 +458,7 @@ class ProductConfigSession(models.Model):
         column1="cfg_session_id",
         column2="attr_val_id",
     )
-    user_id = fields.Many2one(comodel_name="res.users", required=True, string="User")
+    user_id = fields.Many2one(comodel_name="res.users", required=True)
     custom_value_ids = fields.One2many(
         comodel_name="product.config.session.custom.value",
         inverse_name="cfg_session_id",
@@ -465,24 +466,19 @@ class ProductConfigSession(models.Model):
     )
     price = fields.Float(
         compute="_compute_cfg_price",
-        string="Price",
         store=True,
         digits="Product Price",
     )
     currency_id = fields.Many2one(
         comodel_name="res.currency",
-        string="Currency",
         compute="_compute_currency_id",
     )
     state = fields.Selection(
-        string="State",
         required=True,
         selection=[("draft", "Draft"), ("done", "Done")],
         default="draft",
     )
-    weight = fields.Float(
-        string="Weight", compute="_compute_cfg_weight", digits="Stock Weight"
-    )
+    weight = fields.Float(compute="_compute_cfg_weight", digits="Stock Weight")
     # Product preset
     product_preset_id = fields.Many2one(
         comodel_name="product.product",
@@ -548,10 +544,8 @@ class ProductConfigSession(models.Model):
                     field_val = vals[field_name]
                 else:
                     raise UserError(
-                        _(
-                            "An error occursed while parsing value for "
-                            "attribute %s" % attr_line.attribute_id.name
-                        )
+                        _("An error occursed while parsing value for " "attribute %s")
+                        % attr_line.attribute_id.name
                     )
                 attr_val_dict.update({attr_id: field_val})
                 # Ensure there is no custom value stored if we have switched
@@ -671,9 +665,9 @@ class ProductConfigSession(models.Model):
         try:
             self.validate_configuration(final=False)
         except ValidationError as ex:
-            raise ValidationError(_("%s" % ex.name))
-        except Exception:
-            raise ValidationError(_("Invalid Configuration"))
+            raise ValidationError(_("%s") % ex.name) from ex
+        except Exception as ex:
+            raise ValidationError(_("Invalid Configuration")) from ex
         return res
 
     @api.model
@@ -702,11 +696,11 @@ class ProductConfigSession(models.Model):
                 # TODO: Remove if cond when PR with
                 # raise error on github is merged
             except ValidationError as ex:
-                raise ValidationError(_("%s" % ex.name))
-            except Exception:
+                raise ValidationError(_("%s") % ex.name) from ex
+            except Exception as ex:
                 raise ValidationError(
-                    _("Default values provided generate an invalid " "configuration")
-                )
+                    _("Default values provided generate an invalid configuration")
+                ) from ex
             vals.update({"value_ids": [(6, 0, default_val_ids)]})
         return super(ProductConfigSession, self).create(vals)
 
@@ -732,9 +726,9 @@ class ProductConfigSession(models.Model):
         try:
             self.validate_configuration()
         except ValidationError as ex:
-            raise ValidationError(_("%s" % ex.name))
-        except Exception:
-            raise ValidationError(_("Invalid Configuration"))
+            raise ValidationError(_("%s") % ex.name) from ex
+        except Exception as ex:
+            raise ValidationError(_("Invalid Configuration")) from ex
 
         duplicates = self.search_variant(
             value_ids=value_ids, product_tmpl_id=self.product_tmpl_id
@@ -762,7 +756,7 @@ class ProductConfigSession(models.Model):
             value_ids = self.value_ids.ids
 
         value_obj = self.env["product.attribute.value"].with_context(
-            {"pricelist": pricelist.id}
+            pricelist=pricelist.id
         )
         values = (
             value_obj.sudo().browse(value_ids).filtered(lambda x: x.product_id.price)
@@ -783,7 +777,7 @@ class ProductConfigSession(models.Model):
                     val.product_id.price,
                 )
             )
-            product = val.product_id.with_context({"pricelist": pricelist.id})
+            product = val.product_id.with_context(pricelist=pricelist.id)
             product_prices = product.taxes_id.sudo().compute_all(
                 price_unit=product.price,
                 currency=pricelist.currency_id,
@@ -814,7 +808,7 @@ class ProductConfigSession(models.Model):
             custom_vals = {}
 
         product_tmpl = self.product_tmpl_id
-        self = self.with_context({"active_id": product_tmpl.id})
+        self = self.with_context(active_id=product_tmpl.id)
 
         value_ids = self.flatten_val_ids(value_ids)
 
@@ -888,6 +882,7 @@ class ProductConfigSession(models.Model):
             [
                 ("product_tmpl_id", "=", self.product_tmpl_id.id),
                 ("product_attribute_value_id", "in", value_ids),
+                ("ptav_active", "=", True),
             ]
         )
         vals = {
@@ -1267,7 +1262,7 @@ class ProductConfigSession(models.Model):
                 ):
                     # TODO: Verify custom value type to be correct
                     raise ValidationError(
-                        _("Required attribute '%s' is empty" % (attr.name))
+                        _("Required attribute '%s' is empty") % attr.name
                     )
 
     @api.model
@@ -1580,9 +1575,7 @@ class ProductConfigSessionCustomValue(models.Model):
                 (" %s" % uom) or "",
             )
 
-    name = fields.Char(
-        string="Name", readonly=True, compute="_compute_val_name", store=True
-    )
+    name = fields.Char(readonly=True, compute="_compute_val_name", store=True)
     attribute_id = fields.Many2one(
         comodel_name="product.attribute", string="Attribute", required=True
     )
@@ -1592,7 +1585,7 @@ class ProductConfigSessionCustomValue(models.Model):
         ondelete="cascade",
         string="Session",
     )
-    value = fields.Char(string="Value", help="Custom value held as string")
+    value = fields.Char(help="Custom value held as string")
     attachment_ids = fields.Many2many(
         comodel_name="ir.attachment",
         relation="product_config_session_custom_value_attachment_rel",

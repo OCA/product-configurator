@@ -120,18 +120,6 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: _compute_weight()",
         )
 
-    def test_03_get_product_attribute_values_action(self):
-        attribute_value_action = (
-            self.product_tmpl_id.get_product_attribute_values_action()
-        )
-        contextValue = attribute_value_action.get("context")
-        self.assertEqual(
-            contextValue["active_id"],
-            self.product_tmpl_id.id,
-            "Error: If different template id\
-            Method: get_product_attribute_values_action()",
-        )
-
     def test_04_toggle_config(self):
         configFalse = self.product_tmpl_id.toggle_config()
         self.assertFalse(
@@ -312,17 +300,6 @@ class TestProduct(ProductConfiguratorTestCases):
             50,
             "Error: If value are not get 50\
             Method: _compute_product_weight()",
-        )
-
-    def test_10_get_product_attribute_values_action(self):
-        product_product = self._get_product_id()
-        varient_price = product_product.get_product_attribute_values_action()
-        context_vals = varient_price["context"]
-        self.assertEqual(
-            context_vals["default_product_tmpl_id"],
-            product_product.product_tmpl_id.id,
-            "Error: If different template id\
-            Method: get_product_attribute_values_action()",
         )
 
     def test_11_compute_config_name(self):
@@ -666,7 +643,7 @@ class TestProduct(ProductConfiguratorTestCases):
 
     def test_19_fields_view_get(self):
         product_product = self._get_product_id()
-        product_product.with_context({"default_config_ok": True}).fields_view_get()
+        product_product.with_context(default_config_ok=True).fields_view_get()
 
     def test_20_get_conversions_dict(self):
         product_product = self._get_product_id()
@@ -696,27 +673,6 @@ class TestProduct(ProductConfiguratorTestCases):
             product_product.name,
             "Error: If value False\
             Method: _get_config_name()",
-        )
-
-    def test_23_search_product_weight(self):
-        product_product = self._get_product_id()
-        operator = "and"
-        value = 10
-        search_product_weight = product_product._search_product_weight(operator, value)
-        self.assertTrue(
-            search_product_weight,
-            "Error: If value False\
-            Method: _search_product_weight()",
-        )
-
-    def test_24_search_weight(self):
-        operator = "and"
-        value = 10
-        search_weight = self.product_tmpl_id._search_weight(operator, value)
-        self.assertTrue(
-            search_weight,
-            "Error: If value False\
-            Method: _search_weight()",
         )
 
     def test_25_check_config_line_domain(self):

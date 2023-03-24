@@ -552,7 +552,7 @@ class ProductConfigurator(models.TransientModel):
         return res
 
     @api.model
-    def setup_modifiers(self, node, field=None, context=None, current_node_path=None):
+    def setup_modifiers(self, node, field=None, context=None):
         """Processes node attributes and field descriptors to generate
         the ``modifiers`` node attribute and set it on the provided node.
 
@@ -579,7 +579,6 @@ class ProductConfigurator(models.TransientModel):
             node=node,
             modifiers=modifiers,
             context=context,
-            current_node_path=current_node_path,
         )
         transfer_modifiers_to_node(modifiers=modifiers, node=node)
 
@@ -686,10 +685,10 @@ class ProductConfigurator(models.TransientModel):
             xml_parent = xml_static_form.getparent()
             xml_parent.insert(xml_parent.index(xml_static_form) + 1, xml_dynamic_form)
             xml_dynamic_form = xml_view.xpath("//group[@name='dynamic_form']")[0]
-        except Exception:
+        except Exception as exc:
             raise UserError(
-                _("There was a problem rendering the view " "(dynamic_form not found)")
-            )
+                _("There was a problem rendering the view (dynamic_form not found)")
+            ) from exc
 
         # Get all dynamic fields inserted via fields_get method
         attr_lines = wiz.product_tmpl_id.attribute_line_ids.sorted()
@@ -836,9 +835,12 @@ class ProductConfigurator(models.TransientModel):
             # Handle default values for dynamic fields on Odoo frontend
             res[0].update({field_name: False, custom_field_name: False})
 
+            # pylint: disable=context-overridden
             custom_vals = self.custom_value_ids.filtered(
                 lambda x: x.attribute_id.id == attr_id
             ).with_context({"show_attribute": False})
+
+            # pylint: disable=context-overridden
             vals = attr_line.value_ids.filtered(
                 lambda v: v in self.value_ids
             ).with_context(
@@ -1038,27 +1040,3 @@ class ProductConfigurator(models.TransientModel):
             "res_id": variant.id,
         }
         return action
-
-
-# class ProductConfiguratorCustomValue(models.TransientModel):
-#     _name = "product.configurator.custom.value"
-#     _description = "Product Configurator Custom Value"
-
-#     attachment_ids = fields.Many2many(
-#         comodel_name="ir.attachment",
-#         column1="config_attachment",
-#         column2="attachment_id",
-#         string="Attachments",
-#     )
-#     attribute_id = fields.Many2one(
-#         string="Attribute", comodel_name="product.attribute", required=True
-#     )
-#     user_id = fields.Many2one(
-#         string="User",
-#         comodel_name="res.users",
-#         related="wizard_id.create_uid",
-#         required=True,
-#     )
-#     value = fields.Char(string="Value")
-#     wizard_id = fields.Many2one(comodel_name="product.configurator", string="Wizard")
-# TODO: Current value ids to save frontend/backend session?

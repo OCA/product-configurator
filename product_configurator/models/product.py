@@ -6,7 +6,6 @@ from mako.template import Template
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-from odoo.tools.safe_eval import safe_eval
 
 _logger = logging.getLogger(__name__)
 
@@ -20,12 +19,13 @@ class ProductTemplate(models.Model):
         1 as many views and methods trigger only when a template has at least
         one variant attached. Since we create them from the template we should
         have access to them always"""
-        super(ProductTemplate, self)._compute_product_variant_count()
+        res = super(ProductTemplate, self)._compute_product_variant_count()
         for product_tmpl in self:
             config_ok = product_tmpl.config_ok
             variant_count = product_tmpl.product_variant_count
             if config_ok and not variant_count:
                 product_tmpl.product_variant_count = 1
+        return res
 
     @api.depends("attribute_line_ids.value_ids")
     def _compute_template_attr_vals(self):
@@ -115,47 +115,26 @@ class ProductTemplate(models.Model):
         copy=True,
     )
 
-    # We are calculating weight of variants based on weight of
-    # product-template so that no need of compute and inverse on this
-    weight = fields.Float(
-        compute="_compute_weight",
-        inverse="_set_weight",  # pylint: disable=C8110
-        search="_search_weight",
-        store=False,
-    )
     weight_dummy = fields.Float(
         string="Manual Weight",
         digits="Stock Weight",
         help="Manual setting of product template weight",
     )
 
+    @api.depends("weight_dummy", "product_variant_ids", "product_variant_ids.weight")
     def _compute_weight(self):
         config_products = self.filtered(lambda template: template.config_ok)
         for product in config_products:
             product.weight = product.weight_dummy
         standard_products = self - config_products
-        super(ProductTemplate, standard_products)._compute_weight()
+        return super(ProductTemplate, standard_products)._compute_weight()
 
+    # pylint:disable=missing-return
     def _set_weight(self):
         for product_tmpl in self:
             product_tmpl.weight_dummy = product_tmpl.weight
             if not product_tmpl.config_ok:
                 super(ProductTemplate, product_tmpl)._set_weight()
-
-    def _search_weight(self, operator, value):
-        return [("weight_dummy", operator, value)]
-
-    def get_product_attribute_values_action(self):
-        self.ensure_one()
-        action = self.env["ir.actions.actions"]._for_xml_id(
-            "product.product_attribute_value_action"
-        )
-        value_ids = self.attribute_line_ids.mapped("product_template_value_ids").ids
-        action["domain"] = [("id", "in", value_ids)]
-        context = safe_eval(action["context"], {"active_id": self.id})
-        context.update({"active_id": self.id})
-        action["context"] = context
-        return action
 
     def _check_default_values(self):
         default_val_ids = (
@@ -170,11 +149,11 @@ class ProductTemplate(models.Model):
                 value_ids=default_val_ids, product_tmpl_id=self.id, final=False
             )
         except ValidationError as ex:
-            raise ValidationError(ex.name)
-        except Exception:
+            raise ValidationError(ex.name) from ex
+        except Exception as ex:
             raise ValidationError(
                 _("Default values provided generate an invalid configuration")
-            )
+            ) from ex
 
     @api.constrains("config_line_ids", "attribute_line_ids")
     def _check_default_value_domains(self):
@@ -189,7 +168,7 @@ class ProductTemplate(models.Model):
                       \n%s"
                     )
                     % (e.name)
-                )
+                ) from e
 
     def toggle_config(self):
         for record in self:
@@ -471,6 +450,7 @@ class ProductProduct(models.Model):
                 product.mapped("product_template_attribute_value_ids.weight_extra")
             )
 
+    @api.depends("weight_dummy", "weight_extra", "product_tmpl_id.weight")
     def _compute_product_weight(self):
         for product in self:
             if product.config_ok:
@@ -479,9 +459,6 @@ class ProductProduct(models.Model):
             else:
                 product.weight = product.weight_dummy
 
-    def _search_product_weight(self, operator, value):
-        return [("weight_dummy", operator, value)]
-
     def _inverse_product_weight(self):
         """Store weight in dummy field"""
         self.weight_dummy = self.weight
@@ -489,31 +466,16 @@ class ProductProduct(models.Model):
     config_name = fields.Char(
         string="Configuration Name", compute="_compute_config_name"
     )
-    weight_extra = fields.Float(
-        string="Weight Extra", compute="_compute_product_weight_extra"
-    )
+    weight_extra = fields.Float(compute="_compute_product_weight_extra", store=True)
     weight_dummy = fields.Float(string="Manual Weight", digits="Stock Weight")
     weight = fields.Float(
         compute="_compute_product_weight",
         inverse="_inverse_product_weight",
-        search="_search_product_weight",
-        store=False,
+        store=True,
     )
 
     # product preset
     config_preset_ok = fields.Boolean(string="Is Preset")
-
-    def get_product_attribute_values_action(self):
-        self.ensure_one()
-        action = self.env["ir.actions.actions"]._for_xml_id(
-            "product.product_attribute_value_action"
-        )
-        value_ids = self.product_template_attribute_value_ids.ids
-        action["domain"] = [("id", "in", value_ids)]
-        context = safe_eval(action["context"], {"active_id": self.product_tmpl_id.id})
-        context.update({"active_id": self.product_tmpl_id.id})
-        action["context"] = context
-        return action
 
     def _compute_config_name(self):
         """Compute the name of the configurable products and use template
@@ -589,6 +551,7 @@ class ProductProduct(models.Model):
 
         return super(ProductProduct, self).write(vals)
 
+    # pylint:disable=missing-return
     def _compute_product_price_extra(self):
         standard_products = self.filtered(lambda product: not product.config_ok)
         config_products = self - standard_products
