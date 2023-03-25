@@ -33,7 +33,7 @@ class SaleOrder(TC.ProductConfiguratorTestCases):
         )
 
         self.ProductConfWizard = self.env["product.configurator.sale"].with_context(
-            context
+            **context
         )
         sale_order_id.action_config_start()
         self._configure_product_nxt_step()
@@ -42,6 +42,5 @@ class SaleOrder(TC.ProductConfiguratorTestCases):
         self.assertEqual(
             product_tmpl.id,
             self.config_product.id,
-            "Error: If product_tmpl not exsits\
-            Method: action_config_start()",
+            "Error: If product_tmpl not exists" " Method: action_config_start()",
         )

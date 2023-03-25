@@ -24,7 +24,7 @@ class ProductConfiguratorSale(models.TransientModel):
             {
                 "config_session_id": self.config_session_id.id,
                 "name": product._get_mako_tmpl_name(),
-                "customer_lead": product.sale_delay,
+                # "customer_lead": product.sale_delay, // FIXME: sale_delay is in stock
             }
         )
         return line_vals
