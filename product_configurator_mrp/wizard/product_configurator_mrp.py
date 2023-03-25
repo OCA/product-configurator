@@ -72,8 +72,8 @@ class ProductConfiguratorMrp(models.TransientModel):
                 _(
                     "There is no BOM associated with selected product. "
                     "Please inform to administrator/manager. [Product: %s]"
-                    % (self.env["product.product"].browse(res["res_id"]).display_name)
                 )
+                % (self.env["product.product"].browse(res["res_id"]).display_name)
             )
 
         if self.order_id:
@@ -81,12 +81,14 @@ class ProductConfiguratorMrp(models.TransientModel):
             mrp_order = self.order_id
         else:
             mrp_order = self.order_id.create(line_vals)
-        mrp_order.onchange_product_id()
+        mrp_order._onchange_product_id()
         mrp_order._onchange_bom_id()
         mrp_order._onchange_date_planned_start()
         mrp_order._onchange_move_raw()
         mrp_order._onchange_move_finished()
+        mrp_order._onchange_picking_type()
         mrp_order._onchange_location()
+        mrp_order._onchange_location_dest()
         mrp_action = self.get_mrp_production_action()
         mrp_action.update({"res_id": mrp_order.id})
         return mrp_action

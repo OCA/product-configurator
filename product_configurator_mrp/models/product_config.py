@@ -54,9 +54,7 @@ class ProductConfigSession(models.Model):
             for product in attr_products:
                 bom_line_vals = {"product_id": product.id}
                 specs = self.get_onchange_specifications(model="mrp.bom.line")
-                updates = mrpBomLine.onchange(
-                    bom_line_vals, ["product_id", "product_qty"], specs
-                )
+                updates = mrpBomLine.onchange(bom_line_vals, ["product_id"], specs)
                 values = updates.get("value", {})
                 values = self.get_vals_to_write(values=values, model="mrp.bom.line")
                 values.update(bom_line_vals)
@@ -78,7 +76,9 @@ class ProductConfigSession(models.Model):
                                     model="mrp.bom.line"
                                 )
                                 updates = mrpBomLine.onchange(
-                                    parent_bom_line_vals, ["product_id"], specs
+                                    parent_bom_line_vals,
+                                    ["product_id", "product_qty"],
+                                    specs,
                                 )
                                 values = updates.get("value", {})
                                 values = self.get_vals_to_write(
@@ -119,7 +119,10 @@ class ProductConfigSession(models.Model):
             mrp_bom_id = mrpBom.create(values)
             if mrp_bom_id and parent_bom:
                 for operation_line in parent_bom.operation_ids:
-                    operation_line.copy(default={"bom_id": mrp_bom_id.id})
+                    new_op = operation_line.copy(default={"bom_id": mrp_bom_id.id})
+                    for step in new_op.quality_point_ids:
+                        step.write({"product_ids": [(6, 0, [variant.id])]})
+            mrp_bom_id._set_bom_sequences(mrp_bom_id.product_tmpl_id)
             return mrp_bom_id
         return False
 

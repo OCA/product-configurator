@@ -26,13 +26,11 @@ class MrpProduction(models.Model):
     def action_config_start(self):
         """Return action to start configuration wizard"""
         configurator_obj = self.env["product.configurator.mrp"]
-        ctx = dict(
-            self.env.context,
+        return configurator_obj.with_context(
             wizard_id=None,
             wizard_model="product.configurator.mrp",
             allow_preset_selection=True,
-        )
-        return configurator_obj.with_context(ctx).get_wizard_action()
+        ).get_wizard_action()
 
     def reconfigure_product(self):
         """Creates and launches a product configurator wizard with a linked
@@ -40,7 +38,7 @@ class MrpProduction(models.Model):
         esetially a shortcut to pre-fill configuration data of a variant"""
         wizard_model = "product.configurator.mrp"
         extra_vals = {"order_id": self.id, "product_id": self.product_id.id}
-        self = self.with_context({"default_order_id": self.id})
+        self = self.with_context(default_order_id=self.id)
         return self.product_id.product_tmpl_id.create_config_wizard(
             model_name=wizard_model, extra_vals=extra_vals
         )
@@ -55,6 +53,21 @@ class MrpBom(models.Model):
         string="Configurable",
         readonly=True,
     )
+
+    def _set_bom_sequences(self, product_tmpl_id=None):
+        # Set BoM Sequences. For MO, Odoo will look for the first BoM to use, which is
+        # usually the Master BoM without a variant. Setting the Master BoM sequence
+        # higher will ensure Odoo doesn't use the master BoM when it should use
+        # variant's BoM
+        related_boms = self.env["mrp.bom"].search(
+            [("product_tmpl_id", "=", product_tmpl_id.id)]
+        )
+        if related_boms:
+            for bom in related_boms:
+                if bom.product_id and bom.sequence == 0:
+                    bom.write({"sequence": 1})
+                elif not bom.product_id:
+                    bom.write({"sequence": len(related_boms)})
 
 
 class MrpBomLine(models.Model):
