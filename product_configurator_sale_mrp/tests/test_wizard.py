@@ -9,6 +9,10 @@ class Wizard(TransactionCase):
     def setUp(self):
         super(Wizard, self).setUp()
 
+        self.route_mto = self.env.ref("stock.route_warehouse0_mto")
+        self.route_mto.active = True
+        self.route_mrp = self.env.ref("mrp.route_warehouse0_manufacture")
+
         self.sale_order_id = self.env.ref("sale.sale_order_3")
         self.cfg_tmpl = self.env.ref("product_configurator.bmw_2_series")
         self.cfg_wizard = self.env["product.configurator.sale"].create(
@@ -101,6 +105,10 @@ class Wizard(TransactionCase):
             self.cfg_wizard.write(vals)
 
         order_line = self.sale_order_id.order_line.filtered(lambda x: x.config_ok)
+        order_line.product_id.route_ids = [
+            (6, 0, [self.route_mto.id, self.route_mrp.id])
+        ]
+
         bom = order_line.bom_id
 
         self.assertTrue(bom, "Sale order line has no bom linked")
