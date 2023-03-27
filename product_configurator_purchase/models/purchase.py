@@ -9,13 +9,11 @@ class PurchaseOrder(models.Model):
     def action_config_start(self):
         """Return action to start configuration wizard"""
         configurator_obj = self.env["product.configurator.purchase"]
-        ctx = dict(
-            self.env.context,
+        return configurator_obj.with_context(
             default_order_id=self.id,
             wizard_model="product.configurator.purchase",
             allow_preset_selection=True,
-        )
-        return configurator_obj.with_context(ctx).get_wizard_action()
+        ).get_wizard_action()
 
 
 class PurchaseOrderLine(models.Model):
@@ -45,10 +43,8 @@ class PurchaseOrderLine(models.Model):
             "product_id": self.product_id.id,
         }
         self = self.with_context(
-            {
-                "default_order_id": self.order_id.id,
-                "default_order_line_id": self.id,
-            }
+            default_order_id=self.order_id.id,
+            default_order_line_id=self.id,
         )
         return self.product_id.product_tmpl_id.create_config_wizard(
             model_name=wizard_model, extra_vals=extra_vals
