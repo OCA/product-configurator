@@ -398,7 +398,7 @@ class ProductConfigSession(models.Model):
 
         product_tmpl = self.product_tmpl_id
 
-        self = self.with_context({"active_id": product_tmpl.id})
+        self = self.with_context(active_id=product_tmpl.id)
 
         value_ids = self.flatten_val_ids(value_ids)
 
@@ -762,7 +762,7 @@ class ProductConfigSession(models.Model):
             value_ids = self.value_ids.ids
 
         value_obj = self.env["product.attribute.value"].with_context(
-            {"pricelist": pricelist.id}
+            pricelist=pricelist.id,
         )
         values = (
             value_obj.sudo().browse(value_ids).filtered(lambda x: x.product_id.price)
@@ -783,7 +783,7 @@ class ProductConfigSession(models.Model):
                     val.product_id.price,
                 )
             )
-            product = val.product_id.with_context({"pricelist": pricelist.id})
+            product = val.product_id.with_context(pricelist=pricelist.id)
             product_prices = product.taxes_id.sudo().compute_all(
                 price_unit=product.price,
                 currency=pricelist.currency_id,
@@ -814,7 +814,7 @@ class ProductConfigSession(models.Model):
             custom_vals = {}
 
         product_tmpl = self.product_tmpl_id
-        self = self.with_context({"active_id": product_tmpl.id})
+        self = self.with_context(active_id=product_tmpl.id)
 
         value_ids = self.flatten_val_ids(value_ids)
 
