@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+        <record id="product_config_session_custom_value_update" model="base.automation">
+                <field name="name">Product Config Session Custom Value</field>
+                <field name="model_id" ref="product_configurator.model_product_config_session_custom_value" />
+                <field name="state">code</field>
+                <field name="code">
+for custom_value in records:
+    if custom_value.attachment_ids:
+        for attachment in custom_value.attachment_ids:
+            attachment.sudo().write({'res_model': custom_value._name, 'res_id':custom_value.id})
+                </field>
+                <field name="trigger">on_create</field>
+                <field name="active" eval="True" />
+        </record>
+</odoo>

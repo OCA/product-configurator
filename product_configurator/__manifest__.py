@@ -15,6 +15,7 @@
         "data/product_attribute.xml",
         "data/ir_sequence_data.xml",
         "data/ir_config_parameter_data.xml",
+        "data/base_automation.xml",
         "views/assets.xml",
         "views/product_view.xml",
         "views/product_attribute_view.xml",
