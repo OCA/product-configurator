@@ -16,7 +16,7 @@ class ProductConfiguratorSale(models.TransientModel):
     def _get_order_line_vals(self, product_id):
         """Hook to allow custom line values to be put on the newly
         created or edited lines."""
-        product = self.env["product.product"].browse(product_id)
+        product = self.env["product.product"].browse(product_id).with_context(lang=self.order_id.partner_id.lang)
         line_vals = {"product_id": product_id, "order_id": self.order_id.id}
         extra_vals = self.order_line_id._prepare_add_missing_fields(line_vals)
         line_vals.update(extra_vals)
@@ -48,9 +48,9 @@ class ProductConfiguratorSale(models.TransientModel):
         values.update(line_vals)
 
         if self.order_line_id:
-            self.order_line_id.write(values)
+            self.order_line_id.with_context(lang=self.order_id.partner_id.lang).write(values)
         else:
-            self.order_id.write({"order_line": [(0, 0, values)]})
+            self.order_id.with_context(lang=self.order_id.partner_id.lang).write({"order_line": [(0, 0, values)]})
         return
 
     @api.model
