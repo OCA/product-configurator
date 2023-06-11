@@ -18,8 +18,14 @@ class ProductConfiguratorSale(models.TransientModel):
         created or edited lines."""
         product = self.env["product.product"].browse(product_id)
         line_vals = {"product_id": product_id, "order_id": self.order_id.id}
-        extra_vals = self.order_line_id._prepare_add_missing_fields(line_vals)
-        line_vals.update(extra_vals)
+
+        onchange_fields = ["price_unit", "product_uom", "tax_id"]
+        line = self.env["sale.order.line"].new(line_vals)
+        for field in onchange_fields:
+            line_vals.update(
+                {field: line._fields[field].convert_to_write(line[field], line)}
+            )
+
         line_vals.update(
             {
                 "config_session_id": self.config_session_id.id,
@@ -53,18 +59,18 @@ class ProductConfiguratorSale(models.TransientModel):
             self.order_id.write({"order_line": [(0, 0, values)]})
         return
 
-    @api.model
-    def create(self, vals):
-        if self.env.context.get("default_order_line_id", False):
-            sale_line = self.env["sale.order.line"].browse(
-                self.env.context["default_order_line_id"]
-            )
-            if sale_line.custom_value_ids:
-                vals["custom_value_ids"] = self._get_custom_values(
-                    sale_line.config_session_id
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if self.env.context.get("default_order_line_id", False):
+                sale_line = self.env["sale.order.line"].browse(
+                    self.env.context["default_order_line_id"]
                 )
-        res = super(ProductConfiguratorSale, self).create(vals)
-        return res
+                if sale_line.custom_value_ids:
+                    vals["custom_value_ids"] = self._get_custom_values(
+                        sale_line.config_session_id
+                    )
+        return super(ProductConfiguratorSale, self).create(vals_list)
 
     def _get_custom_values(self, session):
         custom_values = [(5,)] + [
