@@ -33,7 +33,7 @@ class SaleOrder(TC.ProductConfiguratorTestCases):
         )
 
         self.ProductConfWizard = self.env["product.configurator.sale"].with_context(
-            context
+            **context
         )
         sale_order_id.action_config_start()
         self._configure_product_nxt_step()

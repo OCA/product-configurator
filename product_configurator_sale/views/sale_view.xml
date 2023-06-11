@@ -24,7 +24,7 @@
                 <field name="config_session_id" />
             </xpath>
             <xpath
-                expr="//field[@name='order_line']/tree//field[@name='product_id']"
+                expr="//field[@name='order_line']/tree//field[@name='product_template_id']"
                 position="after"
             >
                 <field invisible="1" name="config_ok" />
