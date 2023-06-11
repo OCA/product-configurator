@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
     "name": "Product Configurator Sale",
-    "version": "14.0.1.2.0",
+    "version": "16.0.0.0.1",
     "category": "Generic Modules/Sale",
     "summary": "Product configuration interface modules for Sale",
     "author": "Pledra, Odoo Community Association (OCA)",
@@ -16,7 +16,7 @@
     ],
     "demo": ["demo/res_partner_demo.xml"],
     "installable": True,
-    "auto_install": False,
+    "auto_install": True,
     "development_status": "Beta",
     "maintainers": ["PCatinean"],
 }
