@@ -24,7 +24,7 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[product_configurator](product_configurator/) | 14.0.1.2.6 | [![PCatinean](https://github.com/PCatinean.png?size=30px)](https://github.com/PCatinean) | Base for product configuration interface modules
+[product_configurator](product_configurator/) | 14.0.1.3.0 | [![PCatinean](https://github.com/PCatinean.png?size=30px)](https://github.com/PCatinean) | Base for product configuration interface modules
 [product_configurator_mrp](product_configurator_mrp/) | 14.0.1.2.4 | [![PCatinean](https://github.com/PCatinean.png?size=30px)](https://github.com/PCatinean) | BOM Support for configurable products
 [product_configurator_mrp_component](product_configurator_mrp_component/) | 14.0.1.1.3 | [![PCatinean](https://github.com/PCatinean.png?size=30px)](https://github.com/PCatinean) | BOM Support for configurable products
 [product_configurator_purchase](product_configurator_purchase/) | 14.0.1.0.0 | [![PCatinean](https://github.com/PCatinean.png?size=30px)](https://github.com/PCatinean) | Product configuration interface for Purchase
