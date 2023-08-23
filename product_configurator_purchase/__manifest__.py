@@ -1,6 +1,6 @@
 {
     "name": "Product Configurator Purchase",
-    "version": "14.0.1.0.0",
+    "version": "14.0.1.1.0",
     "category": "Generic Modules/Purchase",
     "summary": "Product configuration interface for Purchase",
     "author": "Pledra, Odoo Community Association (OCA)",
