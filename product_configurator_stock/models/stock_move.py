@@ -33,10 +33,8 @@ class StockMove(models.Model):
             "product_id": self.product_id.id,
         }
         self = self.with_context(
-            {
-                "default_picking_id": self.picking_id.id,
-                "default_stock_move_id": self.id,
-            }
+            default_picking_id=self.picking_id.id,
+            default_stock_move_id=self.id,
         )
         return self.product_id.product_tmpl_id.create_config_wizard(
             model_name=wizard_model, extra_vals=extra_vals

@@ -666,7 +666,7 @@ class TestProduct(ProductConfiguratorTestCases):
 
     def test_19_fields_view_get(self):
         product_product = self._get_product_id()
-        product_product.with_context({"default_config_ok": True}).fields_view_get()
+        product_product.with_context(default_config_ok=True).fields_view_get()
 
     def test_20_get_conversions_dict(self):
         product_product = self._get_product_id()
