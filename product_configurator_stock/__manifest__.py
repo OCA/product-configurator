@@ -2,7 +2,7 @@
 
 {
     "name": "Product Configurator for Stock",
-    "version": "14.0.1.0.0",
+    "version": "14.0.1.1.0",
     "category": "Generic Modules/Stock",
     "summary": "Product configuration interface module for Stock",
     "author": "Pledra, Odoo Community Association (OCA)",
