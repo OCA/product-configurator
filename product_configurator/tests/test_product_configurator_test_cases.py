@@ -71,21 +71,21 @@ class ProductConfiguratorTestCases(TransactionCase):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute-{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute-{}".format(self.attr_engine.id): self.value_218i.id,
+                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
+                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute-{}".format(self.attr_color.id): self.value_red.id,
-                "__attribute-{}".format(self.attr_rims.id): self.value_rims_378.id,
+                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
+                "__attribute_{}".format(self.attr_rims.id): self.value_rims_378.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute-{}".format(
+                "__attribute_{}".format(
                     self.attr_model_line.id
                 ): self.value_sport_line.id,
             }
@@ -94,14 +94,14 @@ class ProductConfiguratorTestCases(TransactionCase):
         product_config_wizard.action_previous_step()
         product_config_wizard.write(
             {
-                "__attribute-{}".format(self.attr_engine.id): self.value_220i.id,
+                "__attribute_{}".format(self.attr_engine.id): self.value_220i.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute-{}".format(
+                "__attribute_{}".format(
                     self.attr_model_line.id
                 ): self.value_model_sport_line.id,
             }
@@ -109,16 +109,16 @@ class ProductConfiguratorTestCases(TransactionCase):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute-{}".format(self.attr_tapistry.id): self.value_tapistry.id,
+                "__attribute_{}".format(self.attr_tapistry.id): self.value_tapistry.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute-{}".format(
+                "__attribute_{}".format(
                     self.attr_transmission.id
                 ): self.value_transmission.id,
-                "__attribute-{}".format(self.attr_options.id): [
+                "__attribute_{}".format(self.attr_options.id): [
                     [6, 0, [self.value_options_2.id]]
                 ],
             }
