@@ -2,6 +2,7 @@ from lxml import etree
 
 from odoo import _, api, fields, models, tools
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import frozendict
 
 from odoo.addons.base.models.ir_model import FIELD_TYPES
 from odoo.addons.base.models.ir_ui_view import (
@@ -29,8 +30,8 @@ class ProductConfigurator(models.TransientModel):
         fields in the wizard. Any module extending this functionality should
         override this method to add all extra prefixes"""
         return {
-            "field_prefix": "__attribute-",
-            "custom_field_prefix": "__custom-",
+            "field_prefix": "__attribute_",
+            "custom_field_prefix": "__custom_",
         }
 
     # TODO: Remove _prefix suffix as this is implied by the class property name
@@ -498,38 +499,34 @@ class ProductConfigurator(models.TransientModel):
                     sequence=line.sequence,
                 )
 
-            # Add the dynamic field to the resultset using the convention
-            # "__attribute-DBID" to later identify and extract it
+            # Add the dynamic field to the result set using the convention
+            # "__attribute_DBID" to later identify and extract it
             res[field_prefix + str(attribute.id)] = dict(
                 default_attrs,
                 type="many2many" if line.multi else "many2one",
                 domain=[("id", "in", value_ids)],
                 string=line.attribute_id.name,
                 relation="product.attribute.value",
-                sequence=line.sequence,
+                # sequence=line.sequence,
             )
         return res
 
     @api.model
-    def fields_view_get(
-        self, view_id=None, view_type="form", toolbar=False, submenu=False
-    ):
+    def get_view(self, view_id=None, view_type="form", **options):
         """Generate view dynamically using attributes stored on the
         product.template"""
 
         if view_type == "form" and not view_id:
             view_ext_id = "product_configurator.product_configurator_form"
             view_id = self.env.ref(view_ext_id).id
-        res = super(ProductConfigurator, self).fields_view_get(
-            view_id=view_id,
-            view_type=view_type,
-            toolbar=toolbar,
-            submenu=submenu,
+        res = super(ProductConfigurator, self).get_view(
+            view_id=view_id, view_type=view_type, **options
         )
 
         wizard_id = self.env.context.get("wizard_id")
 
-        if res.get("type") != "form" or not wizard_id:
+        wizard_model = res["model"]
+        if not wizard_id or not res["models"].get(wizard_model):
             return res
 
         wiz = self.browse(wizard_id)
@@ -543,7 +540,10 @@ class ProductConfigurator(models.TransientModel):
         dynamic_fields = {
             k: v for k, v in fields.items() if k.startswith(dynamic_field_prefixes)
         }
-        res["fields"].update(dynamic_fields)
+        # res["fields"].update(dynamic_fields)
+        models = dict(res["models"])
+        models[wizard_model] = models[wizard_model] + tuple(dynamic_fields.keys())
+        res["models"] = frozendict(models)
 
         mod_view = self.add_dynamic_fields(res, dynamic_fields, wiz)
 
@@ -552,7 +552,7 @@ class ProductConfigurator(models.TransientModel):
         return res
 
     @api.model
-    def setup_modifiers(self, node, field=None, context=None, current_node_path=None):
+    def setup_modifiers(self, node, field=None):
         """Processes node attributes and field descriptors to generate
         the ``modifiers`` node attribute and set it on the provided node.
 
@@ -575,12 +575,7 @@ class ProductConfigurator(models.TransientModel):
         modifiers = {}
         if field is not None:
             transfer_field_to_modifiers(field=field, modifiers=modifiers)
-        transfer_node_to_modifiers(
-            node=node,
-            modifiers=modifiers,
-            context=context,
-            current_node_path=current_node_path,
-        )
+        transfer_node_to_modifiers(node=node, modifiers=modifiers)
         transfer_modifiers_to_node(modifiers=modifiers, node=node)
 
     def prepare_attrs_initial(
@@ -686,10 +681,10 @@ class ProductConfigurator(models.TransientModel):
             xml_parent = xml_static_form.getparent()
             xml_parent.insert(xml_parent.index(xml_static_form) + 1, xml_dynamic_form)
             xml_dynamic_form = xml_view.xpath("//group[@name='dynamic_form']")[0]
-        except Exception:
+        except Exception as exc:
             raise UserError(
                 _("There was a problem rendering the view " "(dynamic_form not found)")
-            )
+            ) from exc
 
         # Get all dynamic fields inserted via fields_get method
         attr_lines = wiz.product_tmpl_id.attribute_line_ids.sorted()
@@ -775,33 +770,33 @@ class ProductConfigurator(models.TransientModel):
                 xml_dynamic_form.append(node)
         return xml_view
 
-    @api.model
-    def create(self, vals):
+    @api.model_create_multi
+    def create(self, vals_list):
         """Sets the configuration values of the product_id if given (if any).
         This is used in reconfiguration of a existing variant"""
+        for vals in vals_list:
+            if "product_id" in vals:
+                product = self.env["product.product"].browse(vals["product_id"])
+                pta_value_ids = product.product_template_attribute_value_ids
+                attr_value_ids = pta_value_ids.mapped("product_attribute_value_id")
+                vals.update(
+                    {
+                        "product_tmpl_id": product.product_tmpl_id.id,
+                        "value_ids": [(6, 0, attr_value_ids.ids)],
+                    }
+                )
 
-        if "product_id" in vals:
-            product = self.env["product.product"].browse(vals["product_id"])
-            pta_value_ids = product.product_template_attribute_value_ids
-            attr_value_ids = pta_value_ids.mapped("product_attribute_value_id")
-            vals.update(
-                {
-                    "product_tmpl_id": product.product_tmpl_id.id,
-                    "value_ids": [(6, 0, attr_value_ids.ids)],
-                }
+            # Get existing session for this product_template or create a new one
+            session = self.env["product.config.session"].create_get_session(
+                product_tmpl_id=int(vals.get("product_tmpl_id"))
             )
-
-        # Get existing session for this product_template or create a new one
-        session = self.env["product.config.session"].create_get_session(
-            product_tmpl_id=int(vals.get("product_tmpl_id"))
-        )
-        vals.update({"user_id": self.env.uid, "config_session_id": session.id})
-        wz_value_ids = vals.get("value_ids", [])
-        if session.value_ids and (
-            (wz_value_ids and not wz_value_ids[0][2]) or not wz_value_ids
-        ):
-            vals.update({"value_ids": [(6, 0, session.value_ids.ids)]})
-        return super(ProductConfigurator, self).create(vals)
+            vals.update({"user_id": self.env.uid, "config_session_id": session.id})
+            wz_value_ids = vals.get("value_ids", [])
+            if session.value_ids and (
+                (wz_value_ids and not wz_value_ids[0][2]) or not wz_value_ids
+            ):
+                vals.update({"value_ids": [(6, 0, session.value_ids.ids)]})
+        return super(ProductConfigurator, self).create(vals_list)
 
     def read(self, fields=None, load="_classic_read"):
         """Remove dynamic fields from the fields list and update the
@@ -838,15 +833,13 @@ class ProductConfigurator(models.TransientModel):
 
             custom_vals = self.custom_value_ids.filtered(
                 lambda x: x.attribute_id.id == attr_id
-            ).with_context({"show_attribute": False})
+            ).with_context(show_attribute=False)
             vals = attr_line.value_ids.filtered(
                 lambda v: v in self.value_ids
             ).with_context(
-                {
-                    "show_attribute": False,
-                    "show_price_extra": True,
-                    "active_id": self.product_tmpl_id.id,
-                }
+                show_attribute=False,
+                show_price_extra=True,
+                active_id=self.product_tmpl_id.id,
             )
 
             if not attr_line.custom and not vals:
@@ -978,7 +971,12 @@ class ProductConfigurator(models.TransientModel):
         :returns : dictionary
         """
         ctx = self.env.context.copy()
-        ctx.update({"view_cache": view_cache})
+        ctx.update(
+            {
+                "view_cache": view_cache,
+                "differentiator": ctx.get("differentiator", 1) + 1,
+            }
+        )
         if wizard:
             ctx.update({"wizard_id": wizard.id})
         wizard_action = {
