@@ -355,8 +355,8 @@ class ProductConfig(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute-{}".format(self.attribute_1.id): self.attribute_vals_1.id,
-                "__attribute-{}".format(self.attribute_2.id): self.attribute_vals_3.id,
+                "__attribute_{}".format(self.attribute_1.id): self.attribute_vals_1.id,
+                "__attribute_{}".format(self.attribute_2.id): self.attribute_vals_3.id,
             }
         )
         product_config_wizard.action_next_step()
@@ -471,10 +471,10 @@ class ProductConfig(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute-{}".format(self.attribute_1.id): self.custom_vals.id,
-                "__custom-{}".format(self.attribute_1.id): self.irAttachement.id,
-                "__attribute-{}".format(self.attribute_1.id): self.custom_vals.id,
-                "__custom-{}".format(self.attribute_1.id): "Test",
+                "__attribute_{}".format(self.attribute_1.id): self.custom_vals.id,
+                "__custom_{}".format(self.attribute_1.id): self.irAttachement.id,
+                "__attribute_{}".format(self.attribute_1.id): self.custom_vals.id,
+                "__custom_{}".format(self.attribute_1.id): "Test",
             }
         )
         product_config_wizard.action_next_step()
@@ -566,10 +566,10 @@ class ProductConfig(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute-{}".format(self.attribute_1.id): self.custom_vals.id,
-                "__custom-{}".format(self.attribute_1.id): self.irAttachement.id,
-                "__attribute-{}".format(self.attribute_1.id): self.custom_vals.id,
-                "__custom-{}".format(self.attribute_1.id): "Test",
+                "__attribute_{}".format(self.attribute_1.id): self.custom_vals.id,
+                "__custom_{}".format(self.attribute_1.id): self.irAttachement.id,
+                "__attribute_{}".format(self.attribute_1.id): self.custom_vals.id,
+                "__custom_{}".format(self.attribute_1.id): "Test",
             }
         )
         self.attributeLine1.custom = False

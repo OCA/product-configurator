@@ -120,19 +120,7 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: _compute_weight()",
         )
 
-    def test_03_get_product_attribute_values_action(self):
-        attribute_value_action = (
-            self.product_tmpl_id.get_product_attribute_values_action()
-        )
-        contextValue = attribute_value_action.get("context")
-        self.assertEqual(
-            contextValue["active_id"],
-            self.product_tmpl_id.id,
-            "Error: If different template id\
-            Method: get_product_attribute_values_action()",
-        )
-
-    def test_04_toggle_config(self):
+    def test_03_toggle_config(self):
         configFalse = self.product_tmpl_id.toggle_config()
         self.assertFalse(
             configFalse,
@@ -147,7 +135,7 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: create_variant_ids()",
         )
 
-    def test_05_unlink(self):
+    def test_04_unlink(self):
         product_config_wizard = self.ProductConfWizard.create(
             {
                 "product_tmpl_id": self.product_tmpl_id.id,
@@ -156,9 +144,9 @@ class TestProduct(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute-{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute-{}".format(self.attr_engine.id): self.value_218i.id,
-                "__attribute-{}".format(self.attr_color.id): self.value_red.id,
+                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
+                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
+                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
             }
         )
         product_config_wizard.action_next_step()
@@ -174,13 +162,13 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: unlink()",
         )
 
-    def test_06_check_default_values(self):
+    def test_05_check_default_values(self):
         self.attributelinefuel.default_val = (self.value_gasoline.id,)
         self.attributelineengine.default_val = self.value_218d.id
         with self.assertRaises(ValidationError):
             self.config_product._check_default_values()
 
-    def test_07_configure_product(self):
+    def test_06_configure_product(self):
         # configure product
         self.product_tmpl_id.configure_product()
         self.ProductConfWizard.action_next_step()
@@ -192,9 +180,9 @@ class TestProduct(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute-{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute-{}".format(self.attr_engine.id): self.value_218i.id,
-                "__attribute-{}".format(self.attr_color.id): self.value_red.id,
+                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
+                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
+                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
             }
         )
         wizard_action = product_config_wizard.action_next_step()
@@ -248,14 +236,14 @@ class TestProduct(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute-{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute-{}".format(self.attr_engine.id): self.value_218i.id,
+                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
+                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute-{}".format(self.attr_color.id): self.value_red.id,
+                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
             }
         )
         product_config_wizard.action_previous_step()
@@ -274,7 +262,7 @@ class TestProduct(ProductConfiguratorTestCases):
         )
         product_config_wizard.action_next_step()
 
-    def test_08_get_mako_tmpl_name(self):
+    def test_07_get_mako_tmpl_name(self):
         # check for product_product
         product_product = self._get_product_id()
         mako_tmpl_vals = product_product._get_mako_tmpl_name()
@@ -293,7 +281,7 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: _get_mako_tmpl_name()",
         )
 
-    def test_09_compute_product_weight(self):
+    def test_08_compute_product_weight(self):
         product_product = self._get_product_id()
         self.config_product.weight = 10
         product_product.weight_extra = 20
@@ -314,18 +302,7 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: _compute_product_weight()",
         )
 
-    def test_10_get_product_attribute_values_action(self):
-        product_product = self._get_product_id()
-        varient_price = product_product.get_product_attribute_values_action()
-        context_vals = varient_price["context"]
-        self.assertEqual(
-            context_vals["default_product_tmpl_id"],
-            product_product.product_tmpl_id.id,
-            "Error: If different template id\
-            Method: get_product_attribute_values_action()",
-        )
-
-    def test_11_compute_config_name(self):
+    def test_09_compute_config_name(self):
         product_product = self._get_product_id()
         product_product.config_ok = False
         product_product._compute_config_name()
@@ -344,7 +321,7 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: _compute_config_name()",
         )
 
-    def test_12_reconfigure_product(self):
+    def test_10_reconfigure_product(self):
         self.product_tmpl_id.configure_product()
         product_config_wizard = self.ProductConfWizard.create(
             {
@@ -354,9 +331,9 @@ class TestProduct(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute-{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute-{}".format(self.attr_engine.id): self.value_218i.id,
-                "__attribute-{}".format(self.attr_color.id): self.value_red.id,
+                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
+                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
+                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
             }
         )
         product_config_wizard.action_next_step()
@@ -371,14 +348,14 @@ class TestProduct(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute-{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute-{}".format(self.attr_engine.id): self.value_218d.id,
+                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
+                "__attribute_{}".format(self.attr_engine.id): self.value_218d.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute-{}".format(self.attr_color.id): self.value_silver.id,
+                "__attribute_{}".format(self.attr_color.id): self.value_silver.id,
             }
         )
         product_config_wizard.action_next_step()
@@ -395,11 +372,11 @@ class TestProduct(ProductConfiguratorTestCases):
         )
         self.assertFalse(
             new_variant.id,
-            "Error: if varient id not exists\
+            "Error: if variant id not exists\
             Method: reconfigure_product()",
         )
 
-    def test_13_compute_product_weight_extra(self):
+    def test_11_compute_product_weight_extra(self):
         product_id = self.env.ref("product.product_delivery_01")
         product_template_attribute_value_ids = self.env.ref(
             "product.product_4_attribute_1_value_2"
@@ -438,7 +415,7 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: _compute_product_weight_extra()",
         )
 
-    def test_14_unlink(self):
+    def test_12_unlink(self):
         product_product = self._get_product_id()
         unlinkVals = product_product.unlink()
         self.assertTrue(
@@ -447,7 +424,7 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: unlink()",
         )
 
-    def test_15_copy(self):
+    def test_13_copy(self):
         vals = self.config_product.copy()
         self.assertEqual(
             vals.name,
@@ -461,7 +438,7 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: copy()",
         )
 
-    def test_16_validate_unique_config(self):
+    def test_14_validate_unique_config(self):
         self.product_tmpl_id.write(
             {
                 "attribute_value_line_ids": [
@@ -494,7 +471,7 @@ class TestProduct(ProductConfiguratorTestCases):
                 }
             )
 
-    def test_17_check_attr_value_ids(self):
+    def test_15_check_attr_value_ids(self):
         self.product_tmpl_id.write(
             {
                 "attribute_value_line_ids": [
@@ -632,7 +609,7 @@ class TestProduct(ProductConfiguratorTestCases):
                 }
             )
 
-    def test_18_check_duplicate_product(self):
+    def test_16_check_duplicate_product(self):
         self.product_tmpl_id.configure_product()
         product_config_wizard = self.ProductConfWizard.create(
             {
@@ -642,9 +619,9 @@ class TestProduct(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute-{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute-{}".format(self.attr_engine.id): self.value_218i.id,
-                "__attribute-{}".format(self.attr_color.id): self.value_red.id,
+                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
+                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
+                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
             }
         )
         product_config_wizard.action_next_step()
@@ -664,15 +641,15 @@ class TestProduct(ProductConfiguratorTestCases):
                 }
             )
 
-    def test_19_fields_view_get(self):
+    def test_17_fields_view_get(self):
         product_product = self._get_product_id()
-        product_product.with_context({"default_config_ok": True}).fields_view_get()
+        product_product.with_context(default_config_ok=True).get_view()
 
-    def test_20_get_conversions_dict(self):
+    def test_18_get_conversions_dict(self):
         product_product = self._get_product_id()
         product_product._get_conversions_dict()
 
-    def test_21_compute_product_variant_count(self):
+    def test_19_compute_product_variant_count(self):
         self.product_tmpl_id = self.env["product.template"].create(
             {
                 "name": "Test Configuration",
@@ -689,7 +666,7 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: _compute_product_variant_count()",
         )
 
-    def test_22_get_config_name(self):
+    def test_20_get_config_name(self):
         product_product = self._get_product_id()
         product_product._get_config_name()
         self.assertTrue(
@@ -698,7 +675,7 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: _get_config_name()",
         )
 
-    def test_23_search_product_weight(self):
+    def test_21_search_product_weight(self):
         product_product = self._get_product_id()
         operator = "and"
         value = 10
@@ -709,7 +686,7 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: _search_product_weight()",
         )
 
-    def test_24_search_weight(self):
+    def test_22_search_weight(self):
         operator = "and"
         value = 10
         search_weight = self.product_tmpl_id._search_weight(operator, value)
@@ -719,7 +696,7 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: _search_weight()",
         )
 
-    def test_25_check_config_line_domain(self):
+    def test_23_check_config_line_domain(self):
         product_config_line = self.env.ref(
             "product_configurator.product_config_line_218_lines"
         )

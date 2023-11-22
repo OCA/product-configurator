@@ -4,8 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 14.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-06-11 06:00+0000\n"
+"PO-Revision-Date: 2023-06-11 06:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -14,6 +16,7 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product.py:0
 #, python-format
 msgid ""
@@ -22,6 +25,7 @@ msgid ""
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product.py:0
 #, python-format
 msgid ""
@@ -30,6 +34,7 @@ msgid ""
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product.py:0
 #, python-format
 msgid ""
@@ -48,7 +53,6 @@ msgid "218d"
 msgstr ""
 
 #. module: product_configurator
-#: model:product.product,name:product_configurator.product_engine_218d_coupe
 #: model:product.template,name:product_configurator.product_engine_218d_coupe_product_template
 msgid "218d Coupé"
 msgstr ""
@@ -59,7 +63,6 @@ msgid "218i"
 msgstr ""
 
 #. module: product_configurator
-#: model:product.product,name:product_configurator.product_engine_218i_coupe
 #: model:product.template,name:product_configurator.product_engine_218i_coupe_product_template
 msgid "218i Coupé"
 msgstr ""
@@ -70,7 +73,6 @@ msgid "220d"
 msgstr ""
 
 #. module: product_configurator
-#: model:product.product,name:product_configurator.product_engine_220d_coupe
 #: model:product.template,name:product_configurator.product_engine_220d_coupe_product_template
 msgid "220d Coupé"
 msgstr ""
@@ -81,7 +83,6 @@ msgid "220d xDrive"
 msgstr ""
 
 #. module: product_configurator
-#: model:product.product,name:product_configurator.product_engine_220d_xdrive_coupe
 #: model:product.template,name:product_configurator.product_engine_220d_xdrive_coupe_product_template
 msgid "220d xDrive Coupé"
 msgstr ""
@@ -92,7 +93,6 @@ msgid "220i"
 msgstr ""
 
 #. module: product_configurator
-#: model:product.product,name:product_configurator.product_engine_220i_coupe
 #: model:product.template,name:product_configurator.product_engine_220i_coupe_product_template
 msgid "220i Coupé"
 msgstr ""
@@ -103,7 +103,6 @@ msgid "225d"
 msgstr ""
 
 #. module: product_configurator
-#: model:product.product,name:product_configurator.product_engine_225d_coupe
 #: model:product.template,name:product_configurator.product_engine_225d_coupe_product_template
 msgid "225d Coupé"
 msgstr ""
@@ -114,7 +113,6 @@ msgid "228i"
 msgstr ""
 
 #. module: product_configurator
-#: model:product.product,name:product_configurator.product_engine_228i_coupe
 #: model:product.template,name:product_configurator.product_engine_228i_coupe_product_template
 msgid "228i Coupé"
 msgstr ""
@@ -131,6 +129,7 @@ msgid "Active"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product.py:0
 #, python-format
 msgid ""
@@ -155,9 +154,10 @@ msgid "Allow selection of multiple values for this attribute?"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
-msgid "An error occursed while parsing value for attribute %s"
+msgid "An error occurred while parsing value for attribute %s"
 msgstr ""
 
 #. module: product_configurator
@@ -168,7 +168,6 @@ msgstr ""
 
 #. module: product_configurator
 #: model:product.attribute.value,name:product_configurator.product_attribute_value_armrest
-#: model:product.product,name:product_configurator.product_2_series_armrest
 #: model:product.template,name:product_configurator.product_2_series_armrest_product_template
 msgid "Armrest"
 msgstr ""
@@ -224,11 +223,6 @@ msgid "Attribute Value"
 msgstr ""
 
 #. module: product_configurator
-#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_only_form_view_inherited
-msgid "Attribute Value Dependencies"
-msgstr ""
-
-#. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_product__attribute_value_line_ids
 #: model:ir.model.fields,field_description:product_configurator.field_product_template__attribute_value_line_ids
 msgid "Attribute Value Lines"
@@ -246,6 +240,7 @@ msgid "Attribute Weight Extra"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
 msgid ""
@@ -254,6 +249,7 @@ msgid ""
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
 msgid ""
@@ -264,11 +260,6 @@ msgstr ""
 #. module: product_configurator
 #: model:ir.model.fields,help:product_configurator.field_product_attribute_value__image
 msgid "Attribute value image (Display on website for radio buttons)"
-msgstr ""
-
-#. module: product_configurator
-#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_only_form_view_inherited
-msgid "Attribute value lines"
 msgstr ""
 
 #. module: product_configurator
@@ -289,7 +280,6 @@ msgid "Automatic Sport (Steptronic)"
 msgstr ""
 
 #. module: product_configurator
-#: model:product.product,name:product_configurator.product_2_series_transmission_steptronic
 #: model:product.template,name:product_configurator.product_2_series_transmission_steptronic_product_template
 msgid "Automatic Transmission Steptronic"
 msgstr ""
@@ -307,7 +297,6 @@ msgstr ""
 
 #. module: product_configurator
 #: model:product.config.step,name:product_configurator.config_step_body
-#: model:product.config.step.line,name:product_configurator.2_series_config_step_body
 msgid "Body"
 msgstr ""
 
@@ -332,6 +321,7 @@ msgid "Can be Configured"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
 msgid ""
@@ -340,12 +330,14 @@ msgid ""
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
 msgid "Cannot have a configuration step defined twice."
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/wizard/product_configurator.py:0
 #, python-format
 msgid ""
@@ -370,12 +362,18 @@ msgid "Condition"
 msgstr ""
 
 #. module: product_configurator
+#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_only_form_view_inherited
+msgid "Configurable"
+msgstr ""
+
+#. module: product_configurator
 #: model:ir.ui.menu,name:product_configurator.menu_product_configurable_product_main
 #: model_terms:ir.ui.view,arch_db:product_configurator.product_template_search_view
 msgid "Configurable Products"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product.py:0
 #, python-format
 msgid ""
@@ -447,7 +445,6 @@ msgstr ""
 #: model:ir.actions.act_window,name:product_configurator.product_config_session
 #: model:ir.ui.menu,name:product_configurator.menu_product_config_session
 #: model_terms:ir.ui.view,arch_db:product_configurator.product_config_session_form_view
-#: model_terms:ir.ui.view,arch_db:product_configurator.product_config_session_tree_view
 msgid "Configuration Sessions"
 msgstr ""
 
@@ -475,6 +472,7 @@ msgid "Configuration Steps"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
 msgid "Configuration cannot have the same value inserted twice"
@@ -618,18 +616,20 @@ msgstr ""
 
 #. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_template_attribute_line__default_val
-msgid "Default Value"
+msgid "Default Val"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_attribute.py:0
 #, python-format
 msgid ""
 "Default values for each attribute line must exist in the attribute values "
-"(%s: %s)"
+"(%(attr_name)s: %(default_val)s)"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product.py:0
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
@@ -654,9 +654,6 @@ msgid "Diesel"
 msgstr ""
 
 #. module: product_configurator
-#: model:ir.model.fields,field_description:product_configurator.field_ir_ui_view__display_name
-#: model:ir.model.fields,field_description:product_configurator.field_product_attribute__display_name
-#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value__display_name
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_line__display_name
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain__display_name
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line__display_name
@@ -667,10 +664,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step__display_name
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line__display_name
 #: model:ir.model.fields,field_description:product_configurator.field_product_configurator__display_name
-#: model:ir.model.fields,field_description:product_configurator.field_product_product__display_name
-#: model:ir.model.fields,field_description:product_configurator.field_product_template__display_name
-#: model:ir.model.fields,field_description:product_configurator.field_product_template_attribute_line__display_name
-#: model:ir.model.fields,field_description:product_configurator.field_product_template_attribute_value__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -702,11 +695,11 @@ msgstr ""
 #. module: product_configurator
 #: model:product.attribute,name:product_configurator.product_attribute_engine
 #: model:product.config.step,name:product_configurator.config_step_engine
-#: model:product.config.step.line,name:product_configurator.2_series_config_step_engine
 msgid "Engine"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product.py:0
 #, python-format
 msgid "Error while calculating mako product name: %s"
@@ -714,7 +707,6 @@ msgstr ""
 
 #. module: product_configurator
 #: model:product.config.step,name:product_configurator.config_step_extras
-#: model:product.config.step.line,name:product_configurator.2_series_config_step_extras
 msgid "Extras"
 msgstr ""
 
@@ -724,6 +716,7 @@ msgid "Field Type"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
 msgid "Finished configuration session must have a product_id linked"
@@ -735,6 +728,7 @@ msgid "Float"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product.py:0
 #, python-format
 msgid ""
@@ -759,9 +753,6 @@ msgid "Generate Name based on Mako Template"
 msgstr ""
 
 #. module: product_configurator
-#: model:ir.model.fields,field_description:product_configurator.field_ir_ui_view__id
-#: model:ir.model.fields,field_description:product_configurator.field_product_attribute__id
-#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value__id
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_line__id
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain__id
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line__id
@@ -772,10 +763,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step__id
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line__id
 #: model:ir.model.fields,field_description:product_configurator.field_product_configurator__id
-#: model:ir.model.fields,field_description:product_configurator.field_product_product__id
-#: model:ir.model.fields,field_description:product_configurator.field_product_template__id
-#: model:ir.model.fields,field_description:product_configurator.field_product_template_attribute_line__id
-#: model:ir.model.fields,field_description:product_configurator.field_product_template_attribute_value__id
 msgid "ID"
 msgstr ""
 
@@ -820,11 +807,11 @@ msgstr ""
 
 #. module: product_configurator
 #: model:product.config.step,name:product_configurator.config_step_interior
-#: model:product.config.step.line,name:product_configurator.2_series_config_step_interior
 msgid "Interior"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
@@ -842,9 +829,6 @@ msgid "Is this attribute required?"
 msgstr ""
 
 #. module: product_configurator
-#: model:ir.model.fields,field_description:product_configurator.field_ir_ui_view____last_update
-#: model:ir.model.fields,field_description:product_configurator.field_product_attribute____last_update
-#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value____last_update
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_line____last_update
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain____last_update
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line____last_update
@@ -855,10 +839,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step____last_update
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line____last_update
 #: model:ir.model.fields,field_description:product_configurator.field_product_configurator____last_update
-#: model:ir.model.fields,field_description:product_configurator.field_product_product____last_update
-#: model:ir.model.fields,field_description:product_configurator.field_product_template____last_update
-#: model:ir.model.fields,field_description:product_configurator.field_product_template_attribute_line____last_update
-#: model:ir.model.fields,field_description:product_configurator.field_product_template_attribute_value____last_update
 msgid "Last Modified on"
 msgstr ""
 
@@ -893,13 +873,11 @@ msgstr ""
 #. module: product_configurator
 #: model:product.attribute,name:product_configurator.product_attribute_model_line
 #: model:product.config.step,name:product_configurator.config_step_lines
-#: model:product.config.step.line,name:product_configurator.2_series_config_step_lines
 msgid "Lines"
 msgstr ""
 
 #. module: product_configurator
 #: model:product.attribute.value,name:product_configurator.product_attribute_value_luxury_line
-#: model:product.product,name:product_configurator.product_bmw_luxury_line
 #: model:product.template,name:product_configurator.product_bmw_luxury_line_product_template
 msgid "Luxury Line"
 msgstr ""
@@ -910,7 +888,6 @@ msgid "M235i"
 msgstr ""
 
 #. module: product_configurator
-#: model:product.product,name:product_configurator.product_engine_m235i_coupe
 #: model:product.template,name:product_configurator.product_engine_m235i_coupe_product_template
 msgid "M235i Coupé"
 msgstr ""
@@ -921,7 +898,6 @@ msgid "M235i xDrive"
 msgstr ""
 
 #. module: product_configurator
-#: model:product.product,name:product_configurator.product_engine_m2351_xdrive_coupe
 #: model:product.template,name:product_configurator.product_engine_m2351_xdrive_coupe_product_template
 msgid "M235i xDrive Coupe"
 msgstr ""
@@ -953,6 +929,7 @@ msgid "Maximum value allowed"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_attribute.py:0
 #, python-format
 msgid "Maximum value must be greater than Minimum value"
@@ -970,28 +947,24 @@ msgstr ""
 
 #. module: product_configurator
 #: model:product.attribute.value,name:product_configurator.product_attribute_value_model_advantage
-#: model:product.product,name:product_configurator.product_bmw_model_advantage
 #: model:product.template,name:product_configurator.product_bmw_model_advantage_product_template
 msgid "Model Advantage"
 msgstr ""
 
 #. module: product_configurator
 #: model:product.attribute.value,name:product_configurator.product_attribute_value_model_luxury_line
-#: model:product.product,name:product_configurator.product_bmw_model_luxury_line
 #: model:product.template,name:product_configurator.product_bmw_model_luxury_line_product_template
 msgid "Model Luxury Line"
 msgstr ""
 
 #. module: product_configurator
 #: model:product.attribute.value,name:product_configurator.product_attribute_value_model_m_sport
-#: model:product.product,name:product_configurator.product_bmw_model_m_sport
 #: model:product.template,name:product_configurator.product_bmw_model_m_sport_product_template
 msgid "Model M Sport"
 msgstr ""
 
 #. module: product_configurator
 #: model:product.attribute.value,name:product_configurator.product_attribute_value_model_sport_line
-#: model:product.product,name:product_configurator.product_bmw_model_sport_line
 #: model:product.template,name:product_configurator.product_bmw_model_sport_line_product_template
 msgid "Model Sport Line"
 msgstr ""
@@ -1012,6 +985,7 @@ msgid "Name"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
 msgid "New"
@@ -1023,11 +997,12 @@ msgid "Next"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_attribute.py:0
 #, python-format
 msgid ""
-"On the product %s you cannot associate the value %s with the attribute %s "
-"because they do not match."
+"On the product %(product)s you cannot associate the value %(value)s with the"
+" attribute %(attr)s because they do not match."
 msgstr ""
 
 #. module: product_configurator
@@ -1058,7 +1033,8 @@ msgid "Price"
 msgstr ""
 
 #. module: product_configurator
-#: model:ir.model,name:product_configurator.model_product_product
+#: model:ir.model,name:product_configurator.model_product_template
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value__product_id
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_image__product_tmpl_id
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_session__product_id
 msgid "Product"
@@ -1121,7 +1097,6 @@ msgid "Product Img"
 msgstr ""
 
 #. module: product_configurator
-#: model:ir.model,name:product_configurator.model_product_template
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_line__product_tmpl_id
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_line__product_tmpl_id
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line__product_tmpl_id
@@ -1139,6 +1114,7 @@ msgid "Product Template Attribute Value"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/wizard/product_configurator.py:0
 #, python-format
 msgid "Product Template does not have any attribute lines defined"
@@ -1150,6 +1126,7 @@ msgid "Product Value"
 msgstr ""
 
 #. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_product
 #: model:ir.model.fields,field_description:product_configurator.field_product_configurator__product_id
 msgid "Product Variant"
 msgstr ""
@@ -1160,6 +1137,7 @@ msgid "Product configuration Wizard"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
 msgid "Product created via configuration wizard"
@@ -1176,17 +1154,13 @@ msgid "Red"
 msgstr ""
 
 #. module: product_configurator
-#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value__product_id
-msgid "Related Product"
-msgstr ""
-
-#. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute__required
 #: model:ir.model.fields,field_description:product_configurator.field_product_template_attribute_line__required
 msgid "Required"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
 msgid "Required attribute '%s' is empty"
@@ -1204,6 +1178,7 @@ msgid "Restrictions"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product.py:0
 #, python-format
 msgid ""
@@ -1233,27 +1208,32 @@ msgid "Searchable"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_attribute.py:0
 #, python-format
 msgid "Selected custom field type '%s' is not searchable"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_attribute.py:0
 #, python-format
-msgid "Selected custom value '%s' must be at least %s"
+msgid "Selected custom value '%(name)s' must be at least %(min_val)s"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_attribute.py:0
 #, python-format
-msgid "Selected custom value '%s' must be between %s and %s"
+msgid ""
+"Selected custom value '%(name)s' must be between %(min_val)s and %(max_val)s"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_attribute.py:0
 #, python-format
-msgid "Selected custom value '%s' must be lower than %s"
+msgid "Selected custom value '%(name)s' must be lower than %(max_value)s"
 msgstr ""
 
 #. module: product_configurator
@@ -1293,19 +1273,18 @@ msgid "Silver"
 msgstr ""
 
 #. module: product_configurator
-#: model:product.product,name:product_configurator.product_paint_silver
 #: model:product.template,name:product_configurator.product_paint_silver_product_template
 msgid "Silver Paint"
 msgstr ""
 
 #. module: product_configurator
 #: model:product.attribute.value,name:product_configurator.product_attribute_value_smoker_package
-#: model:product.product,name:product_configurator.product_2_series_smoker_package
 #: model:product.template,name:product_configurator.product_2_series_smoker_package_product_template
 msgid "Smoker Package"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product.py:0
 #: code:addons/product_configurator/models/product.py:0
 #, python-format
@@ -1315,14 +1294,12 @@ msgid ""
 msgstr ""
 
 #. module: product_configurator
-#: model:product.product,name:product_configurator.product_2_series_transmission_steptronic_sport
 #: model:product.template,name:product_configurator.product_2_series_transmission_steptronic_sport_product_template
 msgid "Sport Automatic Transmission Steptronic"
 msgstr ""
 
 #. module: product_configurator
 #: model:product.attribute.value,name:product_configurator.product_attribute_value_sport_line
-#: model:product.product,name:product_configurator.product_bmw_sport_line
 #: model:product.template,name:product_configurator.product_bmw_sport_line_product_template
 msgid "Sport Line"
 msgstr ""
@@ -1340,7 +1317,6 @@ msgstr ""
 
 #. module: product_configurator
 #: model:product.attribute.value,name:product_configurator.product_attribute_value_sunroof
-#: model:product.product,name:product_configurator.product_2_series_sunroof
 #: model:product.template,name:product_configurator.product_2_series_sunroof_product_template
 msgid "Sunroof"
 msgstr ""
@@ -1366,9 +1342,12 @@ msgid "Textarea"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_attribute.py:0
 #, python-format
-msgid "The attribute %s must have at least one value for the product %s."
+msgid ""
+"The attribute %(attr)s must have at least one value for the product "
+"%(product)s."
 msgstr ""
 
 #. module: product_configurator
@@ -1379,6 +1358,7 @@ msgid ""
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
 msgid ""
@@ -1388,6 +1368,7 @@ msgid ""
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
 msgid ""
@@ -1397,6 +1378,7 @@ msgid ""
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
 msgid "The following values are not available:"
@@ -1408,6 +1390,7 @@ msgid "The type of the custom field generated in the frontend"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/wizard/product_configurator.py:0
 #, python-format
 msgid "There was a problem rendering the view (dynamic_form not found)"
@@ -1425,7 +1408,6 @@ msgid "Tow hook"
 msgstr ""
 
 #. module: product_configurator
-#: model:product.product,name:product_configurator.product_2_series_towhook
 #: model:product.template,name:product_configurator.product_2_series_towhook_product_template
 msgid "Towhook"
 msgstr ""
@@ -1443,55 +1425,6 @@ msgstr ""
 #. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute__uom_id
 msgid "Unit of Measure"
-msgstr ""
-
-#. module: product_configurator
-#: model:product.product,uom_name:product_configurator.product_2_series_armrest
-#: model:product.product,uom_name:product_configurator.product_2_series_smoker_package
-#: model:product.product,uom_name:product_configurator.product_2_series_sunroof
-#: model:product.product,uom_name:product_configurator.product_2_series_towhook
-#: model:product.product,uom_name:product_configurator.product_2_series_transmission_steptronic
-#: model:product.product,uom_name:product_configurator.product_2_series_transmission_steptronic_sport
-#: model:product.product,uom_name:product_configurator.product_bmw_luxury_line
-#: model:product.product,uom_name:product_configurator.product_bmw_model_advantage
-#: model:product.product,uom_name:product_configurator.product_bmw_model_luxury_line
-#: model:product.product,uom_name:product_configurator.product_bmw_model_m_sport
-#: model:product.product,uom_name:product_configurator.product_bmw_model_sport_line
-#: model:product.product,uom_name:product_configurator.product_bmw_sport_line
-#: model:product.product,uom_name:product_configurator.product_engine_218d_coupe
-#: model:product.product,uom_name:product_configurator.product_engine_218i_coupe
-#: model:product.product,uom_name:product_configurator.product_engine_220d_coupe
-#: model:product.product,uom_name:product_configurator.product_engine_220d_xdrive_coupe
-#: model:product.product,uom_name:product_configurator.product_engine_220i_coupe
-#: model:product.product,uom_name:product_configurator.product_engine_225d_coupe
-#: model:product.product,uom_name:product_configurator.product_engine_228i_coupe
-#: model:product.product,uom_name:product_configurator.product_engine_m2351_xdrive_coupe
-#: model:product.product,uom_name:product_configurator.product_engine_m235i_coupe
-#: model:product.product,uom_name:product_configurator.product_paint_silver
-#: model:product.template,uom_name:product_configurator.bmw_2_series
-#: model:product.template,uom_name:product_configurator.product_2_series_armrest_product_template
-#: model:product.template,uom_name:product_configurator.product_2_series_smoker_package_product_template
-#: model:product.template,uom_name:product_configurator.product_2_series_sunroof_product_template
-#: model:product.template,uom_name:product_configurator.product_2_series_towhook_product_template
-#: model:product.template,uom_name:product_configurator.product_2_series_transmission_steptronic_product_template
-#: model:product.template,uom_name:product_configurator.product_2_series_transmission_steptronic_sport_product_template
-#: model:product.template,uom_name:product_configurator.product_bmw_luxury_line_product_template
-#: model:product.template,uom_name:product_configurator.product_bmw_model_advantage_product_template
-#: model:product.template,uom_name:product_configurator.product_bmw_model_luxury_line_product_template
-#: model:product.template,uom_name:product_configurator.product_bmw_model_m_sport_product_template
-#: model:product.template,uom_name:product_configurator.product_bmw_model_sport_line_product_template
-#: model:product.template,uom_name:product_configurator.product_bmw_sport_line_product_template
-#: model:product.template,uom_name:product_configurator.product_engine_218d_coupe_product_template
-#: model:product.template,uom_name:product_configurator.product_engine_218i_coupe_product_template
-#: model:product.template,uom_name:product_configurator.product_engine_220d_coupe_product_template
-#: model:product.template,uom_name:product_configurator.product_engine_220d_xdrive_coupe_product_template
-#: model:product.template,uom_name:product_configurator.product_engine_220i_coupe_product_template
-#: model:product.template,uom_name:product_configurator.product_engine_225d_coupe_product_template
-#: model:product.template,uom_name:product_configurator.product_engine_228i_coupe_product_template
-#: model:product.template,uom_name:product_configurator.product_engine_m2351_xdrive_coupe_product_template
-#: model:product.template,uom_name:product_configurator.product_engine_m235i_coupe_product_template
-#: model:product.template,uom_name:product_configurator.product_paint_silver_product_template
-msgid "Units"
 msgstr ""
 
 #. module: product_configurator
@@ -1531,12 +1464,14 @@ msgid "Values Configuration"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
 msgid "Values entered for line '%s' generate a incompatible configuration"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
 msgid ""
@@ -1545,6 +1480,7 @@ msgid ""
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_attribute.py:0
 #, python-format
 msgid ""
@@ -1555,17 +1491,6 @@ msgstr ""
 #. module: product_configurator
 #: model_terms:ir.ui.view,arch_db:product_configurator.product_template_only_form_view_inherited
 msgid "Variant Name"
-msgstr ""
-
-#. module: product_configurator
-#: model_terms:ir.ui.view,arch_db:product_configurator.product_form_view_custom_vals_inherit
-#: model_terms:ir.ui.view,arch_db:product_configurator.product_template_only_form_view_inherited
-msgid "Variant Prices"
-msgstr ""
-
-#. module: product_configurator
-#: model_terms:ir.ui.view,arch_db:product_configurator.variants_tree_view
-msgid "Variant Values"
 msgstr ""
 
 #. module: product_configurator
@@ -1600,12 +1525,14 @@ msgid ""
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product.py:0
 #, python-format
 msgid "You cannot have a duplicate configuration for the same value"
 msgstr ""
 
 #. module: product_configurator
+#. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
