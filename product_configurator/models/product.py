@@ -6,7 +6,6 @@ from mako.template import Template
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-from odoo.tools.safe_eval import safe_eval
 
 _logger = logging.getLogger(__name__)
 
@@ -20,12 +19,13 @@ class ProductTemplate(models.Model):
         1 as many views and methods trigger only when a template has at least
         one variant attached. Since we create them from the template we should
         have access to them always"""
-        super(ProductTemplate, self)._compute_product_variant_count()
+        result = super(ProductTemplate, self)._compute_product_variant_count()
         for product_tmpl in self:
             config_ok = product_tmpl.config_ok
             variant_count = product_tmpl.product_variant_count
             if config_ok and not variant_count:
                 product_tmpl.product_variant_count = 1
+        return result
 
     @api.depends("attribute_line_ids.value_ids")
     def _compute_template_attr_vals(self):
@@ -70,7 +70,7 @@ class ProductTemplate(models.Model):
             ]
             if len(set(attr_val_line_vals)) != len(attr_val_line_vals):
                 raise ValidationError(
-                    _("You cannot have a duplicate configuration for the " "same value")
+                    _("You cannot have a duplicate configuration for the same value")
                 )
 
     config_ok = fields.Boolean(string="Can be Configured")
@@ -134,28 +134,17 @@ class ProductTemplate(models.Model):
         for product in config_products:
             product.weight = product.weight_dummy
         standard_products = self - config_products
-        super(ProductTemplate, standard_products)._compute_weight()
+        return super(ProductTemplate, standard_products)._compute_weight()
 
     def _set_weight(self):
         for product_tmpl in self:
             product_tmpl.weight_dummy = product_tmpl.weight
             if not product_tmpl.config_ok:
                 super(ProductTemplate, product_tmpl)._set_weight()
+        return
 
     def _search_weight(self, operator, value):
         return [("weight_dummy", operator, value)]
-
-    def get_product_attribute_values_action(self):
-        self.ensure_one()
-        action = self.env["ir.actions.actions"]._for_xml_id(
-            "product.product_attribute_value_action"
-        )
-        value_ids = self.attribute_line_ids.mapped("product_template_value_ids").ids
-        action["domain"] = [("id", "in", value_ids)]
-        context = safe_eval(action["context"], {"active_id": self.id})
-        context.update({"active_id": self.id})
-        action["context"] = context
-        return action
 
     def _check_default_values(self):
         default_val_ids = (
@@ -169,27 +158,27 @@ class ProductTemplate(models.Model):
             cfg_session_obj.validate_configuration(
                 value_ids=default_val_ids, product_tmpl_id=self.id, final=False
             )
-        except ValidationError as ex:
-            raise ValidationError(ex.name)
-        except Exception:
+        except ValidationError as exc:
+            raise ValidationError(exc.args[0]) from exc
+        except Exception as exc:
             raise ValidationError(
                 _("Default values provided generate an invalid configuration")
-            )
+            ) from exc
 
     @api.constrains("config_line_ids", "attribute_line_ids")
     def _check_default_value_domains(self):
         for template in self:
             try:
                 template._check_default_values()
-            except ValidationError as e:
+            except ValidationError as exc:
                 raise ValidationError(
                     _(
                         "Restrictions added make the current default values "
                         "generate an invalid configuration.\
                       \n%s"
                     )
-                    % (e.name)
-                )
+                    % (exc.name)
+                ) from exc
 
     def toggle_config(self):
         for record in self:
@@ -329,13 +318,14 @@ class ProductTemplate(models.Model):
             )
         )
 
-    @api.model
-    def create(self, vals):
+    @api.model_create_multi
+    def create(self, vals_list):
         """Patch for check access rights of user(configurable products)"""
-        config_ok = vals.get("config_ok", False)
-        if config_ok:
-            self.check_config_user_access()
-        return super(ProductTemplate, self).create(vals)
+        for vals in vals_list:
+            config_ok = vals.get("config_ok", False)
+            if config_ok:
+                self.check_config_user_access()
+        return super(ProductTemplate, self).create(vals_list)
 
     def write(self, vals):
         """Patch for check access rights of user(configurable products)"""
@@ -489,9 +479,7 @@ class ProductProduct(models.Model):
     config_name = fields.Char(
         string="Configuration Name", compute="_compute_config_name"
     )
-    weight_extra = fields.Float(
-        string="Weight Extra", compute="_compute_product_weight_extra"
-    )
+    weight_extra = fields.Float(compute="_compute_product_weight_extra")
     weight_dummy = fields.Float(string="Manual Weight", digits="Stock Weight")
     weight = fields.Float(
         compute="_compute_product_weight",
@@ -502,18 +490,6 @@ class ProductProduct(models.Model):
 
     # product preset
     config_preset_ok = fields.Boolean(string="Is Preset")
-
-    def get_product_attribute_values_action(self):
-        self.ensure_one()
-        action = self.env["ir.actions.actions"]._for_xml_id(
-            "product.product_attribute_value_action"
-        )
-        value_ids = self.product_template_attribute_value_ids.ids
-        action["domain"] = [("id", "in", value_ids)]
-        context = safe_eval(action["context"], {"active_id": self.product_tmpl_id.id})
-        context.update({"active_id": self.product_tmpl_id.id})
-        action["context"] = context
-        return action
 
     def _compute_config_name(self):
         """Compute the name of the configurable products and use template
@@ -572,13 +548,14 @@ class ProductProduct(models.Model):
         self.env.context = ctx
         return super(ProductProduct, self).unlink()
 
-    @api.model
-    def create(self, vals):
+    @api.model_create_multi
+    def create(self, vals_list):
         """Patch for check access rights of user(configurable products)"""
-        config_ok = vals.get("config_ok", False)
-        if config_ok:
-            self.check_config_user_access(mode="create")
-        return super(ProductProduct, self).create(vals)
+        for vals in vals_list:
+            config_ok = vals.get("config_ok", False)
+            if config_ok:
+                self.check_config_user_access(mode="create")
+        return super(ProductProduct, self).create(vals_list)
 
     def write(self, vals):
         """Patch for check access rights of user(configurable products)"""
@@ -593,7 +570,11 @@ class ProductProduct(models.Model):
         standard_products = self.filtered(lambda product: not product.config_ok)
         config_products = self - standard_products
         if standard_products:
-            super(ProductProduct, standard_products)._compute_product_price_extra()
+            result = super(
+                ProductProduct, standard_products
+            )._compute_product_price_extra()
+        else:
+            result = None
         for product in config_products:
             attribute_value_obj = self.env["product.attribute.value"]
             value_ids = (
@@ -603,3 +584,4 @@ class ProductProduct(models.Model):
                 product_tmpl_id=product.product_tmpl_id.id, pt_attr_value_ids=value_ids
             )
             product.price_extra = sum(extra_prices.values())
+        return result

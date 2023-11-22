@@ -49,7 +49,6 @@ class ProductAttribute(models.Model):
     ]
 
     active = fields.Boolean(
-        string="Active",
         default=True,
         help="By unchecking the active field you can "
         "disable a attribute without deleting it",
@@ -66,7 +65,7 @@ class ProductAttribute(models.Model):
         string="Field Type",
         help="The type of the custom field generated in the frontend",
     )
-    description = fields.Text(string="Description", translate=True)
+    description = fields.Text(translate=True)
     search_ok = fields.Boolean(
         string="Searchable",
         help="When checking for variants with "
@@ -74,18 +73,16 @@ class ProductAttribute(models.Model):
         "include this field in the search?",
     )
     required = fields.Boolean(
-        string="Required",
         default=True,
         help="Determines the required value of this "
         "attribute though it can be change on "
         "the template level",
     )
     multi = fields.Boolean(
-        string="Multi",
-        help="Allow selection of multiple values for " "this attribute?",
+        help="Allow selection of multiple values for this attribute?",
     )
     uom_id = fields.Many2one(comodel_name="uom.uom", string="Unit of Measure")
-    image = fields.Binary(string="Image")
+    image = fields.Binary()
 
     # TODO prevent the same attribute from being defined twice on the
     # attribute lines
@@ -96,15 +93,13 @@ class ProductAttribute(models.Model):
             nosearch_fields = attribute._get_nosearch_fields()
             if attribute.custom_type in nosearch_fields and attribute.search_ok:
                 raise ValidationError(
-                    _(
-                        "Selected custom field type '%s' is not searchable"
-                        % attribute.custom_type
-                    )
+                    _("Selected custom field type '%s' is not searchable")
+                    % attribute.custom_type
                 )
 
     def validate_custom_val(self, val):
         """Pass in a desired custom value and ensure it is valid.
-        Probaly should check type, etc, but let's assume fine for the moment.
+        Probably should check type, etc., but let's assume fine for the moment.
         """
         self.ensure_one()
         if self.custom_type in ("integer", "float"):
@@ -114,23 +109,28 @@ class ProductAttribute(models.Model):
             if minv and maxv and (val < minv or val > maxv):
                 raise ValidationError(
                     _(
-                        "Selected custom value '%s' must be between %s and %s"
-                        % (self.name, self.min_val, self.max_val)
+                        "Selected custom value '%(name)s' must be "
+                        "between %(min_val)s and %(max_val)s"
+                    )
+                    % (
+                        {
+                            "name": self.name,
+                            "min_val": self.min_val,
+                            "max_val": self.max_val,
+                        }
                     )
                 )
             elif minv and val < minv:
                 raise ValidationError(
-                    _(
-                        "Selected custom value '%s' must be at least %s"
-                        % (self.name, self.min_val)
-                    )
+                    _("Selected custom value '%(name)s' must be at least %(min_val)s")
+                    % ({"name": self.name, "min_val": self.min_val})
                 )
             elif maxv and val > maxv:
                 raise ValidationError(
                     _(
-                        "Selected custom value '%s' must be lower than %s"
-                        % (self.name, self.max_val + 1)
+                        "Selected custom value '%(name)s' must be lower than %(max_value)s"
                     )
+                    % ({"name": self.name, "max_val": self.max_val + 1})
                 )
 
     @api.constrains("min_val", "max_val")
@@ -168,19 +168,14 @@ class ProductAttributeLine(models.Model):
         if self.default_val and self.default_val not in self.value_ids:
             self.default_val = None
 
-    custom = fields.Boolean(
-        string="Custom", help="Allow custom values for this attribute?"
-    )
-    required = fields.Boolean(string="Required", help="Is this attribute required?")
+    custom = fields.Boolean(help="Allow custom values for this attribute?")
+    required = fields.Boolean(help="Is this attribute required?")
     multi = fields.Boolean(
-        string="Multi",
         help="Allow selection of multiple values for this attribute?",
     )
-    default_val = fields.Many2one(
-        comodel_name="product.attribute.value", string="Default Value"
-    )
+    default_val = fields.Many2one(comodel_name="product.attribute.value")
 
-    sequence = fields.Integer(string="Sequence", default=10)
+    sequence = fields.Integer(default=10)
 
     @api.constrains("value_ids", "default_val")
     def _check_default_values(self):
@@ -191,8 +186,13 @@ class ProductAttributeLine(models.Model):
                 raise ValidationError(
                     _(
                         "Default values for each attribute line must exist in "
-                        "the attribute values (%s: %s)"
-                        % (line.attribute_id.name, line.default_val.name)
+                        "the attribute values (%(attr_name)s: %(default_val)s)"
+                    )
+                    % (
+                        {
+                            "attr_name": line.attribute_id.name,
+                            "default_val": line.default_val.name,
+                        }
                     )
                 )
 
@@ -208,26 +208,30 @@ class ProductAttributeLine(models.Model):
                 # Customization End
                 raise ValidationError(
                     _(
-                        "The attribute %s must have at least one value for "
-                        "the product %s."
+                        "The attribute %(attr)s must have at least one value for "
+                        "the product %(product)s."
                     )
                     % (
-                        ptal.attribute_id.display_name,
-                        ptal.product_tmpl_id.display_name,
+                        {
+                            "attr": ptal.attribute_id.display_name,
+                            "product": ptal.product_tmpl_id.display_name,
+                        }
                     )
                 )
             for pav in ptal.value_ids:
                 if pav.attribute_id != ptal.attribute_id:
                     raise ValidationError(
                         _(
-                            "On the product %s you cannot associate the "
-                            "value %s with the attribute %s because they "
+                            "On the product %(product)s you cannot associate the "
+                            "value %(value)s with the attribute %(attr)s because they "
                             "do not match."
                         )
                         % (
-                            ptal.product_tmpl_id.display_name,
-                            pav.display_name,
-                            ptal.attribute_id.display_name,
+                            {
+                                "product": ptal.product_tmpl_id.display_name,
+                                "value": pav.display_name,
+                                "attr": ptal.attribute_id.display_name,
+                            }
                         )
                     )
         return True
@@ -246,16 +250,12 @@ class ProductAttributeValue(models.Model):
         return product
 
     active = fields.Boolean(
-        string="Active",
         default=True,
         help="By unchecking the active field you can "
         "disable a attribute value without deleting it",
     )
-    product_id = fields.Many2one(
-        comodel_name="product.product", string="Related Product"
-    )
+    product_id = fields.Many2one(comodel_name="product.product")
     image = fields.Binary(
-        string="Image",
         attachment=True,
         help="Attribute value image (Display on website for radio buttons)",
     )
@@ -272,7 +272,9 @@ class ProductAttributeValue(models.Model):
             [("id", "in", pt_attr_value_ids.ids), ("product_id", "!=", False)]
         )
         extra_prices = {
-            av.id: av.product_id.with_context(pricelist=pricelist.id).price
+            av.id: av.product_id.with_context(
+                pricelist=pricelist.id
+            )._get_contextual_price()
             for av in related_product_av_ids
         }
         remaining_av_ids = pt_attr_value_ids - related_product_av_ids
@@ -381,7 +383,7 @@ class ProductAttributeValueLine(models.Model):
     _description = "Product Attribute Value Line"
     _order = "sequence"
 
-    sequence = fields.Integer(string="Sequence", default=10)
+    sequence = fields.Integer(default=10)
     product_tmpl_id = fields.Many2one(
         comodel_name="product.template",
         string="Product Template",
