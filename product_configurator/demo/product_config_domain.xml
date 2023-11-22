@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-<data>
+
     <!-- Configuration Domain and domain Lines -->
 
     <!-- Gasoline Engines -->
@@ -15,10 +15,10 @@
         <field name="condition">in</field>
         <field name="operator">and</field>
         <field
-                name="value_ids"
-                eval="[(6, 0, [
+            name="value_ids"
+            eval="[(6, 0, [
             ref('product_attribute_value_gasoline')])]"
-            />
+        />
     </record>
 
     <!-- Diesel Engines -->
@@ -33,10 +33,10 @@
         <field name="condition">in</field>
         <field name="operator">and</field>
         <field
-                name="value_ids"
-                eval="[(6, 0, [
+            name="value_ids"
+            eval="[(6, 0, [
             ref('product_attribute_value_diesel')])]"
-            />
+        />
     </record>
 
 
@@ -52,10 +52,10 @@
         <field name="condition">in</field>
         <field name="operator">and</field>
         <field
-                name="value_ids"
-                eval="[(6, 0, [
+            name="value_ids"
+            eval="[(6, 0, [
             ref('product_attribute_value_218i')])]"
-            />
+        />
     </record>
 
 
@@ -71,15 +71,14 @@
         <field name="condition">in</field>
         <field name="operator">and</field>
         <field
-                name="value_ids"
-                eval="[(6, 0, [
+            name="value_ids"
+            eval="[(6, 0, [
             ref('product_attribute_value_220i'),
             ref('product_attribute_value_228i'),
             ref('product_attribute_value_218d'),
             ref('product_attribute_value_220d'),
             ref('product_attribute_value_220d_xdrive')])]"
-            />
+        />
     </record>
 
-</data>
 </odoo>

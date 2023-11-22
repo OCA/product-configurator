@@ -20,7 +20,7 @@ Product Configurator
     :target: https://translation.odoo-community.org/projects/product-configurator-14-0/product-configurator-14-0-product_configurator
     :alt: Translate me on Weblate
 
-|badge1| |badge2| |badge3| |badge4| 
+|badge1| |badge2| |badge3| |badge4|
 
 This module has all the mechanics to support product configuration. It serves as a base
 dependency for configuration interfaces.
@@ -67,7 +67,7 @@ promote its widespread use.
 
 Current `maintainer <https://odoo-community.org/page/maintainer-role>`__:
 
-|maintainer-PCatinean| 
+|maintainer-PCatinean|
 
 This module is part of the `OCA/product-configurator <https://github.com/OCA/product-configurator/tree/14.0/product_configurator>`_ project on GitHub.
 
