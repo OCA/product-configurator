@@ -177,7 +177,7 @@ class ProductTemplate(models.Model):
                         "generate an invalid configuration.\
                       \n%s"
                     )
-                    % (exc.name)
+                    % (exc.args[0])
                 ) from exc
 
     def toggle_config(self):
