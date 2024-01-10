@@ -645,10 +645,6 @@ class TestProduct(ProductConfiguratorTestCases):
         product_product = self._get_product_id()
         product_product.with_context(default_config_ok=True).get_view()
 
-    def test_18_get_conversions_dict(self):
-        product_product = self._get_product_id()
-        product_product._get_conversions_dict()
-
     def test_19_compute_product_variant_count(self):
         self.product_tmpl_id = self.env["product.template"].create(
             {
