@@ -93,8 +93,10 @@ class ProductAttribute(models.Model):
             nosearch_fields = attribute._get_nosearch_fields()
             if attribute.custom_type in nosearch_fields and attribute.search_ok:
                 raise ValidationError(
-                    _("Selected custom field type '%s' is not searchable")
-                    % attribute.custom_type
+                    _(
+                        "Selected custom field type '%s' is not searchable",
+                        attribute.custom_type,
+                    )
                 )
 
     def validate_custom_val(self, val):
@@ -110,27 +112,27 @@ class ProductAttribute(models.Model):
                 raise ValidationError(
                     _(
                         "Selected custom value '%(name)s' must be "
-                        "between %(min_val)s and %(max_val)s"
-                    )
-                    % (
-                        {
+                        "between %(min_val)s and %(max_val)s",
+                        **{
                             "name": self.name,
                             "min_val": self.min_val,
                             "max_val": self.max_val,
-                        }
+                        },
                     )
                 )
             elif minv and val < minv:
                 raise ValidationError(
-                    _("Selected custom value '%(name)s' must be at least %(min_val)s")
-                    % ({"name": self.name, "min_val": self.min_val})
+                    _(
+                        "Selected custom value '%(name)s' must be at least %(min_val)s",
+                        **{"name": self.name, "min_val": self.min_val},
+                    )
                 )
             elif maxv and val > maxv:
                 raise ValidationError(
                     _(
-                        "Selected custom value '%(name)s' must be lower than %(max_value)s"
+                        "Selected custom value '%(name)s' must be lower than %(max_value)s",
+                        **{"name": self.name, "max_val": self.max_val + 1},
                     )
-                    % ({"name": self.name, "max_val": self.max_val + 1})
                 )
 
     @api.constrains("min_val", "max_val")
@@ -186,13 +188,11 @@ class ProductAttributeLine(models.Model):
                 raise ValidationError(
                     _(
                         "Default values for each attribute line must exist in "
-                        "the attribute values (%(attr_name)s: %(default_val)s)"
-                    )
-                    % (
-                        {
+                        "the attribute values (%(attr_name)s: %(default_val)s)",
+                        **{
                             "attr_name": line.attribute_id.name,
                             "default_val": line.default_val.name,
-                        }
+                        },
                     )
                 )
 
@@ -209,13 +209,11 @@ class ProductAttributeLine(models.Model):
                 raise ValidationError(
                     _(
                         "The attribute %(attr)s must have at least one value for "
-                        "the product %(product)s."
-                    )
-                    % (
-                        {
+                        "the product %(product)s.",
+                        **{
                             "attr": ptal.attribute_id.display_name,
                             "product": ptal.product_tmpl_id.display_name,
-                        }
+                        },
                     )
                 )
             for pav in ptal.value_ids:
@@ -224,14 +222,12 @@ class ProductAttributeLine(models.Model):
                         _(
                             "On the product %(product)s you cannot associate the "
                             "value %(value)s with the attribute %(attr)s because they "
-                            "do not match."
-                        )
-                        % (
-                            {
+                            "do not match.",
+                            **{
                                 "product": ptal.product_tmpl_id.display_name,
                                 "value": pav.display_name,
                                 "attr": ptal.attribute_id.display_name,
-                            }
+                            },
                         )
                     )
         return True
