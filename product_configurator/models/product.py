@@ -376,10 +376,6 @@ class ProductProduct(models.Model):
     _inherit = "product.product"
     _rec_name = "config_name"
 
-    def _get_conversions_dict(self):
-        conversions = {"float": float, "integer": int}
-        return conversions
-
     @api.constrains("product_template_attribute_value_ids")
     def _check_duplicate_product(self):
         """Check for prducts with same attribute values/custom values"""
