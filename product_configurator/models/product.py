@@ -347,7 +347,7 @@ class ProductTemplate(models.Model):
             domain_value_ids = domain_id.domain_line_ids.mapped("value_ids")
             invalid_value_ids = domain_value_ids - tmpl_value_ids
             invalid_attribute_ids = domain_attr_ids - tmpl_attribute_ids
-            if not invalid_value_ids and not invalid_value_ids:
+            if not invalid_attribute_ids and not invalid_value_ids:
                 continue
             if not error_message:
                 error_message = _(
