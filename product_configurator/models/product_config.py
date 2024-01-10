@@ -270,9 +270,9 @@ class ProductConfigImage(models.Model):
                 raise ValidationError(
                     _(
                         "Values entered for line '%s' generate "
-                        "a incompatible configuration"
+                        "a incompatible configuration",
+                        cfg_img.name,
                     )
-                    % cfg_img.name
                 ) from exc
 
 
@@ -553,8 +553,10 @@ class ProductConfigSession(models.Model):
                     field_val = vals[field_name]
                 else:
                     raise UserError(
-                        _("An error occurred while parsing value for attribute %s")
-                        % attr_line.attribute_id.name
+                        _(
+                            "An error occurred while parsing value for attribute %s",
+                            attr_line.attribute_id.name,
+                        )
                     )
                 attr_val_dict.update({attr_id: field_val})
                 # Ensure there is no custom value stored if we have switched
@@ -1279,7 +1281,7 @@ class ProductConfigSession(models.Model):
                 ):
                     # TODO: Verify custom value type to be correct
                     raise ValidationError(
-                        _("Required attribute '%s' is empty") % (attr.name)
+                        _("Required attribute '%s' is empty", attr.name)
                     )
 
     @api.model
@@ -1340,13 +1342,14 @@ class ProductConfigSession(models.Model):
                 else:
                     group_by_attr[val.attribute_id] = val
 
-            message = _("The following values are not available:")
+            message = "The following values are not available:%s"
+            message_vals = ""
             for attr, val in group_by_attr.items():
-                message += "\n%s: %s" % (
+                message_vals += "\n%s: %s" % (
                     attr.name,
                     ", ".join(val.mapped("name")),
                 )
-            raise ValidationError(message)
+            raise ValidationError(_(message, message_vals))
 
         # Check if custom values are allowed
         custom_attr_ids = (
@@ -1361,7 +1364,7 @@ class ProductConfigSession(models.Model):
             custom_attrs_with_error = self.env["product.attribute"].browse(
                 custom_attrs_with_error
             )
-            error_message = _(
+            error_message = (
                 "The following custom values are not permitted "
                 "according to the product template - %s.\n\nIt is possible "
                 "that a change has been made to allowed custom values "
@@ -1375,7 +1378,7 @@ class ProductConfigSession(models.Model):
                     attr_id.name,
                     custom_vals.get(attr_id.id),
                 )
-            raise ValidationError(error_message % (message_vals))
+            raise ValidationError(_(error_message, message_vals))
 
         # Check if there are multiple values passed for non-multi attributes
         mono_attr_lines = product_tmpl.attribute_line_ids.filtered(
@@ -1389,7 +1392,7 @@ class ProductConfigSession(models.Model):
                 )
                 attrs_with_error[line.attribute_id] = wrong_vals
         if attrs_with_error:
-            error_message = _(
+            error_message = (
                 "The following multi values are not permitted "
                 "according to the product template - %s.\n\nIt is possible "
                 "that a change has been made to allowed multi values "
@@ -1403,7 +1406,7 @@ class ProductConfigSession(models.Model):
                     attr_id.name,
                     ", ".join(vals.mapped("name")),
                 )
-            raise ValidationError(error_message % (message_vals))
+            raise ValidationError(_(error_message, message_vals))
         return True
 
     @api.model

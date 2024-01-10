@@ -355,16 +355,17 @@ class ProductTemplate(models.Model):
                     "are not present in template attributes/values. "
                     "Please make sure you are adding right restriction"
                 )
-            error_message += _("\nRestriction: %s") % (domain_id.name)
+            error_message += _("\nRestriction: %s", domain_id.name)
             error_message += (
                 invalid_attribute_ids
-                and _("\nAttribute/s: %s")
-                % (", ".join(invalid_attribute_ids.mapped("name")))
+                and _(
+                    "\nAttribute/s: %s", ", ".join(invalid_attribute_ids.mapped("name"))
+                )
                 or ""
             )
             error_message += (
                 invalid_value_ids
-                and _("\nValue/s: %s\n") % (", ".join(invalid_value_ids.mapped("name")))
+                and _("\nValue/s: %s\n", ", ".join(invalid_value_ids.mapped("name")))
                 or ""
             )
         if error_message:
