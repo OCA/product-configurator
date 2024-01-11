@@ -540,7 +540,6 @@ class ProductConfigurator(models.TransientModel):
         dynamic_fields = {
             k: v for k, v in fields.items() if k.startswith(dynamic_field_prefixes)
         }
-        # res["fields"].update(dynamic_fields)
         models = dict(res["models"])
         models[wizard_model] = models[wizard_model] + tuple(dynamic_fields.keys())
         res["models"] = frozendict(models)
