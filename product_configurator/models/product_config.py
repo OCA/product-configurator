@@ -779,7 +779,9 @@ class ProductConfigSession(models.Model):
             pricelist=pricelist.id
         )
         values = (
-            value_obj.sudo().browse(value_ids).filtered(lambda x: x.product_id.price)
+            value_obj.sudo()
+            .browse(value_ids)
+            .filtered(lambda x: x.product_id._get_contextual_price())
         )
         return values
 
@@ -794,12 +796,12 @@ class ProductConfigSession(models.Model):
                 (
                     val.attribute_id.name,
                     val.product_id.name,
-                    val.product_id.price,
+                    val.product_id._get_contextual_price(),
                 )
             )
             product = val.product_id.with_context(pricelist=pricelist.id)
             product_prices = product.taxes_id.sudo().compute_all(
-                price_unit=product.price,
+                price_unit=product._get_contextual_price(),
                 currency=pricelist.currency_id,
                 quantity=1,
                 product=self,
