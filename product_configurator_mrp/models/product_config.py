@@ -72,13 +72,15 @@ class ProductConfigSession(models.Model):
                             if parent_bom_line.bom_id.id == parent_bom.id:
                                 parent_bom_line_vals = {
                                     "product_id": parent_bom_line.product_id.id,
-                                "product_qty": parent_bom_line.product_qty,}
+                                    "product_qty": parent_bom_line.product_qty,
+                                }
                                 specs = self.get_onchange_specifications(
                                     model="mrp.bom.line"
                                 )
                                 updates = mrpBomLine.onchange(
-                                    parent_bom_line_vals, ["product_id", "product_qty"],
-                                        specs,
+                                    parent_bom_line_vals,
+                                    ["product_id", "product_qty"],
+                                    specs,
                                 )
                                 values = updates.get("value", {})
                                 values = self.get_vals_to_write(
