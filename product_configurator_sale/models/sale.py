@@ -54,8 +54,9 @@ class SaleOrderLine(models.Model):
             model_name=wizard_model, extra_vals=extra_vals
         )
 
-    @api.depends("product_id", "product_uom", "product_uom_qty")
+    @api.depends()
     def _compute_price_unit(self):
+        result = None
         for line in self:
             if line.config_session_id:
                 account_tax_obj = self.env["account.tax"]
@@ -66,4 +67,5 @@ class SaleOrderLine(models.Model):
                     line.company_id,
                 )
             else:
-                return super(SaleOrderLine, line)._compute_price_unit()
+                result = super(SaleOrderLine, line)._compute_price_unit()
+        return result
