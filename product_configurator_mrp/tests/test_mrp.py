@@ -116,7 +116,7 @@ class TestMrp(ProductConfiguratorTestCases):
         )
         mrpProduction.action_config_start()
         self.ProductConfWizard = self.env["product.configurator.mrp"].with_context(
-            context
+            **context
         )
         self._configure_product_nxt_step()
         # self.assertEqual(
