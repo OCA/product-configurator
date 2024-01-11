@@ -3,7 +3,7 @@ from ast import literal_eval
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools.misc import formatLang
+from odoo.tools.misc import flatten, formatLang
 
 _logger = logging.getLogger(__name__)
 
@@ -409,7 +409,7 @@ class ProductConfigSession(models.Model):
 
         self = self.with_context(active_id=product_tmpl.id)
 
-        value_ids = self.flatten_val_ids(value_ids)
+        value_ids = flatten(value_ids)
 
         weight_extra = 0.0
         product_attr_val_obj = self.env["product.template.attribute.value"]
@@ -1484,14 +1484,7 @@ class ProductConfigSession(models.Model):
         :param value_ids: list of value ids or mix of ids and list of ids
                            (e.g: [1, 2, 3, [4, 5, 6]])
         :returns: flattened list of ids ([1, 2, 3, 4, 5, 6])"""
-        flat_val_ids = set()
-        for val in value_ids:
-            if not val:
-                continue
-            if isinstance(val, list):
-                flat_val_ids |= set(val)
-            elif isinstance(val, int):
-                flat_val_ids.add(val)
+        flat_val_ids = set(flatten(value_ids))
         return list(flat_val_ids)
 
     def formatPrices(self, prices=None, dp="Product Price"):
