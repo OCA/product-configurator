@@ -8,7 +8,7 @@
     "author": "Pledra, Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "website": "https://github.com/OCA/product-configurator",
-    "depends": ["sale_management", "product_configurator"],
+    "depends": ["sale_management", "product_configurator", "stock"],
     "data": [
         "security/ir.model.access.csv",
         "data/menu_product.xml",
