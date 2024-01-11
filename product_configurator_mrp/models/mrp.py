@@ -32,7 +32,7 @@ class MrpProduction(models.Model):
             wizard_model="product.configurator.mrp",
             allow_preset_selection=True,
         )
-        return configurator_obj.with_context(ctx).get_wizard_action()
+        return configurator_obj.with_context(**ctx).get_wizard_action()
 
     def reconfigure_product(self):
         """Creates and launches a product configurator wizard with a linked
