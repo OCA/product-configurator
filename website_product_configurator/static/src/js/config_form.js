@@ -568,11 +568,12 @@ odoo.define("website_product_configurator.config_form", function (require) {
             this.config_form
                 .find(".tab-content")
                 .find("tab-pane container[data-step-id=" + config_step + "]");
-            _.each(config_step.find(".form-control.config_attribute"), function (
-                attribute_field
-            ) {
-                $(attribute_field).attr("required", true);
-            });
+            _.each(
+                config_step.find(".form-control.config_attribute"),
+                function (attribute_field) {
+                    $(attribute_field).attr("required", true);
+                }
+            );
         },
 
         _onChangeQtySpinner: function (ev) {
