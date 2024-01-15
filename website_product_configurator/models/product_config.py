@@ -21,7 +21,7 @@ class ProductConfigStepLine(models.Model):
     def get_website_template(self):
         """Return the external id of the qweb template linked to this step"""
         if self.website_tmpl_id:
-            xml_id_dict = self.website_tmpl_id.get_xml_id()
+            xml_id_dict = self.website_tmpl_id.get_external_id()
             view_id = xml_id_dict.get(self.website_tmpl_id.id)
         else:
             view_id = self.env[
