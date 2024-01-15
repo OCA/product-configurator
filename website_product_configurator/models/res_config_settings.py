@@ -28,7 +28,7 @@ class ResConfigSettings(models.TransientModel):
         return website_tmpl_id
 
     def set_values(self):
-        super(ResConfigSettings, self).set_values()
+        result = super().set_values()
         ICPSudo = self.env["ir.config_parameter"].sudo()
         website_tmpl_xml_id = ""
         if self.website_tmpl_id:
@@ -37,10 +37,11 @@ class ResConfigSettings(models.TransientModel):
             "product_configurator.default_configuration_step_website_view_id",
             website_tmpl_xml_id,
         )
+        return result
 
     @api.model
     def get_values(self):
-        res = super(ResConfigSettings, self).get_values()
+        res = super().get_values()
         ICPSudo = self.env["ir.config_parameter"].sudo()
         xml_id = ICPSudo.get_param(
             "product_configurator.default_configuration_step_website_view_id"

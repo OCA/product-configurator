@@ -1,4 +1,5 @@
 import json
+import logging
 
 from odoo import http, models
 from odoo.exceptions import UserError, ValidationError
@@ -7,6 +8,8 @@ from odoo.tools.safe_eval import safe_eval
 
 from odoo.addons.http_routing.models.ir_http import slug
 from odoo.addons.website_sale.controllers.main import WebsiteSale
+
+_logger = logging.getLogger(__name__)
 
 
 def get_pricelist():
@@ -467,8 +470,8 @@ class ProductConfigWebsiteSale(WebsiteSale):
                     valid = config_session_id.sudo().validate_configuration()
                     if valid:
                         check_next_step = False
-                except Exception:
-                    pass
+                except Exception as exc:
+                    _logger.debug(exc, exc_info=True)
             if check_next_step:
                 result = self.set_config_next_step(
                     config_session_id=config_session_id,
