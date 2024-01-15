@@ -73,7 +73,7 @@ odoo.define("website_product_configurator.config_form", function (require) {
             this.blockui_opts.css["background-color"] = "";
             this.blockui_opts.overlayCSS.opacity = "0.5";
             this.blockui_opts.message =
-                '<h2 class="text-white"><img src="/web/static/src/img/spin.png" class="fa-pulse"/><br /></h2>';
+                '<h2 class="text-white"><img src="/web/static/img/spin.png" class="fa-pulse"/><br /></h2>';
         },
 
         start: function () {
@@ -410,6 +410,7 @@ odoo.define("website_product_configurator.config_form", function (require) {
             var next_step = event.currentTarget.getAttribute("data-step-id");
             var result = self._onChangeConfigStep(event, next_step);
             if (result) {
+                $(event.target).tab("show");
                 self._handleFooterButtons($(event.currentTarget));
             } else {
                 event.preventDefault();
