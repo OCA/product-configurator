@@ -69,3 +69,18 @@ class SaleOrderLine(models.Model):
             else:
                 result = super(SaleOrderLine, line)._compute_price_unit()
         return result
+
+    def _get_sale_order_line_multiline_description_variants(self):
+        name = ""
+        for line in self:
+            custom_values = line.custom_value_ids
+            if custom_values:
+                name += "\n" + "\n".join(
+                    [f"{cv.display_name}: {cv.value}" for cv in custom_values]
+                )
+            else:
+                name += super(
+                    SaleOrderLine,
+                    line,
+                )._get_sale_order_line_multiline_description_variants()
+        return name
