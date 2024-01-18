@@ -2,21 +2,12 @@
 from odoo import http
 from odoo.http import request
 
-from odoo.addons.website_product_configurator.controllers.main import (
-    ProductConfigWebsiteSale,
-)
+from odoo.addons.website_sale.controllers.main import WebsiteSale
 
 
-class WebsiteProductConfigMrp(ProductConfigWebsiteSale):
-    @http.route(
-        ["/shop/cart/update"],
-        type="http",
-        auth="public",
-        methods=["POST"],
-        website=True,
-        csrf=False,
-    )
-    def cart_update(self, product_id, add_qty=1, set_qty=0, **kw):
+class WebsiteProductConfigMrp(WebsiteSale):
+    @http.route()
+    def cart_update_json(self, product_id, **kw):
         product = request.env["product.product"].browse(int(product_id))
         if product.config_ok and kw.get("assembly") == "kit":
             attr_value_ids = product.product_template_attribute_value_ids
@@ -24,16 +15,10 @@ class WebsiteProductConfigMrp(ProductConfigWebsiteSale):
                 "product_attribute_value_id.product_id"
             )
             if not attr_products:
-                return super(WebsiteProductConfigMrp, self).cart_update(
-                    product_id=product_id, add_qty=add_qty, set_qty=set_qty, **kw
-                )
+                return super().cart_update_json(product_id, **kw)
 
-            for product_id in attr_products:
-                res = super(ProductConfigWebsiteSale, self).cart_update(
-                    product_id=product_id, add_qty=add_qty, set_qty=set_qty, **kw
-                )
+            for attr_product in attr_products:
+                res = super().cart_update_json(attr_product.id, **kw)
             return res
         else:
-            return super(WebsiteProductConfigMrp, self).cart_update(
-                product_id=product_id, add_qty=add_qty, set_qty=set_qty, **kw
-            )
+            return super().cart_update_json(product_id, **kw)
