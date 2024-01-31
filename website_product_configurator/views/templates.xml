@@ -41,4 +41,28 @@
         </t>
     </template>
 
+    <template
+        id="cart_lines"
+        inherit_id="website_sale.cart_lines"
+        name="Product Configurator in Shopping Cart Lines"
+    >
+        <xpath expr="//table[@id='cart_products']//thead//th[1]" position="before">
+            <th class="th-reconfigure_action" />
+        </xpath>
+        <xpath expr="//table[@id='cart_products']//tbody//td[1]" position="before">
+            <td class="td-reconfigure_action">
+                <t t-set="product" t-value="line.product_id" />
+                <t t-if="product.config_ok">
+                    <a
+                        class="btn btn-link"
+                        aria-label="Reconfigure"
+                        title="Reconfigure"
+                        t-attf-href="/product_configurator/reconfigure/#{product.id}?reconfiguring_order_line_id=#{line.id}"
+                    >
+                        <i class="fa fa-edit" />
+                    </a>
+                </t>
+            </td>
+        </xpath>
+    </template>
 </odoo>
