@@ -179,6 +179,14 @@ class ProductConfigWebsiteSale(WebsiteSale):
         config_vals = self.get_render_vals(cfg_session)
         values.update(product_values)
         values.update(config_vals)
+        reconfiguring_order_line_id = kwargs.get("reconfiguring_order_line_id")
+        if reconfiguring_order_line_id:
+            reconfiguring_order_line = request.env["sale.order.line"].browse(
+                int(reconfiguring_order_line_id)
+            )
+            order = request.website.sale_get_order()
+            if reconfiguring_order_line.exists() in order.order_line:
+                values["reconfiguring_order_line"] = reconfiguring_order_line
         return request.render(
             "website_product_configurator.product_configurator", values
         )
@@ -456,11 +464,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
         except Exception as Ex:
             return {"error": Ex}
 
-        form_values = self.get_orm_form_vals(form_values, config_session_id)
+        config_form_values = self.get_orm_form_vals(form_values, config_session_id)
         try:
             # save values
             config_session_id.sudo().update_session_configuration_value(
-                vals=form_values, product_tmpl_id=product_template_id
+                vals=config_form_values, product_tmpl_id=product_template_id
             )
 
             # next step
@@ -495,6 +503,19 @@ class ProductConfigWebsiteSale(WebsiteSale):
             if product:
                 redirect_url = "/product_configurator/product"
                 redirect_url += "/%s" % (slug(config_session_id))
+                reconfiguring_order_line_id_list = list(
+                    filter(
+                        lambda v: v["name"] == "reconfiguring_order_line_id",
+                        form_values,
+                    )
+                )
+                if reconfiguring_order_line_id_list:
+                    reconfiguring_order_line_id = reconfiguring_order_line_id_list[0][
+                        "value"
+                    ]
+                    redirect_url += "?reconfiguring_order_line_id={}".format(
+                        reconfiguring_order_line_id
+                    )
                 return {
                     "product_id": product.id,
                     "config_session": config_session_id.id,
@@ -552,6 +573,15 @@ class ProductConfigWebsiteSale(WebsiteSale):
             "vals": vals,
             "reconfigure_product_url": reconfigure_product_url,
         }
+        reconfiguring_order_line_id = post.get("reconfiguring_order_line_id")
+        if reconfiguring_order_line_id:
+            reconfiguring_order_line = request.env["sale.order.line"].browse(
+                int(reconfiguring_order_line_id)
+            )
+            order = request.website.sale_get_order()
+            if reconfiguring_order_line.exists() in order.order_line:
+                values["add_qty"] = int(reconfiguring_order_line.product_uom_qty)
+                values["reconfiguring_order_line"] = reconfiguring_order_line
         return request.render("website_product_configurator.cfg_product", values)
 
     @http.route(
@@ -568,7 +598,14 @@ class ProductConfigWebsiteSale(WebsiteSale):
             tmpl_value_ids = product_id.product_template_attribute_value_ids
             cfg_session.value_ids = tmpl_value_ids.mapped("product_attribute_value_id")
             cfg_session.product_id = product_id.id
-            return request.redirect("/shop/product/%s" % (slug(product_tmpl_id)))
+
+            redirect_url = "/shop/product/%s" % (slug(product_tmpl_id))
+            reconfiguring_order_line_id = post.get("reconfiguring_order_line_id")
+            if reconfiguring_order_line_id:
+                redirect_url += "?reconfiguring_order_line_id={}".format(
+                    reconfiguring_order_line_id
+                )
+            return request.redirect(redirect_url)
         except Exception:
             error_code = 1
             return request.redirect(
@@ -594,6 +631,26 @@ class ProductConfigWebsiteSale(WebsiteSale):
             )
         vals = {"message": message, "error": error}
         return request.render("website_product_configurator.error_page", vals)
+
+    @http.route()
+    def cart_update_json(self, product_id, **kwargs):
+        reconfiguring_order_line_id = kwargs.get("reconfiguring_order_line_id")
+        line_id = kwargs.get("line_id")
+        if reconfiguring_order_line_id and not line_id:
+            reconfiguring_order_line = request.env["sale.order.line"].browse(
+                int(reconfiguring_order_line_id)
+            )
+            order = request.website.sale_get_order()
+            if reconfiguring_order_line.exists() in order.order_line:
+                # Set (not add) the `add_qty` in the line we are reconfiguring.
+                kwargs["line_id"] = reconfiguring_order_line.id
+                kwargs["set_qty"] = kwargs.pop("add_qty", 1)
+                # Product has to be changed too
+                # otherwise the line we are reconfiguring is discarded
+                # because doesn't match the received product
+                kwargs["reconfiguring_product_id"] = product_id
+                product_id = reconfiguring_order_line.product_id.id
+        return super().cart_update_json(product_id, **kwargs)
 
     @http.route()
     def cart_update(self, product_id, add_qty=1, set_qty=0, **kw):

@@ -31,6 +31,7 @@
         ],
         "web.assets_tests": [
             "website_product_configurator/static/tests/tours/custom_values.esm.js",
+            "website_product_configurator/static/tests/tours/reconfigure_cart_line.esm.js",
         ],
     },
     "demo": ["demo/product_template_demo.xml"],

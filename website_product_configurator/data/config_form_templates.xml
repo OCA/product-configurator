@@ -16,6 +16,16 @@
         </div>
     </template>
 
+    <template
+        id="warn_reconfigure_order_line"
+        name="Display warning when reconfiguring an order line"
+    >
+        <!-- @param order_line: the line being reconfigured. -->
+        <div t-if="order_line" class="alert alert-info text-center" role="alert">
+            <span>You are editing the product in an order line</span>
+        </div>
+    </template>
+
     <!-- Base view for website configuration body -->
     <template id="product_configurator" name="Product Configuration Interface">
         <t t-call="website.layout">
@@ -25,6 +35,11 @@
                     id="product_configurator"
                     class="container py-2 product_configurator"
                 >
+            <div t-if="reconfiguring_order_line" class="row">
+                <t t-call="website_product_configurator.warn_reconfigure_order_line">
+                    <t t-set="order_line" t-value="reconfiguring_order_line" />
+                </t>
+            </div>
             <div class="row">
                 <div class="col-lg-12">
                     <t t-call="website_product_configurator.config_header" />
@@ -42,6 +57,12 @@
                                     type="hidden"
                                     name="csrf_token"
                                     t-att-value="request.csrf_token()"
+                                />
+                        <input
+                                    t-if="reconfiguring_order_line"
+                                    type="hidden"
+                                    name="reconfiguring_order_line_id"
+                                    t-att-value="reconfiguring_order_line.id"
                                 />
                         <div class="row">
                             <div class="col-lg-12">
@@ -653,6 +674,13 @@
                     t-att-data-view-track="view_track and '1' or '0'"
                     t-att-data-product-tracking-info="json.dumps(request.env['product.template'].get_google_analytics_data(combination_info))"
                 >
+                    <div t-if="reconfiguring_order_line" class="row">
+                        <t
+                            t-call="website_product_configurator.warn_reconfigure_order_line"
+                        >
+                            <t t-set="order_line" t-value="reconfiguring_order_line" />
+                        </t>
+                    </div>
                     <div class="row">
                         <div class="col-md-4">
                             <ol class="breadcrumb">
@@ -707,6 +735,13 @@
                                     name="csrf_token"
                                     t-att-value="request.csrf_token()"
                                 />
+                                <input
+                                    t-if="reconfiguring_order_line"
+                                    type="hidden"
+                                    name="reconfiguring_order_line_id"
+                                    t-att-value="reconfiguring_order_line.id"
+                                />
+
                                 <div class="js_product js_main_product main_product">
                                     <t t-placeholder="select">
                                         <input
