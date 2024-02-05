@@ -17,7 +17,11 @@ TODO: add repo description.
 
 [//]: # (addons)
 
-This part will be replaced when running the oca-gen-addons-table script from OCA/maintainer-tools.
+Available addons
+----------------
+addon | version | maintainers | summary
+--- | --- | --- | ---
+[product_configurator](product_configurator/) | 16.0.1.0.0 | [![PCatinean](https://github.com/PCatinean.png?size=30px)](https://github.com/PCatinean) | Base for product configuration interface modules
 
 [//]: # (end addons)
 
