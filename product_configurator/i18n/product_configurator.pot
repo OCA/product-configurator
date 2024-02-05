@@ -6,8 +6,6 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-11 06:00+0000\n"
-"PO-Revision-Date: 2023-06-11 06:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -352,7 +350,6 @@ msgstr ""
 
 #. module: product_configurator
 #: model:ir.model.fields.selection,name:product_configurator.selection__product_attribute__custom_type__color
-#: model:product.attribute,name:product_configurator.product_attribute_color
 msgid "Color"
 msgstr ""
 
@@ -1021,6 +1018,11 @@ msgid "Oyster/Black"
 msgstr ""
 
 #. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_color
+msgid "Paint Color"
+msgstr ""
+
+#. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_session__product_preset_id
 #: model:ir.model.fields,field_description:product_configurator.field_product_configurator__product_preset_id
 msgid "Preset"
@@ -1355,33 +1357,6 @@ msgstr ""
 msgid ""
 "The attribute cannot be changed once the value is used on at least one "
 "product."
-msgstr ""
-
-#. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
-#, python-format
-msgid ""
-"The following custom values are not permitted according to the product template - %s.\n"
-"\n"
-"It is possible that a change has been made to allowed custom values while your configuration was in process. Please reset your current session and start over or contact your administrator in order to proceed."
-msgstr ""
-
-#. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
-#, python-format
-msgid ""
-"The following multi values are not permitted according to the product template - %s.\n"
-"\n"
-"It is possible that a change has been made to allowed multi values while your configuration was in process. Please reset your current session and start over or contact your administrator in order to proceed."
-msgstr ""
-
-#. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
-#, python-format
-msgid "The following values are not available:"
 msgstr ""
 
 #. module: product_configurator
