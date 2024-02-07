@@ -5,7 +5,7 @@ from ..tests.test_product_configurator_test_cases import ProductConfiguratorTest
 
 class ConfigurationWizard(ProductConfiguratorTestCases):
     def setUp(self):
-        super(ConfigurationWizard, self).setUp()
+        super().setUp()
         self.productTemplate = self.env["product.template"]
         self.productAttributeLine = self.env["product.template.attribute.line"]
         self.productConfigStepLine = self.env["product.config.step.line"]
@@ -113,14 +113,14 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
+                f"__attribute_{self.attr_fuel.id}": self.value_gasoline.id,
+                f"__attribute_{self.attr_engine.id}": self.value_218i.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
+                f"__attribute_{self.attr_color.id}": self.value_red.id,
             }
         )
         return product_config_wizard
@@ -239,10 +239,10 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
 
     def test_11_onchange(self):
         field_name = ""
-        values = {"__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id}
+        values = {f"__attribute_{self.attr_fuel.id}": self.value_gasoline.id}
         product_config_wizard = self._check_wizard_nxt_step()
         field_prefix = product_config_wizard._prefixes.get("field_prefix")
-        field_name = "%s%s" % (field_prefix, field_name)
+        field_name = f"{field_prefix}{field_name}"
         specs = product_config_wizard._onchange_spec()
         product_config_wizard.onchange(values, field_name, specs)
 
@@ -253,8 +253,8 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
             }
         )
         values2 = {
-            "__attribute_{}".format(self.attr_fuel.id): self.custom_vals.id,
-            "__custom_{}".format(self.attr_fuel.id): "Test1",
+            f"__attribute_{self.attr_fuel.id}": self.custom_vals.id,
+            f"__custom_{self.attr_fuel.id}": "Test1",
         }
         product_config_wizard.onchange(values2, field_name, specs)
 
@@ -276,56 +276,50 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
         product_config_wizard_1.action_next_step()
         product_config_wizard_1.write(
             {
-                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__custom_{}".format(self.attr_fuel.id): "Test1",
-                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
-                "__custom_{}".format(self.attr_engine.id): "Test2",
+                f"__attribute_{self.attr_fuel.id}": self.value_gasoline.id,
+                f"__custom_{self.attr_fuel.id}": "Test1",
+                f"__attribute_{self.attr_engine.id}": self.value_218i.id,
+                f"__custom_{self.attr_engine.id}": "Test2",
             }
         )
         product_config_wizard_1.action_next_step()
         product_config_wizard_1.write(
             {
-                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
-                "__attribute_{}".format(self.attr_rims.id): self.value_rims_378.id,
+                f"__attribute_{self.attr_color.id}": self.value_red.id,
+                f"__attribute_{self.attr_rims.id}": self.value_rims_378.id,
             }
         )
         product_config_wizard_1.action_next_step()
         product_config_wizard_1.write(
             {
-                "__attribute_{}".format(
-                    self.attr_model_line.id
-                ): self.value_sport_line.id,
+                f"__attribute_{self.attr_model_line.id}": self.value_sport_line.id,
             }
         )
         product_config_wizard_1.action_previous_step()
         product_config_wizard_1.action_previous_step()
         product_config_wizard_1.write(
             {
-                "__attribute_{}".format(self.attr_engine.id): self.value_220i.id,
+                f"__attribute_{self.attr_engine.id}": self.value_220i.id,
             }
         )
         product_config_wizard_1.action_next_step()
         product_config_wizard_1.action_next_step()
         product_config_wizard_1.write(
             {
-                "__attribute_{}".format(
-                    self.attr_model_line.id
-                ): self.value_model_sport_line.id,
+                f"__attribute_{self.attr_model_line.id}": self.value_model_sport_line.id,
             }
         )
         product_config_wizard_1.action_next_step()
         product_config_wizard_1.write(
             {
-                "__attribute_{}".format(self.attr_tapistry.id): self.value_tapistry.id,
+                f"__attribute_{self.attr_tapistry.id}": self.value_tapistry.id,
             }
         )
         product_config_wizard_1.action_next_step()
         product_config_wizard_1.write(
             {
-                "__attribute_{}".format(
-                    self.attr_transmission.id
-                ): self.value_transmission.id,
-                "__attribute_{}".format(self.attr_options.id): [
+                f"__attribute_{self.attr_transmission.id}": self.value_transmission.id,
+                f"__attribute_{self.attr_options.id}": [
                     [6, 0, [self.value_options_2.id]]
                 ],
             }
@@ -353,56 +347,50 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
         product_config_wizard_1.action_next_step()
         product_config_wizard_1.write(
             {
-                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__custom_{}".format(self.attr_fuel.id): "Test1",
-                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
-                "__custom_{}".format(self.attr_engine.id): "Test2",
+                f"__attribute_{self.attr_fuel.id}": self.value_gasoline.id,
+                f"__custom_{self.attr_fuel.id}": "Test1",
+                f"__attribute_{self.attr_engine.id}": self.value_218i.id,
+                f"__custom_{self.attr_engine.id}": "Test2",
             }
         )
         product_config_wizard_1.action_next_step()
         product_config_wizard_1.write(
             {
-                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
-                "__attribute_{}".format(self.attr_rims.id): self.value_rims_378.id,
+                f"__attribute_{self.attr_color.id}": self.value_red.id,
+                f"__attribute_{self.attr_rims.id}": self.value_rims_378.id,
             }
         )
         product_config_wizard_1.action_next_step()
         product_config_wizard_1.write(
             {
-                "__attribute_{}".format(
-                    self.attr_model_line.id
-                ): self.value_sport_line.id,
+                f"__attribute_{self.attr_model_line.id}": self.value_sport_line.id,
             }
         )
         product_config_wizard_1.action_previous_step()
         product_config_wizard_1.action_previous_step()
         product_config_wizard_1.write(
             {
-                "__attribute_{}".format(self.attr_engine.id): self.value_220i.id,
+                f"__attribute_{self.attr_engine.id}": self.value_220i.id,
             }
         )
         product_config_wizard_1.action_next_step()
         product_config_wizard_1.action_next_step()
         product_config_wizard_1.write(
             {
-                "__attribute_{}".format(
-                    self.attr_model_line.id
-                ): self.value_model_sport_line.id,
+                f"__attribute_{self.attr_model_line.id}": self.value_model_sport_line.id,
             }
         )
         product_config_wizard_1.action_next_step()
         product_config_wizard_1.write(
             {
-                "__attribute_{}".format(self.attr_tapistry.id): self.value_tapistry.id,
+                f"__attribute_{self.attr_tapistry.id}": self.value_tapistry.id,
             }
         )
         product_config_wizard_1.action_next_step()
         product_config_wizard_1.write(
             {
-                "__attribute_{}".format(
-                    self.attr_transmission.id
-                ): self.value_transmission.id,
-                "__attribute_{}".format(self.attr_options.id): [
+                f"__attribute_{self.attr_transmission.id}": self.value_transmission.id,
+                f"__attribute_{self.attr_options.id}": [
                     [6, 0, [self.value_options_2.id]]
                 ],
             }
@@ -424,9 +412,9 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
     def test_15_read(self):
         product_config_wizard = self._check_wizard_nxt_step()
         values = {
-            "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
-            "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
-            "__attribute_{}".format(self.attr_color.id): self.value_red.id,
+            f"__attribute_{self.attr_fuel.id}": self.value_gasoline.id,
+            f"__attribute_{self.attr_engine.id}": self.value_218i.id,
+            f"__attribute_{self.attr_color.id}": self.value_red.id,
         }
         product_config_wizard.read(values)
         product_tmpl = self.env["product.template"].create(
@@ -500,25 +488,25 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
         product_config_wizard_1.action_next_step()
         product_config_wizard_1.write(
             {
-                "__attribute_{}".format(self.attr_fuel.id): self.custom_vals.id,
-                "__custom_{}".format(self.attr_fuel.id): "#DEFSRE",
-                "__attribute_{}".format(self.attr_engine.id): self.custom_vals.id,
-                "__custom_{}".format(self.attr_engine.id): "#FERDFGR",
+                f"__attribute_{self.attr_fuel.id}": self.custom_vals.id,
+                f"__custom_{self.attr_fuel.id}": "#DEFSRE",
+                f"__attribute_{self.attr_engine.id}": self.custom_vals.id,
+                f"__custom_{self.attr_engine.id}": "#FERDFGR",
             }
         )
         product_config_wizard_1.action_next_step()
         product_config_wizard_1.write(
             {
-                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
+                f"__attribute_{self.attr_color.id}": self.value_red.id,
             }
         )
         # check for custom value
         custom_vals = {
-            "__attribute_{}".format(self.attr_fuel.id): self.custom_vals.id,
-            "__custom_{}".format(self.attr_fuel.id): "#DEFSRE",
-            "__attribute_{}".format(self.attr_engine.id): self.custom_vals.id,
-            "__custom_{}".format(self.attr_engine.id): "#FERDFGR",
-            "__attribute_{}".format(self.attr_color.id): self.value_red.id,
+            f"__attribute_{self.attr_fuel.id}": self.custom_vals.id,
+            f"__custom_{self.attr_fuel.id}": "#DEFSRE",
+            f"__attribute_{self.attr_engine.id}": self.custom_vals.id,
+            f"__custom_{self.attr_engine.id}": "#FERDFGR",
+            f"__attribute_{self.attr_color.id}": self.value_red.id,
         }
         product_config_wizard_1.read(custom_vals)
         session = self.productConfigSession.search(
@@ -536,27 +524,27 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
         product_config_wizard_2.action_next_step()
         product_config_wizard_2.write(
             {
-                "__attribute_{}".format(self.attr_fuel.id): [
+                f"__attribute_{self.attr_fuel.id}": [
                     (6, 0, [self.value_diesel.id, self.value_gasoline.id])
                 ],
-                "__attribute_{}".format(self.attr_engine.id): self.custom_vals.id,
-                "__custom_{}".format(self.attr_engine.id): "#FERDFGR",
+                f"__attribute_{self.attr_engine.id}": self.custom_vals.id,
+                f"__custom_{self.attr_engine.id}": "#FERDFGR",
             }
         )
         product_config_wizard_2.action_next_step()
         product_config_wizard_2.write(
             {
-                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
+                f"__attribute_{self.attr_color.id}": self.value_red.id,
             }
         )
         # check for multi value
         multi_vals = {
-            "__attribute_{}".format(self.attr_fuel.id): [
+            f"__attribute_{self.attr_fuel.id}": [
                 (6, 0, [self.value_diesel.id, self.value_gasoline.id])
             ],
-            "__attribute_{}".format(self.attr_engine.id): self.custom_vals.id,
-            "__custom_{}".format(self.attr_engine.id): "#FERDFGR",
-            "__attribute_{}".format(self.attr_color.id): self.value_red.id,
+            f"__attribute_{self.attr_engine.id}": self.custom_vals.id,
+            f"__custom_{self.attr_engine.id}": "#FERDFGR",
+            f"__attribute_{self.attr_color.id}": self.value_red.id,
         }
         product_config_wizard_2.read(multi_vals)
 

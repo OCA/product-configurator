@@ -3,7 +3,7 @@ from odoo.tests.common import TransactionCase
 
 class ProductConfiguratorTestCases(TransactionCase):
     def setUp(self):
-        super(ProductConfiguratorTestCases, self).setUp()
+        super().setUp()
 
         self.ProductConfWizard = self.env["product.configurator"]
         self.config_product = self.env.ref("product_configurator.bmw_2_series")
@@ -71,54 +71,48 @@ class ProductConfiguratorTestCases(TransactionCase):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
+                f"__attribute_{self.attr_fuel.id}": self.value_gasoline.id,
+                f"__attribute_{self.attr_engine.id}": self.value_218i.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
-                "__attribute_{}".format(self.attr_rims.id): self.value_rims_378.id,
+                f"__attribute_{self.attr_color.id}": self.value_red.id,
+                f"__attribute_{self.attr_rims.id}": self.value_rims_378.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(
-                    self.attr_model_line.id
-                ): self.value_sport_line.id,
+                f"__attribute_{self.attr_model_line.id}": self.value_sport_line.id,
             }
         )
         product_config_wizard.action_previous_step()
         product_config_wizard.action_previous_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_engine.id): self.value_220i.id,
+                f"__attribute_{self.attr_engine.id}": self.value_220i.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(
-                    self.attr_model_line.id
-                ): self.value_model_sport_line.id,
+                f"__attribute_{self.attr_model_line.id}": self.value_model_sport_line.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_tapistry.id): self.value_tapistry.id,
+                f"__attribute_{self.attr_tapistry.id}": self.value_tapistry.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(
-                    self.attr_transmission.id
-                ): self.value_transmission.id,
-                "__attribute_{}".format(self.attr_options.id): [
+                f"__attribute_{self.attr_transmission.id}": self.value_transmission.id,
+                f"__attribute_{self.attr_options.id}": [
                     [6, 0, [self.value_options_2.id]]
                 ],
             }

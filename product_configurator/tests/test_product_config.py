@@ -5,7 +5,7 @@ from ..tests.test_product_configurator_test_cases import ProductConfiguratorTest
 
 class ProductConfig(ProductConfiguratorTestCases):
     def setUp(self):
-        super(ProductConfig, self).setUp()
+        super().setUp()
         self.productConfWizard = self.env["product.configurator"]
         self.productTemplate = self.env["product.template"]
         self.productAttribute = self.env["product.attribute"]
@@ -355,8 +355,8 @@ class ProductConfig(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attribute_1.id): self.attribute_vals_1.id,
-                "__attribute_{}".format(self.attribute_2.id): self.attribute_vals_3.id,
+                f"__attribute_{self.attribute_1.id}": self.attribute_vals_1.id,
+                f"__attribute_{self.attribute_2.id}": self.attribute_vals_3.id,
             }
         )
         product_config_wizard.action_next_step()
@@ -471,10 +471,10 @@ class ProductConfig(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attribute_1.id): self.custom_vals.id,
-                "__custom_{}".format(self.attribute_1.id): self.irAttachement.id,
-                "__attribute_{}".format(self.attribute_1.id): self.custom_vals.id,
-                "__custom_{}".format(self.attribute_1.id): "Test",
+                f"__attribute_{self.attribute_1.id}": self.custom_vals.id,
+                f"__custom_{self.attribute_1.id}": self.irAttachement.id,
+                f"__attribute_{self.attribute_1.id}": self.custom_vals.id,
+                f"__custom_{self.attribute_1.id}": "Test",
             }
         )
         product_config_wizard.action_next_step()
@@ -566,10 +566,10 @@ class ProductConfig(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attribute_1.id): self.custom_vals.id,
-                "__custom_{}".format(self.attribute_1.id): self.irAttachement.id,
-                "__attribute_{}".format(self.attribute_1.id): self.custom_vals.id,
-                "__custom_{}".format(self.attribute_1.id): "Test",
+                f"__attribute_{self.attribute_1.id}": self.custom_vals.id,
+                f"__custom_{self.attribute_1.id}": self.irAttachement.id,
+                f"__attribute_{self.attribute_1.id}": self.custom_vals.id,
+                f"__custom_{self.attribute_1.id}": "Test",
             }
         )
         self.attributeLine1.custom = False
