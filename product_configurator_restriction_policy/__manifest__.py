@@ -3,7 +3,7 @@
 
 {
     "name": "Product Configurator - Restriction Policy",
-    "version": "14.0.1.0.0",
+    "version": "17.0.1.0.0",
     "category": "Generic Modules",
     "summary": "Adds a Restriction Policy for processing restrictions.",
     "author": "Open Source Integrators, Odoo Community Association (OCA)",
