@@ -15,6 +15,22 @@ class ProductConfiguratorMrp(models.TransientModel):
         comodel_name="mrp.production", string="Manufacturing Order"
     )
 
+    domain_attr_ids = fields.Many2many(
+        "product.attribute.value",
+        "domain_attrs_mrp_configurator_rel",
+        "wiz_id",
+        "attribute_id",
+        string="Domain",
+    )
+
+    domain_attr_2_ids = fields.Many2many(
+        "product.attribute.value",
+        "domain_attrs_mrp_configurator_2_rel",
+        "wiz_id",
+        "attribute_id",
+        string="Domain 2",
+    )
+
     def get_mrp_production_action(self):
         mrp_action = self.env.ref("mrp.mrp_production_action").read()
         if mrp_action:
@@ -57,20 +73,19 @@ class ProductConfiguratorMrp(models.TransientModel):
 
     def action_config_done(self):
         """Parse values and execute final code before closing the wizard"""
-        res = super(ProductConfiguratorMrp, self).action_config_done()
+        res = super().action_config_done()
         if res.get("res_model") == self._name:
             return res
         model_name = "mrp.production"
         line_vals = self._get_order_vals(res["res_id"])
-
         mrpProduction = self.env[model_name]
         cfg_session = self.config_session_id
         specs = cfg_session.get_onchange_specifications(model=model_name)
-        updates = mrpProduction.onchange(line_vals, ["bom_id"], specs)
-        values = updates.get("value", {})
-        values = cfg_session.get_vals_to_write(values=values, model=model_name)
-        values.update(line_vals)
-        if not values.get("bom_id"):
+        # updates = mrpProduction.onchange(line_vals, ["bom_id"], specs)
+        # values = updates.get("value", {})
+        # values = cfg_session.get_vals_to_write(values=values, model=model_name)
+        # values.update(line_vals)
+        if not line_vals.get('bom_id'):
             raise ValidationError(
                 _(
                     "There is no BOM associated with selected product. "

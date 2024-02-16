@@ -8,7 +8,6 @@ class ProductConfigSession(models.Model):
     _inherit = "product.config.session"
 
     def create_get_bom(self, variant, product_tmpl_id=None, values=None):
-
         # default_type is set as 'product' when the user navigates
         # through menu item "Products". This conflicts
         # with the type for mrp.bom when mrpBom.onchange() is executed.
@@ -54,6 +53,9 @@ class ProductConfigSession(models.Model):
             for product in attr_products:
                 bom_line_vals = {"product_id": product.id, "product_qty": 1}
                 specs = self.get_onchange_specifications(model="mrp.bom.line")
+                for key, val in specs.items():
+                    if val is None:
+                        specs[key] = {}
                 updates = mrpBomLine.onchange(
                     bom_line_vals, ["product_id", "product_qty"], specs
                 )
@@ -77,6 +79,9 @@ class ProductConfigSession(models.Model):
                                 specs = self.get_onchange_specifications(
                                     model="mrp.bom.line"
                                 )
+                                for key, val in specs.items():
+                                    if val is None:
+                                        specs[key] = {}
                                 updates = mrpBomLine.onchange(
                                     parent_bom_line_vals,
                                     ["product_id", "product_qty"],
@@ -87,22 +92,25 @@ class ProductConfigSession(models.Model):
                                     values=values, model="mrp.bom.line"
                                 )
                                 values.update(parent_bom_line_vals)
-                                bom_lines.append((0, 0, values))
+                                bom_lines.append((0, 0, parent_bom_line_vals))
                 else:
                     parent_bom_line_vals = {
                         "product_id": parent_bom_line.product_id.id,
                         "product_qty": parent_bom_line.product_qty,
                     }
                     specs = self.get_onchange_specifications(model="mrp.bom.line")
+                    for key, val in specs.items():
+                        if val is None:
+                            specs[key] = {}
                     updates = mrpBomLine.onchange(
                         parent_bom_line_vals, ["product_id", "product_qty"], specs
                     )
-                    values2 = updates.get("value", {})
-                    values2 = self.get_vals_to_write(
+                    values = updates.get("value", {})
+                    values = self.get_vals_to_write(
                         values=values, model="mrp.bom.line"
                     )
-                    values2.update(parent_bom_line_vals)
-                    bom_lines.append((0, 0, values2))
+                    values.update(parent_bom_line_vals)
+                    bom_lines.append((0, 0, values))
         if bom_lines:
             bom_values = {
                 "product_tmpl_id": self.product_tmpl_id.id,
@@ -110,9 +118,12 @@ class ProductConfigSession(models.Model):
                 "bom_line_ids": bom_lines,
             }
             specs = self.get_onchange_specifications(model="mrp.bom")
+            for key, val in specs.items():
+                if val is None:
+                    specs[key] = {}
             updates = mrpBom.onchange(
                 bom_values,
-                ["product_id", "product_tmpl_id", "bom_line_ids"],
+                ["product_id", "product_configurator_sale_mrproduct_tmpl_id", "bom_line_ids"],
                 specs,
             )
             values = updates.get("value", {})
@@ -126,7 +137,7 @@ class ProductConfigSession(models.Model):
         return False
 
     def create_get_variant(self, value_ids=None, custom_vals=None):
-        variant = super(ProductConfigSession, self).create_get_variant(
+        variant = super().create_get_variant(
             value_ids=value_ids, custom_vals=custom_vals
         )
         self.create_get_bom(variant=variant, product_tmpl_id=self.product_tmpl_id)

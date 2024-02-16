@@ -23,7 +23,7 @@
                         class="oe_highlight"
                         type="object"
                         string="Reconfigure"
-                        attrs="{'invisible': ['|', ('config_ok','=',False), ('state', '!=', 'draft')]}"
+                        invisible="not config_ok or state != 'draft'"
                     />
                 </div>
             </xpath>
@@ -80,9 +80,7 @@
             </xpath>
 
             <xpath expr="//field[@name='product_id']" position="attributes">
-                <attribute
-                    name="attrs"
-                >{'readonly': [('config_ok', '=', True)]}</attribute>
+                <attribute name="readonly">"config_ok"</attribute>
                 <attribute name="force_save">True</attribute>
             </xpath>
 
@@ -91,8 +89,9 @@
                 position="attributes"
             >
                 <attribute
-                    name="attrs"
-                >{'column_invisible': [('parent.type','not in', ('normal', 'phantom'))], 'readonly': [('parent.config_ok', '=', True)]}</attribute>
+                    name="column_invisible"
+                >parent.type not in ('normal', 'phantom')</attribute>
+                <attribute name="readonly">parent.config_ok</attribute>
             </xpath>
 
              <xpath
@@ -101,7 +100,7 @@
             >
                 <field
                     name="config_set_id"
-                    attrs="{'readonly': [('parent.config_ok', '=', False)]}"
+                    readonly="not parent.config_ok"
                     options="{'create_edit': True, 'open': 'True'}"
                 />
              </xpath>

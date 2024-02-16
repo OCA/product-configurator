@@ -1,7 +1,7 @@
 # Copyright (C) 2021 Open Source Integrators
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from odoo import fields, models, api
 
 
 class MrpProduction(models.Model):
@@ -23,6 +23,7 @@ class MrpProduction(models.Model):
         string="Custom Values",
     )
 
+    @api.model
     def action_config_start(self):
         """Return action to start configuration wizard"""
         configurator_obj = self.env["product.configurator.mrp"]

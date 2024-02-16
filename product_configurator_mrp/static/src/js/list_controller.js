@@ -1,47 +1,35 @@
-odoo.define("product_configurator_mrp.ListController", function (require) {
-    "use strict";
-    var ListController = require("web.ListController");
-    var ListView = require("web.ListView");
-    var viewRegistry = require("web.view_registry");
+/** @odoo-module **/ 
 
-    var ConfigListController = ListController.extend({
-        buttons_template: "ConfigListView.buttons",
-        events: _.extend({}, ListController.prototype.events, {
-            "click .o_list_button_add_config": "_onConfigure",
-        }),
+import { _t } from "@web/core/l10n/translation";
+import { registry } from "@web/core/registry";
+import { listView } from "@web/views/list/list_view";
+import { ListController } from "@web/views/list/list_controller";
+import { useService } from "@web/core/utils/hooks";
 
-        renderButtons: function () {
-            var self = this;
-            self._super.apply(this, arguments);
-            if (
-                this.$buttons &&
-                self.modelName === "mrp.production" &&
-                self.initialState.context.custom_create_variant
-            ) {
-                this.$buttons
-                    .find(".o_list_button_add_config")
-                    .css("display", "inline");
-            }
-        },
+export class ProductConfiguratorController extends ListController {
+    setup() {
+        super.setup();
+        this.action = useService("action");
+        this.rpc = useService("rpc");
+        this.orm = useService("orm");
 
-        _onConfigure: function () {
-            var self = this;
-            return this._rpc({
-                model: "mrp.production",
-                method: "action_config_start",
-                args: [""],
-                context: this.initialState.context,
-            }).then(function (result) {
-                self.do_action(result);
-            });
-        },
-    });
+    }
 
-    var ConfigListView = ListView.extend({
-        config: _.extend({}, ListView.prototype.config, {
-            Controller: ConfigListController,
-        }),
-    });
+    async _onConfigure() {
+        let action = await this.orm.call("mrp.production", 'action_config_start', [])
+        this.action.doAction(action)
+    }
+};
 
-    viewRegistry.add("product_configurator_mrp_tree", ConfigListView);
-});
+ProductConfiguratorController.components = {
+    ...ListController.components,
+};
+
+export const ProductConfiguratorListView = {
+    ...listView,
+    Controller: ProductConfiguratorController,
+    buttonTemplate: "product_configurator_mrp.ListButtons",
+};
+
+
+registry.category("views").add("product_configurator_mrp_tree", ProductConfiguratorListView);
