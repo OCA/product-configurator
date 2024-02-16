@@ -685,7 +685,7 @@ class ProductConfigSession(models.Model):
         try:
             self.validate_configuration(final=False)
         except ValidationError as exc:
-            raise ValidationError(_("%s") % exc.name) from exc
+            raise ValidationError(_("{}".format(exc)))
         except Exception as exc:
             raise ValidationError(_("Invalid Configuration")) from exc
         return res
