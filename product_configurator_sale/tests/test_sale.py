@@ -5,7 +5,7 @@ from odoo.addons.product_configurator.tests import (
 
 class SaleOrder(TC.ProductConfiguratorTestCases):
     def setUp(self):
-        super(SaleOrder, self).setUp()
+        super().setUp()
         self.SaleOrderId = self.env["sale.order"]
         self.productPricelist = self.env["product.pricelist"]
         self.resPartner = self.env.ref("product_configurator_sale.partenr_sale_1")

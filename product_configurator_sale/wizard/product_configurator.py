@@ -13,6 +13,24 @@ class ProductConfiguratorSale(models.TransientModel):
     order_id = fields.Many2one(comodel_name="sale.order", required=True, readonly=True)
     order_line_id = fields.Many2one(comodel_name="sale.order.line", readonly=True)
 
+    domain_attr_ids = fields.Many2many(
+        "product.attribute.value",
+        "domain_attrs_values_sale_rel",
+        "wiz_id",
+        "attribute_id",
+        string="Domain",
+    )
+    dyn_field_value = fields.Char()
+
+    domain_attr_2_ids = fields.Many2many(
+        "product.attribute.value",
+        "domain_attrs_2_values_sale_rel",
+        "wiz_id",
+        "attribute_id",
+        string="Domain",
+    )
+    dyn_field_2_value = fields.Char()
+
     def _get_order_line_vals(self, product_id):
         """Hook to allow custom line values to be put on the newly
         created or edited lines."""
@@ -37,7 +55,7 @@ class ProductConfiguratorSale(models.TransientModel):
 
     def action_config_done(self):
         """Parse values and execute final code before closing the wizard"""
-        res = super(ProductConfiguratorSale, self).action_config_done()
+        res = super().action_config_done()
         if res.get("res_model") == self._name:
             return res
         model_name = "sale.order.line"
@@ -47,8 +65,13 @@ class ProductConfiguratorSale(models.TransientModel):
         # will not trigger onchange automatically
         order_line_obj = self.env[model_name]
         cfg_session = self.config_session_id
-        specs = cfg_session.get_onchange_specifications(model=model_name)
-        updates = order_line_obj.onchange(line_vals, ["product_id"], specs)
+        fields_spec = cfg_session.get_onchange_specifications(model=model_name)
+        fields_spec = {
+            key: val
+            for key, val in fields_spec.items()
+            if key in list(line_vals.keys()) and key != "tax_id"
+        }
+        updates = order_line_obj.onchange(line_vals, ["product_id"], fields_spec)
         values = updates.get("value", {})
         values = cfg_session.get_vals_to_write(values=values, model=model_name)
         values.update(line_vals)
@@ -70,7 +93,7 @@ class ProductConfiguratorSale(models.TransientModel):
                     vals["custom_value_ids"] = self._get_custom_values(
                         sale_line.config_session_id
                     )
-        return super(ProductConfiguratorSale, self).create(vals_list)
+        return super().create(vals_list)
 
     def _get_custom_values(self, session):
         custom_values = [(5,)] + [

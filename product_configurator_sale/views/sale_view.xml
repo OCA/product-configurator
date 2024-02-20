@@ -10,7 +10,6 @@
                     class="oe_highlight"
                     groups="product_configurator.group_product_configurator"
                     name="action_config_start"
-                    states="draft,sent"
                     string="Configure Product"
                     style="margin-top: 15px;"
                     type="object"
@@ -29,7 +28,7 @@
             >
                 <field invisible="1" name="config_ok" />
                 <button
-                    attrs="{                             'invisible': [                                 '|',                                 ('config_ok','=',False),                                 ('state','not in',['draft','sent'])                             ]                         }"
+                    invisible="not config_ok or state not in ['draft','sent']"
                     class="fa-lg"
                     groups="product_configurator.group_product_configurator"
                     help="Reconfigure"
