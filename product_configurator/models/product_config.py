@@ -4,6 +4,7 @@ from ast import literal_eval
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.misc import flatten, formatLang
+from odoo.tools.safe_eval import safe_eval
 
 _logger = logging.getLogger(__name__)
 
@@ -332,6 +333,7 @@ class ProductConfigSession(models.Model):
 
     @api.depends(
         "value_ids",
+        "custom_value_ids.price",
         "product_tmpl_id.list_price",
         "product_tmpl_id.attribute_line_ids",
         "product_tmpl_id.attribute_line_ids.value_ids",
@@ -815,32 +817,38 @@ class ProductConfigSession(models.Model):
         return prices
 
     @api.model
-    def get_cfg_price(self, value_ids=None, custom_vals=None):
+    def get_cfg_price(self, value_ids=None, custom_vals_ids=None):
         """Computes the price of the configured product based on the
             configuration passed in via value_ids and custom_values
 
         :param value_ids: list of attribute value_ids
-        :param custom_vals: dictionary of custom attribute values
+        :param custom_vals_ids: list of custom attribute values IDs
         :returns: final configuration price"""
 
         if value_ids is None:
             value_ids = self.value_ids.ids
 
-        if custom_vals is None:
-            custom_vals = {}
+        if custom_vals_ids is None:
+            custom_vals_ids = self.custom_value_ids.ids
+
+        custom_values = self.env["product.config.session.custom.value"].browse(
+            custom_vals_ids
+        )
+        custom_prices = custom_values.mapped("price")
+
+        price_extra = sum(custom_prices)
 
         product_tmpl = self.product_tmpl_id
         self = self.with_context(active_id=product_tmpl.id)
 
         value_ids = self.flatten_val_ids(value_ids)
 
-        price_extra = 0.0
         attr_val_obj = self.env["product.attribute.value"]
         av_ids = attr_val_obj.browse(value_ids)
         extra_prices = attr_val_obj.get_attribute_value_extra_prices(
             product_tmpl_id=product_tmpl.id, pt_attr_value_ids=av_ids
         )
-        price_extra = sum(extra_prices.values())
+        price_extra += sum(extra_prices.values())
         return product_tmpl.list_price + price_extra
 
     def _get_config_image(self, value_ids=None, custom_vals=None, size=None):
@@ -1608,6 +1616,43 @@ class ProductConfigSessionCustomValue(models.Model):
         column2="attachment_id",
         string="Attachments",
     )
+    price = fields.Float(
+        compute="_compute_price",
+        help="Price computed using attribute's 'Extra price formula'.",
+    )
+
+    def _eval_price_formula_variables_dict(self):
+        """Variables described in `product.attribute.configurator_extra_price_formula`."""
+        self.ensure_one()
+        return {
+            "attribute": self.attribute_id,
+            "config_session": self.cfg_session_id,
+            "custom_value": self.eval(),
+            "product": self.cfg_session_id.product_id,
+        }
+
+    def _eval_price_formula(self):
+        self.ensure_one()
+        price_formula = self.attribute_id.configurator_extra_price_formula
+        if price_formula:
+            variables_dict = self._eval_price_formula_variables_dict()
+            safe_eval(
+                price_formula,
+                globals_dict=variables_dict,
+                mode="exec",
+                nocopy=True,
+            )
+            price = variables_dict.get("price", 0)
+        else:
+            price = 0
+        return price
+
+    @api.depends(
+        "value",
+    )
+    def _compute_price(self):
+        for custom_value in self:
+            custom_value.price = custom_value._eval_price_formula()
 
     def eval(self):
         """Return custom value evaluated using the related custom field type"""
