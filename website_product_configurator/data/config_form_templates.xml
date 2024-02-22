@@ -300,6 +300,11 @@
                         <i class="fa fa-plus" />
                     </a>
                 </div>
+                <div
+                    t-if="line.attribute_id.uom_id"
+                    class="input-group-text"
+                    t-field="line.attribute_id.uom_id"
+                />
             </div>
         </t>
         <t t-if="custom_type == 'binary'">
