@@ -3,7 +3,7 @@ from ast import literal_eval
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools.misc import flatten, formatLang
+from odoo.tools.misc import formatLang
 
 _logger = logging.getLogger(__name__)
 
@@ -281,9 +281,9 @@ class ProductConfigImage(models.Model):
                 raise ValidationError(
                     _(
                         "Values entered for line '%s' generate "
-                        "a incompatible configuration",
-                        cfg_img.name,
+                        "a incompatible configuration"
                     )
+                    % cfg_img.name
                 ) from exc
 
 
@@ -420,7 +420,7 @@ class ProductConfigSession(models.Model):
 
         self = self.with_context(active_id=product_tmpl.id)
 
-        value_ids = flatten(value_ids)
+        value_ids = self.flatten_val_ids(value_ids)
 
         weight_extra = 0.0
         product_attr_val_obj = self.env["product.template.attribute.value"]
@@ -559,15 +559,21 @@ class ProductConfigSession(models.Model):
                     if not vals[field_name]:
                         field_val = None
                     else:
-                        field_val = vals[field_name][0][2]
+                        field_val = []
+                        for field_vals in vals[field_name]:
+                            if field_vals[0] == 6:
+                                field_val += field_vals[2] or []
+                            elif field_vals[0] == 4:
+                                field_val.append(field_vals[1])
+                        # field_val = [
+                        #     i[1] for i in vals[field_name] if vals[field_name][0]
+                        # ] or vals[field_name][0][1]
                 elif not attr_line.multi and isinstance(vals[field_name], int):
                     field_val = vals[field_name]
                 else:
                     raise UserError(
-                        _(
-                            "An error occurred while parsing value for attribute %s",
-                            attr_line.attribute_id.name,
-                        )
+                        _("An error occurred while parsing value for attribute %s")
+                        % attr_line.attribute_id.name
                     )
                 attr_val_dict.update({attr_id: field_val})
                 # Ensure there is no custom value stored if we have switched
@@ -792,9 +798,7 @@ class ProductConfigSession(models.Model):
             pricelist=pricelist.id
         )
         values = (
-            value_obj.sudo()
-            .browse(value_ids)
-            .filtered(lambda x: x.product_id._get_contextual_price())
+            value_obj.sudo().browse(value_ids).filtered(lambda x: x.product_id.price)
         )
         return values
 
@@ -809,12 +813,12 @@ class ProductConfigSession(models.Model):
                 (
                     val.attribute_id.name,
                     val.product_id.name,
-                    val.product_id._get_contextual_price(),
+                    val.product_id.price,
                 )
             )
             product = val.product_id.with_context(pricelist=pricelist.id)
             product_prices = product.taxes_id.sudo().compute_all(
-                price_unit=product._get_contextual_price(),
+                price_unit=product.price,
                 currency=pricelist.currency_id,
                 quantity=1,
                 product=self,
@@ -1312,7 +1316,7 @@ class ProductConfigSession(models.Model):
                 ):
                     # TODO: Verify custom value type to be correct
                     raise ValidationError(
-                        _("Required attribute '%s' is empty", attr.name)
+                        _("Required attribute '%s' is empty") % (attr.name)
                     )
 
     @api.model
@@ -1505,7 +1509,15 @@ class ProductConfigSession(models.Model):
         :param value_ids: list of value ids or mix of ids and list of ids
                            (e.g: [1, 2, 3, [4, 5, 6]])
         :returns: flattened list of ids ([1, 2, 3, 4, 5, 6])"""
-        flat_val_ids = set(flatten(value_ids))
+        flat_val_ids = set()
+        if value_ids and value_ids[0]:
+            for val in value_ids:
+                if not val:
+                    continue
+                if isinstance(val, list):
+                    flat_val_ids.add(val[1])
+                elif isinstance(val, int):
+                    flat_val_ids.add(val)
         return list(flat_val_ids)
 
     def formatPrices(self, prices=None, dp="Product Price"):
@@ -1562,13 +1574,16 @@ class ProductConfigSession(models.Model):
         intead of view in that field"""
         model_obj = self.env[model]
         specs = model_obj._onchange_spec()
-        for name, field in model_obj._fields.items():
-            if field.type not in ["one2many", "many2many"]:
-                continue
-            ch_specs = self.get_child_specification(
-                model=field.comodel_name, parent=name
-            )
-            specs.update(ch_specs)
+
+        # TODO :- Commented a code and ths code already base in a odoo base modules.
+        # for name, field in model_obj._fields.items():
+        #     if field.type not in ["one2many", "many2many"]:
+        #         continue
+        #     ch_specs = self.get_child_specification(
+        #         model=field.comodel_name, parent=name
+        #     )
+        #     specs.update(ch_specs)
+
         return specs
 
     @api.model

@@ -347,7 +347,7 @@ class ProductTemplate(models.Model):
             domain_value_ids = domain_id.domain_line_ids.mapped("value_ids")
             invalid_value_ids = domain_value_ids - tmpl_value_ids
             invalid_attribute_ids = domain_attr_ids - tmpl_attribute_ids
-            if not invalid_attribute_ids and not invalid_value_ids:
+            if not invalid_value_ids and not invalid_value_ids:
                 continue
             if not error_message:
                 error_message = _(
@@ -355,26 +355,35 @@ class ProductTemplate(models.Model):
                     "are not present in template attributes/values. "
                     "Please make sure you are adding right restriction"
                 )
-            error_message += _("\nRestriction: %s", domain_id.name)
+            error_message += _("\nRestriction: %s") % (domain_id.name)
             error_message += (
                 invalid_attribute_ids
-                and _(
-                    "\nAttribute/s: %s", ", ".join(invalid_attribute_ids.mapped("name"))
-                )
+                and _("\nAttribute/s: %s")
+                % (", ".join(invalid_attribute_ids.mapped("name")))
                 or ""
             )
             error_message += (
                 invalid_value_ids
-                and _("\nValue/s: %s\n", ", ".join(invalid_value_ids.mapped("name")))
+                and _("\nValue/s: %s\n") % (", ".join(invalid_value_ids.mapped("name")))
                 or ""
             )
         if error_message:
             raise ValidationError(error_message)
 
+    @api.model
+    def _name_search(self, name, domain=None, operator="ilike", limit=None, order=None):
+        domain = domain or []
+        domain += ["|", ("name", operator, name), ("default_code", operator, name)]
+        return self._search(domain, limit=limit, order=order)
+
 
 class ProductProduct(models.Model):
     _inherit = "product.product"
     _rec_name = "config_name"
+
+    def _get_conversions_dict(self):
+        conversions = {"float": float, "integer": int}
+        return conversions
 
     @api.constrains("product_template_attribute_value_ids")
     def _check_duplicate_product(self):
