@@ -403,7 +403,6 @@ class ProductConfigurator(models.TransientModel):
 
     @api.model
     def get_field_default_attrs(self):
-
         return {
             "company_dependent": False,
             "depends": (),
@@ -582,7 +581,6 @@ class ProductConfigurator(models.TransientModel):
     ):
         cfg_step_ids = []
         for attr_line in attr_lines:
-
             attribute_id = attr_line.attribute_id.id
             field_name = field_prefix + str(attribute_id)
             custom_field = custom_field_prefix + str(attribute_id)

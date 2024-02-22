@@ -1160,7 +1160,6 @@ class ProductConfigSession(models.Model):
         return domain
 
     def validate_domains_against_sels(self, domains, value_ids=None, custom_vals=None):
-
         if custom_vals is None:
             custom_vals = self._get_custom_vals_dict()
 
