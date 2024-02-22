@@ -1555,7 +1555,7 @@ class ProductConfigSession(models.Model):
         #         model=field.comodel_name, parent=name
         #     )
         #     specs.update(ch_specs)
-        
+
         return specs
 
     @api.model
