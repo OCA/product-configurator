@@ -1546,13 +1546,16 @@ class ProductConfigSession(models.Model):
         intead of view in that field"""
         model_obj = self.env[model]
         specs = model_obj._onchange_spec()
-        for name, field in model_obj._fields.items():
-            if field.type not in ["one2many", "many2many"]:
-                continue
-            ch_specs = self.get_child_specification(
-                model=field.comodel_name, parent=name
-            )
-            specs.update(ch_specs)
+
+        # TODO :- Commented a code and ths code already base in a odoo base modules.
+        # for name, field in model_obj._fields.items():
+        #     if field.type not in ["one2many", "many2many"]:
+        #         continue
+        #     ch_specs = self.get_child_specification(
+        #         model=field.comodel_name, parent=name
+        #     )
+        #     specs.update(ch_specs)
+        
         return specs
 
     @api.model
