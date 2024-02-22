@@ -1,10 +1,13 @@
 /** @odoo-module **/
-const {onMounted, onRendered, useRef, useState} = owl;
-import {BooleanField} from "@web/views/fields/boolean/boolean_field";
+/*eslint-disable*/
 import {registry} from "@web/core/registry";
+import {onMounted, onRendered, useRef, useState} from "@odoo/owl";
+import {BooleanField, booleanField} from "@web/views/fields/boolean/boolean_field";
 import {standardFieldProps} from "@web/views/fields/standard_field_props";
 
-export class BooleanButtonField extends BooleanField {
+export class BooleanButton extends BooleanField {
+    //    Static template = "product_configurator.BooleanButtonField";
+
     setup() {
         super.setup();
         this.state1 = useState({value: 0});
@@ -15,10 +18,6 @@ export class BooleanButtonField extends BooleanField {
         onRendered(() => {
             this.updateConfigurableButton();
         });
-    }
-
-    onChange() {
-        this.state1.value++;
     }
 
     updateConfigurableButton() {
@@ -41,18 +40,21 @@ export class BooleanButtonField extends BooleanField {
     }
 }
 
-BooleanButtonField.props = {
+export const BooleanButtonField = {
+    ...booleanField,
+    component: BooleanButton,
+    extractProps: ({options}) => {
+        return {
+            activeString: options.active,
+            inactiveString: options.inactive,
+        };
+    },
+};
+
+BooleanButton.props = {
     ...standardFieldProps,
-    activeString: {type: String, optional: true},
+    activeString: {type: String},
     inactiveString: {type: String, optional: true},
 };
 
-BooleanButtonField.extractProps = ({attrs}) => {
-    return {
-        activeString: attrs.options.active,
-        inactiveString: attrs.options.inactive,
-    };
-};
-
-BooleanButtonField.template = "product_configurator.BooleanButtonField";
 registry.category("fields").add("boolean_button", BooleanButtonField);

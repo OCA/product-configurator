@@ -5,7 +5,7 @@ from ..tests.test_product_configurator_test_cases import ProductConfiguratorTest
 
 class ProductConfig(ProductConfiguratorTestCases):
     def setUp(self):
-        super(ProductConfig, self).setUp()
+        super().setUp()
         self.productConfWizard = self.env["product.configurator"]
         self.productTemplate = self.env["product.template"]
         self.productAttribute = self.env["product.attribute"]

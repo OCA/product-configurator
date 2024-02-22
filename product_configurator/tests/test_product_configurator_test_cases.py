@@ -3,7 +3,7 @@ from odoo.tests.common import TransactionCase
 
 class ProductConfiguratorTestCases(TransactionCase):
     def setUp(self):
-        super(ProductConfiguratorTestCases, self).setUp()
+        super().setUp()
 
         self.ProductConfWizard = self.env["product.configurator"]
         self.config_product = self.env.ref("product_configurator.bmw_2_series")
