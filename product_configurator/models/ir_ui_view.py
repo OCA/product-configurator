@@ -8,5 +8,4 @@ class View(models.Model):
         special = node.get("special")
         if special and special == "no_save":
             return
-        else:
-            return super()._validate_tag_button(node, name_manager, node_info)
+        return super()._validate_tag_button(node, name_manager, node_info)
