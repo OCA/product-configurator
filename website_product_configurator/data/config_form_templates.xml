@@ -554,6 +554,20 @@
                                 </div>
                             </t>
                             <t t-if="line.custom">
+                                <t t-if="line.attribute_id.configurator_custom_image">
+                                    <t
+                                        t-set="image_record"
+                                        t-value="line.attribute_id"
+                                    />
+                                    <t
+                                        t-set="image_field"
+                                        t-value="'configurator_custom_image'"
+                                    />
+                                </t>
+                                <t t-else="">
+                                    <t t-set="image_record" t-value="custom_val_id" />
+                                    <t t-set="image_field" t-value="'image'" />
+                                </t>
                                 <div class="radio-card-container">
                                     <span
                                         t-esc="custom_val_id.name"
@@ -575,7 +589,7 @@
                                         class="image_config_attr_value_radio"
                                         for="'%s%s' % (field_prefix, line.attribute_id.id)"
                                         t-att-data-val-id="custom_val_id.id"
-                                        t-attf-style="background-image:url(/web/image/product.attribute.value/{{custom_val_id.id}}/image);"
+                                        t-attf-style="background-image:url(/web/image/{{image_record._name}}/{{image_record.id}}/{{image_field}});"
                                         t-att-enabled="custom_val_id.id in available_value_ids and True or False"
                                         t-att-title="custom_val_id.name"
                                     >
