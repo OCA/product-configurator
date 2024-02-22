@@ -1,5 +1,4 @@
 <odoo>
-
     <record id="mrp_bom_configurable_components_inherit" model="ir.ui.view">
         <field name="name">mrp.bom.configure.components</field>
         <field name="model">mrp.bom</field>
@@ -9,7 +8,7 @@
                 <page
                     name="config_components"
                     string="Configurable Components"
-                    attrs="{'invisible':[('config_ok', '=', False)]}"
+                    invisible="not config_ok"
                 >
                     <field name="available_config_components" invisible="1" />
                     <field
@@ -63,7 +62,7 @@
                     readonly="True"
                     class="oe_inline oe_stat_button"
                     icon="fa-exclamation-triangle"
-                    attrs="{'invisible': ['|', ('config_ok', '=', False), ('product_template_attribute_value_ids', '!=', [])]}"
+                    invisible="not config_ok or product_template_attribute_value_ids"
                     string=""
                     title="Product has been set to configurable."
                 />
@@ -80,5 +79,4 @@
             </field>
         </field>
     </record>
-
 </odoo>
