@@ -22,6 +22,7 @@ Available addons
 addon | version | maintainers | summary
 --- | --- | --- | ---
 [product_configurator](product_configurator/) | 16.0.1.0.0 | [![PCatinean](https://github.com/PCatinean.png?size=30px)](https://github.com/PCatinean) | Base for product configuration interface modules
+[product_configurator_sale](product_configurator_sale/) | 16.0.1.0.0 | [![PCatinean](https://github.com/PCatinean.png?size=30px)](https://github.com/PCatinean) | Product configuration interface modules for Sale
 
 [//]: # (end addons)
 
