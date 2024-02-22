@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates>
-    <t t-name="product_configurator_mrp.ListButtons" t-inherit="web.ListView.Buttons" t-inherit-mode="primary">
+    <t
+        t-name="product_configurator_mrp.ListButtons"
+        t-inherit="web.ListView.Buttons"
+        t-inherit-mode="primary"
+    >
          <xpath expr="//div[hasclass('o_list_buttons')]" position="inside">
             <!-- t-on-click="onUnselectClick" -->
             <button type="button" class="btn btn-primary" t-on-click="_onConfigure">
@@ -8,8 +12,12 @@
             </button>
          </xpath>
      </t>
-     
-     <t t-name="product_configurator_mrp.KanbanButtons" t-inherit="web.KanbanView.Buttons" t-inherit-mode="primary">
+
+     <t
+        t-name="product_configurator_mrp.KanbanButtons"
+        t-inherit="web.KanbanView.Buttons"
+        t-inherit-mode="primary"
+    >
         <xpath expr="//div[hasclass('o_cp_buttons')]" position="inside">
             <button type="button" class="btn btn-primary" t-on-click="_onConfigure">
                 Configure
@@ -17,7 +25,11 @@
         </xpath>
     </t>
 
-    <t t-name="product_configurator_mrp.FormButtons" t-inherit="web.FormView.Buttons" t-inherit-mode="primary">
+    <t
+        t-name="product_configurator_mrp.FormButtons"
+        t-inherit="web.FormView.Buttons"
+        t-inherit-mode="primary"
+    >
         <xpath expr="//div[hasclass('o_cp_buttons')]" position="inside">
             <button type="button" class="btn btn-primary" t-on-click="_onConfigure">
                 Configure

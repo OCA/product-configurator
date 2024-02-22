@@ -85,7 +85,7 @@ class ProductConfiguratorMrp(models.TransientModel):
         # values = updates.get("value", {})
         # values = cfg_session.get_vals_to_write(values=values, model=model_name)
         # values.update(line_vals)
-        if not line_vals.get('bom_id'):
+        if not line_vals.get("bom_id"):
             raise ValidationError(
                 _(
                     "There is no BOM associated with selected product. "

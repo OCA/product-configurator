@@ -106,9 +106,7 @@ class ProductConfigSession(models.Model):
                         parent_bom_line_vals, ["product_id", "product_qty"], specs
                     )
                     values = updates.get("value", {})
-                    values = self.get_vals_to_write(
-                        values=values, model="mrp.bom.line"
-                    )
+                    values = self.get_vals_to_write(values=values, model="mrp.bom.line")
                     values.update(parent_bom_line_vals)
                     bom_lines.append((0, 0, values))
         if bom_lines:
@@ -123,7 +121,11 @@ class ProductConfigSession(models.Model):
                     specs[key] = {}
             updates = mrpBom.onchange(
                 bom_values,
-                ["product_id", "product_configurator_sale_mrproduct_tmpl_id", "bom_line_ids"],
+                [
+                    "product_id",
+                    "product_configurator_sale_mrproduct_tmpl_id",
+                    "bom_line_ids",
+                ],
                 specs,
             )
             values = updates.get("value", {})

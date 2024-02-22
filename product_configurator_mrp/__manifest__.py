@@ -22,7 +22,7 @@
             "/product_configurator_mrp/static/src/js/kanban_controller.js",
             "/product_configurator_mrp/static/src/js/form_controller.js",
             "/product_configurator_mrp/static/src/scss/mrp_config.scss",
-            "/product_configurator_mrp/static/src/xml/mrp_production_views.xml"
+            "/product_configurator_mrp/static/src/xml/mrp_production_views.xml",
         ],
     },
     "demo": ["demo/product_template.xml"],

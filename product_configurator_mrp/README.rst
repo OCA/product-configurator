@@ -56,8 +56,10 @@ Authors
 Contributors
 ------------
 
--  Aion Tech `https://aiontech.company <https://aiontech.company>`__
--  Simone Rubino simone.rubino@aion-tech.it
+-  ``Aion Tech <https://aiontech.company>``\ \_\_\_\_:
+
+   -  Simone Rubino simone.rubino@aion-tech.it
+
 -  Murtaza Mithaiwala mmithaiwala@opensourceintegrators.com
 
 Maintainers
