@@ -256,7 +256,7 @@ class ProductAttributeValue(models.Model):
         if not default:
             default = {}
         default.update({"name": self.name + " (copy)"})
-        product = super(ProductAttributeValue, self).copy(default)
+        product = super().copy(default)
         return product
 
     active = fields.Boolean(
@@ -367,9 +367,7 @@ class ProductAttributeValue(models.Model):
             if attr_restrict_ids:
                 new_args.append(("attribute_id", "not in", attr_restrict_ids))
             args = new_args
-        res = super(ProductAttributeValue, self).name_search(
-            name=name, args=args, operator=operator, limit=limit
-        )
+        res = super().name_search(name=name, args=args, operator=operator, limit=limit)
         return res
 
     # TODO: Prevent unlinking custom options by overriding unlink
@@ -402,7 +400,7 @@ class ProductAttributeValueLine(models.Model):
     )
     value_id = fields.Many2one(
         comodel_name="product.attribute.value",
-        required="True",
+        required=True,
         string="Attribute Value",
     )
     attribute_id = fields.Many2one(
