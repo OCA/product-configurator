@@ -144,9 +144,9 @@ class TestProduct(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
-                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
+                f"__attribute_{self.attr_fuel.id}": self.value_gasoline.id,
+                f"__attribute_{self.attr_engine.id}": self.value_218i.id,
+                f"__attribute_{self.attr_color.id}": self.value_red.id,
             }
         )
         product_config_wizard.action_next_step()
@@ -180,9 +180,9 @@ class TestProduct(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
-                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
+                f"__attribute_{self.attr_fuel.id}": self.value_gasoline.id,
+                f"__attribute_{self.attr_engine.id}": self.value_218i.id,
+                f"__attribute_{self.attr_color.id}": self.value_red.id,
             }
         )
         wizard_action = product_config_wizard.action_next_step()
@@ -236,14 +236,14 @@ class TestProduct(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
+                f"__attribute_{self.attr_fuel.id}": self.value_gasoline.id,
+                f"__attribute_{self.attr_engine.id}": self.value_218i.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
+                f"__attribute_{self.attr_color.id}": self.value_red.id,
             }
         )
         product_config_wizard.action_previous_step()
@@ -331,9 +331,9 @@ class TestProduct(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
-                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
+                f"__attribute_{self.attr_fuel.id}": self.value_gasoline.id,
+                f"__attribute_{self.attr_engine.id}": self.value_218i.id,
+                f"__attribute_{self.attr_color.id}": self.value_red.id,
             }
         )
         product_config_wizard.action_next_step()
@@ -348,14 +348,14 @@ class TestProduct(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute_{}".format(self.attr_engine.id): self.value_218d.id,
+                f"__attribute_{self.attr_fuel.id}": self.value_gasoline.id,
+                f"__attribute_{self.attr_engine.id}": self.value_218d.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_color.id): self.value_silver.id,
+                f"__attribute_{self.attr_color.id}": self.value_silver.id,
             }
         )
         product_config_wizard.action_next_step()
@@ -619,9 +619,9 @@ class TestProduct(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
-                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
+                f"__attribute_{self.attr_fuel.id}": self.value_gasoline.id,
+                f"__attribute_{self.attr_engine.id}": self.value_218i.id,
+                f"__attribute_{self.attr_color.id}": self.value_red.id,
             }
         )
         product_config_wizard.action_next_step()

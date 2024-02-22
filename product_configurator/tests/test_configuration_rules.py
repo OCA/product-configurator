@@ -55,7 +55,6 @@ class ConfigurationRules(TransactionCase):
         self.assertTrue(validation, "Valid configuration failed validation")
 
     def test_invalid_configuration(self):
-
         conf = [
             "diesel",
             "228i",
