@@ -5,7 +5,7 @@ from odoo.tests.common import TransactionCase
 
 class ConfigurationRules(TransactionCase):
     def setUp(self):
-        super(ConfigurationRules, self).setUp()
+        super().setUp()
 
         self.cfg_tmpl = self.env.ref("product_configurator.bmw_2_series")
         self.cfg_session = self.env["product.config.session"].create(

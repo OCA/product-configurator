@@ -5,7 +5,7 @@ from ..tests.test_product_configurator_test_cases import ProductConfiguratorTest
 
 class TestProduct(ProductConfiguratorTestCases):
     def setUp(self):
-        super(TestProduct, self).setUp()
+        super().setUp()
         self.productTemplate = self.env["product.template"]
         self.productAttributeLine = self.env["product.template.attribute.line"]
         self.productConfigStepLine = self.env["product.config.step.line"]
@@ -644,6 +644,10 @@ class TestProduct(ProductConfiguratorTestCases):
     def test_17_fields_view_get(self):
         product_product = self._get_product_id()
         product_product.with_context(default_config_ok=True).get_view()
+
+    def test_18_get_conversions_dict(self):
+        product_product = self._get_product_id()
+        product_product._get_conversions_dict()
 
     def test_19_compute_product_variant_count(self):
         self.product_tmpl_id = self.env["product.template"].create(

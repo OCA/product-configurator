@@ -4,7 +4,7 @@ from odoo.tests.common import TransactionCase
 
 class ProductAttributes(TransactionCase):
     def setUp(self):
-        super(ProductAttributes, self).setUp()
+        super().setUp()
         self.productAttributeLine = self.env["product.template.attribute.line"]
         self.ProductAttributeFuel = self.env.ref(
             "product_configurator.product_attribute_fuel"

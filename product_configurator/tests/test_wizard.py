@@ -5,7 +5,7 @@ from ..tests.test_product_configurator_test_cases import ProductConfiguratorTest
 
 class ConfigurationWizard(ProductConfiguratorTestCases):
     def setUp(self):
-        super(ConfigurationWizard, self).setUp()
+        super().setUp()
         self.productTemplate = self.env["product.template"]
         self.productAttributeLine = self.env["product.template.attribute.line"]
         self.productConfigStepLine = self.env["product.config.step.line"]
@@ -242,7 +242,7 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
         values = {f"__attribute_{self.attr_fuel.id}": self.value_gasoline.id}
         product_config_wizard = self._check_wizard_nxt_step()
         field_prefix = product_config_wizard._prefixes.get("field_prefix")
-        field_name = "%s%s" % (field_prefix, field_name)
+        field_name = f"{field_prefix}{field_name}"
         specs = product_config_wizard._onchange_spec()
         product_config_wizard.onchange(values, field_name, specs)
 
