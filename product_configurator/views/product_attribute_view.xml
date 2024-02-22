@@ -82,6 +82,9 @@
                         <group>
                             <field name="search_ok" />
                         </group>
+                        <group>
+                            <field name="configurator_custom_image" widget="image" />
+                        </group>
                     </group>
                 </page>
             </xpath>
