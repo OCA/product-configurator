@@ -20,8 +20,6 @@ class ProductConfiguratorSale(models.TransientModel):
         "attribute_id",
         string="Domain",
     )
-    dyn_field_value = fields.Char()
-
     domain_attr_2_ids = fields.Many2many(
         "product.attribute.value",
         "domain_attrs_2_values_sale_rel",
@@ -29,7 +27,6 @@ class ProductConfiguratorSale(models.TransientModel):
         "attribute_id",
         string="Domain",
     )
-    dyn_field_2_value = fields.Char()
 
     def _get_order_line_vals(self, product_id):
         """Hook to allow custom line values to be put on the newly
