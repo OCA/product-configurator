@@ -17,22 +17,13 @@ class ProductConfiguratorSale(models.TransientModel):
         """Hook to allow custom line values to be put on the newly
         created or edited lines."""
         product = self.env["product.product"].browse(product_id)
-        line_vals = {"product_id": product_id, "order_id": self.order_id.id}
-
-        onchange_fields = ["price_unit", "product_uom", "tax_id"]
-        line = self.env["sale.order.line"].new(line_vals)
-        for field in onchange_fields:
-            line_vals.update(
-                {field: line._fields[field].convert_to_write(line[field], line)}
-            )
-
-        line_vals.update(
-            {
-                "config_session_id": self.config_session_id.id,
-                "name": product._get_mako_tmpl_name(),
-                "customer_lead": product.sale_delay,
-            }
-        )
+        line_vals = {
+            "product_id": product_id,
+            "order_id": self.order_id.id,
+            "config_session_id": self.config_session_id.id,
+            "name": product._get_mako_tmpl_name(),
+            "customer_lead": product.sale_delay,
+        }
         return line_vals
 
     def action_config_done(self):
