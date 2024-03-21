@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <template id="error_page">
+        <t t-call="web.layout">
+            <t t-set="html_data" t-value="{'style': 'height: 100%;'}" />
+            <t t-set="head">
+                <t t-call-assets="web.assets_common" t-js="false" />
+                <t t-call-assets="web.assets_frontend" t-js="false" />
+                <t t-call-assets="web.assets_common" t-css="false" />
+                <t t-call-assets="web.assets_frontend" t-css="false" />
+            </t>
+            <t t-set="body_classname" t-value="'container'" />
+            <div class="wrap">
+                <div>
+                    <div class="text-center">
+                        <img t-attf-src="/web/static/src/img/logo2.png" />
+                    </div>
+                </div>
+                <div class="oe_structure oe_empty">
+                    <div class="container">
+                        <h1 class="mt32">ERROR!</h1>
+                        <h4><b><u
+                                >There is somthing going wrong. Please try again after some time.</u></b></h4>
+                        <t t-if="error">
+                            <ul>
+                                <li>
+                                    <h4><t t-esc="error" /></h4>
+                                </li>
+                            </ul>
+                        </t>
+                        <br /><br />
+                        <p>
+                            <h4>
+                                <a t-attf-href="/shop">Go Back</a>
+                            </h4>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template
+        id="cart_lines"
+        inherit_id="website_sale.cart_lines"
+        name="Product Configurator in Shopping Cart Lines"
+    >
+        <xpath expr="//table[@id='cart_products']//thead//th[1]" position="before">
+            <th class="th-reconfigure_action" />
+        </xpath>
+        <xpath expr="//table[@id='cart_products']//tbody//td[1]" position="before">
+            <td class="td-reconfigure_action">
+                <t t-set="product" t-value="line.product_id" />
+                <t t-if="product.config_ok">
+                    <a
+                        class="btn btn-link"
+                        aria-label="Reconfigure"
+                        title="Reconfigure"
+                        t-attf-href="/product_configurator/reconfigure/#{product.id}?reconfiguring_order_line_id=#{line.id}"
+                    >
+                        <i class="fa fa-edit" />
+                    </a>
+                </t>
+            </td>
+        </xpath>
+    </template>
+</odoo>
