@@ -37,14 +37,6 @@ odoo.define("product_configurator.FieldBooleanButton", function (require) {
                     record_ctx
                 );
             }
-            if (attrs.special === "no_save") {
-                this.canBeSaved = function () {
-                    return true;
-                };
-                var event_no_save = $.extend(true, {}, event);
-                event_no_save.data.attrs.special = false;
-                return this._super(event_no_save);
-            }
             this._super(event);
         },
     });
