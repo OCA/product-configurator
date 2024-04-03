@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2024-03-20 10:33+0000\n"
-"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
+"PO-Revision-Date: 2024-04-03 09:36+0000\n"
+"Last-Translator: Simone Rubino <simone.rubino@aion-tech.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -275,7 +275,7 @@ msgstr ""
 #: model:ir.model.fields,help:product_configurator.field_product_attribute_value__image
 msgid "Attribute value image (Display on website for radio buttons)"
 msgstr ""
-"Immagina valore attributo (visualizzato nel sito web per selettore di tipo "
+"Immagine valore attributo (visualizzata nel sito web per selettore di tipo "
 "radio)"
 
 #. module: product_configurator
@@ -298,7 +298,7 @@ msgstr "Automatico sport (Steptronic)"
 #. module: product_configurator
 #: model:product.template,name:product_configurator.product_2_series_transmission_steptronic_product_template
 msgid "Automatic Transmission Steptronic"
-msgstr "Transmissione automatica Steptronic"
+msgstr "Trasmissione automatica Steptronic"
 
 #. module: product_configurator
 #: model_terms:ir.ui.view,arch_db:product_configurator.product_configurator_form
@@ -704,7 +704,7 @@ msgstr "Riga dominio per restrizioni configurazione"
 #. module: product_configurator
 #: model:ir.model,name:product_configurator.model_product_config_domain
 msgid "Domain for Config Restrictions"
-msgstr "Dminio per restrizioni configurazione"
+msgstr "Dominio per restrizioni configurazione"
 
 #. module: product_configurator
 #: model:ir.model.fields.selection,name:product_configurator.selection__product_config_session__state__done
@@ -1037,7 +1037,7 @@ msgid ""
 "On the product %(product)s you cannot associate the value %(value)s with the"
 " attribute %(attr)s because they do not match."
 msgstr ""
-"Nel prodotto %(product)s npon si può associare il valore %(value)s per "
+"Nel prodotto %(product)s non si può associare il valore %(value)s per "
 "l'attributo %(attr)s perché non corrispondono."
 
 #. module: product_configurator
@@ -1158,7 +1158,7 @@ msgstr "Valore attributo modello prodotto"
 #: code:addons/product_configurator/wizard/product_configurator.py:0
 #, python-format
 msgid "Product Template does not have any attribute lines defined"
-msgstr "Il modello prodotto non ha nessun riga attributo definita"
+msgstr "Il modello prodotto non ha nessuna riga attributo definita"
 
 #. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_line__product_value_ids
@@ -1501,7 +1501,8 @@ msgstr "Configurazione valori"
 #, python-format
 msgid "Values entered for line '%s' generate a incompatible configuration"
 msgstr ""
-"I valori inseriti per la riga '%s' generano un configurazione non compatibile"
+"I valori inseriti per la riga '%s' generano una configurazione non "
+"compatibile"
 
 #. module: product_configurator
 #. odoo-python
