@@ -128,7 +128,8 @@ class ProductAttribute(models.Model):
             elif maxv and val > maxv:
                 raise ValidationError(
                     _(
-                        "Selected custom value '%(name)s' must be lower than %(max_value)s"
+                        "Selected custom value '%(name)s'\
+                         must be lower than %(max_value)s"
                     )
                     % ({"name": self.name, "max_val": self.max_val + 1})
                 )
@@ -417,6 +418,19 @@ class ProductAttributeValue(models.Model):
                 or not wiz_id.dyn_field_2_value
             ):
                 args = [("id", "in", wiz_id.domain_attr_2_ids.ids)]
+
+            else:
+                field_prefix = wiz_id._prefixes.get("field_prefix")
+                if field_prefix and self.env.context.get('field_name') and wiz_id.domain_attr_ids and wiz_id.domain_attr_2_ids:
+                    attrs_split = self.env.context.get('field_name').split(field_prefix)
+                    if attrs_split and len(attrs_split) == 2 and not args[0][2]:
+                        attribute_id = int(attrs_split[1])
+                        domain_attr_ids = wiz_id.domain_attr_ids.filtered(lambda l:l.attribute_id.id == attribute_id)
+                        domain_attr_2_ids = wiz_id.domain_attr_2_ids.filtered(lambda l:l.attribute_id.id == attribute_id)
+                        if domain_attr_ids.ids:
+                            args[0][2] = domain_attr_ids.ids
+                        if domain_attr_2_ids.ids:
+                            args[0][2] = domain_attr_2_ids.ids
 
         product_tmpl_id = self.env.context.get("_cfg_product_tmpl_id")
         if product_tmpl_id:
