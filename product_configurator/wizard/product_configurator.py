@@ -14,6 +14,13 @@ from odoo.addons.base.models.ir_model import FIELD_TYPES
 # )
 
 
+class Base(models.AbstractModel):
+    _inherit = 'base'
+
+    def onchange(self, values: {}, field_names: [] ,fields_spec: {}):
+        fields_spec = self.env['product.configurator']._remove_dynamic_fields(fields_spec)
+        return super().onchange(values,field_names,fields_spec)
+
 class FreeSelection(fields.Selection):
     def convert_to_cache(self, value, record, validate=True):
         return super().convert_to_cache(value=value, record=record, validate=False)
@@ -280,19 +287,20 @@ class ProductConfigurator(models.TransientModel):
         if not cfg_vals:
             cfg_vals = self.value_ids
 
-        # field_type = type(field_name)
+        field_type = type(field_name)
         field_prefix = self._prefixes.get("field_prefix")
-        # custom_field_prefix = self._prefixes.get("custom_field_prefix")
-        # TODO: NC: Need to check onchange
-        # if field_type == list or (
-        #     not field_name.startswith(field_prefix)
-        #     and not field_name.startswith(custom_field_prefix)
-        # ):
-        #     values = self._remove_dynamic_fields(values)
-        #     res = super().onchange(
-        #         values, field_name, field_onchange
-        #     )
-        #     return res
+        custom_field_prefix = self._prefixes.get("custom_field_prefix")
+        local_field_name = field_name and field_name[0].startswith(field_prefix)
+        local_custom_field = field_name and field_name[0].startswith(custom_field_prefix)
+        if field_type == list and (
+            not local_field_name
+            and not local_custom_field
+        ):
+            values = self._remove_dynamic_fields(values)
+            res = super().onchange(
+                values, field_name, field_onchange
+            )
+            return res
 
         view_val_ids = set()
         view_attribute_ids = set()
@@ -306,7 +314,7 @@ class ProductConfigurator(models.TransientModel):
             cfg_step = self.env["product.config.step.line"]
 
         dynamic_fields = {k: v for k, v in values.items() if k.startswith(field_prefix)}
-
+        self.dyn_field_2_value = False
         # Get the unstored values from the client view
         for k, v in dynamic_fields.items():
             attr_id = int(k.split(field_prefix)[1])
@@ -427,6 +435,7 @@ class ProductConfigurator(models.TransientModel):
         "attribute_id",
         string="Domain",
     )
+
     dyn_field_value = fields.Char()
 
     domain_attr_2_ids = fields.Many2many(
@@ -781,6 +790,7 @@ class ProductConfigurator(models.TransientModel):
                         "field_name": field_name,
                         "is_m2m": attr_line.multi,
                         "value_ids": attr_line.value_ids.ids,
+                        "active_model":self._name,
                     }
                 ),
                 options=str(
@@ -1031,8 +1041,8 @@ class ProductConfigurator(models.TransientModel):
         except Exception:
             session_product_tmpl_id = None
         if session_product_tmpl_id:
-            action = session_product_tmpl_id.with_context({}).create_config_wizard(
-                click_next=False
+            action = session_product_tmpl_id.with_context(dict(self.env.context)).create_config_wizard(
+                model_name=self._name,click_next=False
             )
             return action
         return False
@@ -1048,6 +1058,7 @@ class ProductConfigurator(models.TransientModel):
             {
                 "view_cache": view_cache,
                 "differentiator": ctx.get("differentiator", 1) + 1,
+                "is_product_configurator":True,
             }
         )
         if wizard:
