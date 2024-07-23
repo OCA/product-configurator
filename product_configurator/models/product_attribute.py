@@ -410,9 +410,9 @@ class ProductAttributeValue(models.Model):
         TODO: This only works when activating the selection not when typing
         """
         if self.env.context.get("wizard_id"):
-            wiz_id = self.env[self.env.context.get('active_model','product.configurator')].browse(
-                self.env.context.get("wizard_id")
-            )
+            wiz_id = self.env[
+                self.env.context.get("active_model", "product.configurator")
+            ].browse(self.env.context.get("wizard_id"))
             if (
                 wiz_id.domain_attr_ids
                 and self.env.context.get("field_name") == wiz_id.dyn_field_value
@@ -431,7 +431,14 @@ class ProductAttributeValue(models.Model):
                 self.env.context.get("field_name") == wiz_id.dyn_field_2_value
                 or not wiz_id.dyn_field_2_value
             ):
-                args = [("id", "in", wiz_id.domain_attr_2_ids.ids)]
+                if len(args) > 2:
+                    vals1 = args[-1]
+                    vals2 = args[1]
+                    if vals2 and vals1:
+                        vals = list(set(vals2[2]) - set(vals1[2]))
+                    args = [("id", "in", vals)]
+                else:
+                    args = [("id", "in", wiz_id.domain_attr_2_ids.ids)]
 
             else:
                 field_prefix = wiz_id._prefixes.get("field_prefix")
