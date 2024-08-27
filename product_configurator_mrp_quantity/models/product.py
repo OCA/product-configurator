@@ -35,7 +35,7 @@ class ProductProduct(models.Model):
                 "qty"
             )
             product.qty_combination_indices = ",".join(
-                [str(i) for i in sorted(qty_combination_indices)]
+                [str(i) for i in qty_combination_indices]
             )
 
     product_attribute_value_qty_ids = fields.One2many(

@@ -14,23 +14,14 @@ class ProductConfigSession(models.Model):
         products = super().search_variant(
             value_ids=value_ids, product_tmpl_id=product_tmpl_id
         )
-        session_filter_values = []
-        product_attrs_qtys = products.product_attribute_value_qty_ids
         session_attrs_qtys = self.session_value_quantity_ids
-        for attr_qty in session_attrs_qtys:
-            filter_values = product_attrs_qtys.filtered(
-                lambda prod_attr: prod_attr.attr_value_id.id
-                == attr_qty.attr_value_id.id
-                and prod_attr.qty == int(attr_qty.qty)
-            )
-            session_filter_values.extend(filter_values.mapped("product_id").ids)
-        session_filter_products = self.env["product.product"].browse(
-            session_filter_values
-        )
-        if session_filter_products:
-            return session_filter_products
-        else:
-            return self.env["product.product"]
+        duplicate_product = self.env["product.product"]
+        for product in products:
+            if product.product_attribute_value_qty_ids.mapped(
+                "qty"
+            ) == session_attrs_qtys.mapped("qty"):
+                duplicate_product = product
+        return duplicate_product
 
     def create_get_variant(self, value_ids=None, custom_vals=None):
         result = super().create_get_variant(
@@ -94,6 +85,50 @@ class ProductConfigSession(models.Model):
                         sum(extra_prices.values()) * session_value.qty
                     )
         return updated_price
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        attribute_value_qty_obj = self.env["attribute.value.qty"]
+        attribute_value_qty_obj2 = self.env["product.template.attribute.value"]
+        for val in vals_list:
+            product_tmpl = (
+                self.env["product.template"].browse(val.get("product_tmpl_id")).exists()
+            )
+            session_qty_list = []
+            if product_tmpl:
+                default_val_ids = product_tmpl.attribute_line_ids.filtered(
+                    lambda line: line.default_val and line.is_qty_required
+                )
+                for line in default_val_ids:
+                    template_attribute_value2 = attribute_value_qty_obj2.search(
+                        [
+                            ("product_tmpl_id", "=", product_tmpl.id),
+                            ("attribute_id", "=", line.attribute_id.id),
+                            ("product_attribute_value_id", "=", line.default_val.id),
+                        ]
+                    )
+                    template_attribute_value = attribute_value_qty_obj.search(
+                        [
+                            ("product_tmpl_id", "=", product_tmpl.id),
+                            ("product_attribute_id", "=", line.attribute_id.id),
+                            ("product_attribute_value_id", "=", line.default_val.id),
+                            ("qty", "=", int(template_attribute_value2.default_qty)),
+                        ]
+                    )
+                    session_qty_list.append(
+                        (
+                            0,
+                            0,
+                            {
+                                "product_attribute_id": template_attribute_value.product_attribute_id.id,
+                                "attr_value_id": template_attribute_value.product_attribute_value_id.id,
+                                "attribute_value_qty_id": template_attribute_value.id,
+                                "qty": template_attribute_value.qty,
+                            },
+                        )
+                    )
+            val.update({"session_value_quantity_ids": session_qty_list})
+        return super().create(vals_list)
 
     # ============================
     # OVERRIDE Methods
@@ -287,6 +322,7 @@ class ProductConfigSession(models.Model):
                 )
                 existing_session_ids.unlink()
                 session_qty_list.append((0, 0, qty_val))
+
             update_vals.update({"session_value_quantity_ids": session_qty_list})
         # Remove all custom values included in the custom_vals dict
         self.custom_value_ids.filtered(
