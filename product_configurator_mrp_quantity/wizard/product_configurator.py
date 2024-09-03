@@ -275,7 +275,20 @@ class ProductConfigurator(models.TransientModel):
                         update_price += sum(extra_prices.values())
                 elif isinstance(values_dict.get(value_line), list):
                     # Many2Many Values
-                    data_list = values_dict[value_line][0][2]
+                    data_list = list(set(values_dict[value_line][0][2]))
+                    if values.get(value_line) or value_line in values:
+                        if any(values.get(value_line)):
+                            for multi_value in values.get(value_line, []):
+                                if multi_value[0] == 3 and multi_value[1] in data_list:
+                                    data_list.remove(multi_value[1])
+                                if multi_value[0] == 4:
+                                    data_list.append(multi_value[1])
+                        if (
+                            not any(values.get(value_line))
+                            and values.get(value_line, []) == []
+                        ):
+                            data_list = []
+                    data_list = list(set(data_list))
                     product_attribute_values = attribute_value_obj.browse(data_list)
                     for product_attribute_value in product_attribute_values:
                         if product_attribute_value.product_id:
@@ -318,7 +331,7 @@ class ProductConfigurator(models.TransientModel):
 
     @api.onchange("product_preset_id")
     def _onchange_product_preset(self):
-        super()._onchange_product_preset()
+        result = super()._onchange_product_preset()
         if (
             self.product_preset_id
             and self.product_preset_id.product_attribute_value_qty_ids
@@ -388,8 +401,10 @@ class ProductConfigurator(models.TransientModel):
                         == value.attribute_id.id
                     )
                     values_dict.update({field_name: [[6, 0, multi_values.ids]]})
+            values_dict.update({"preset_product": self.product_preset_id.id})
             self._origin.values_dict = json.dumps(values_dict)
             self._origin.config_session_id.session_value_quantity_ids = attr_qty_list
+            return result
 
     # ============================
     # OVERRIDE Methods
