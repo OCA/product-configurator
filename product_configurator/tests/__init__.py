@@ -7,3 +7,4 @@ from . import test_product
 # from . import test_product_attribute
 # from . import test_product_config
 # from . import test_wizard
+from . import test_custom_attribute_price

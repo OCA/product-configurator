@@ -176,7 +176,7 @@ class ProductConfigurator(models.TransientModel):
                     continue
         return domains
 
-    def get_onchange_vals(self, cfg_val_ids, config_session_id=None):
+    def get_onchange_vals(self, cfg_val_ids, config_session_id=None, custom_vals=None):
         """Onchange hook to add / modify returned values by onchange method"""
         if not config_session_id:
             config_session_id = self.config_session_id
@@ -184,9 +184,18 @@ class ProductConfigurator(models.TransientModel):
         # Remove None from cfg_val_ids if exist
         cfg_val_ids = [val for val in cfg_val_ids if val]
 
-        product_img = config_session_id.get_config_image(cfg_val_ids)
-        price = config_session_id.get_cfg_price(cfg_val_ids)
-        weight = config_session_id.get_cfg_weight(value_ids=cfg_val_ids)
+        product_img = config_session_id.get_config_image(
+            cfg_val_ids,
+            custom_vals=custom_vals,
+        )
+        price = config_session_id.get_cfg_price(
+            cfg_val_ids,
+            custom_vals=custom_vals,
+        )
+        weight = config_session_id.get_cfg_weight(
+            value_ids=cfg_val_ids,
+            custom_vals=custom_vals,
+        )
 
         return {
             "product_img": product_img,
@@ -202,6 +211,7 @@ class ProductConfigurator(models.TransientModel):
         cfg_val_ids=None,
         product_tmpl_id=None,
         config_session_id=None,
+        custom_vals=None,
     ):
         """Generate a dictionary to return new values via onchange method.
         Domains hold the values available, this method enforces these values
@@ -232,13 +242,39 @@ class ProductConfigurator(models.TransientModel):
 
         final_cfg_val_ids = list(dynamic_fields.values())
 
-        vals.update(self.get_onchange_vals(final_cfg_val_ids, config_session_id))
+        changed_values = self.get_onchange_vals(
+            final_cfg_val_ids,
+            config_session_id=config_session_id,
+            custom_vals=custom_vals,
+        )
+        vals.update(changed_values)
         # To solve the Multi selection problem removing extra []
         if "value_ids" in vals:
             val_ids = vals["value_ids"][0]
             vals["value_ids"] = [[val_ids[0], val_ids[1], tools.flatten(val_ids[2])]]
 
         return vals
+
+    def _extract_onchange_custom_vals(self, values):
+        """Extract custom values from onchange values `values`.
+
+        Custom values are returned as per the structure
+        defined in product.config.session._get_custom_vals_dict.
+        """
+        custom_field_prefix = self._prefixes.get("custom_field_prefix")
+        custom_vals = {}
+        for field_name, field_value in values.items():
+            if field_name.startswith(custom_field_prefix):
+                attribute_id = int(field_name[len(custom_field_prefix) :])
+                # Create a temporary custom value to be able to `eval` the view's value.
+                temp_custom_value = self.env["product.config.session.custom.value"].new(
+                    {
+                        "attribute_id": attribute_id,
+                        "value": field_value,
+                    }
+                )
+                custom_vals[attribute_id] = temp_custom_value.eval()
+        return custom_vals
 
     def apply_onchange_values(self, values, field_name, field_onchange):
         """Called from web-controller
@@ -324,11 +360,14 @@ class ProductConfigurator(models.TransientModel):
         domains = self.get_onchange_domains(
             values, cfg_val_ids, product_tmpl_id, config_session_id
         )
+        custom_vals = self._extract_onchange_custom_vals(values)
+
         vals = self.get_form_vals(
             dynamic_fields=dynamic_fields,
             domains=domains,
             product_tmpl_id=product_tmpl_id,
             config_session_id=config_session_id,
+            custom_vals=custom_vals,
         )
 
         return {"value": vals, "domain": domains}
@@ -763,7 +802,11 @@ class ProductConfigurator(models.TransientModel):
                     attrs["readonly"].insert(0, "|")
 
                 node = etree.Element(
-                    "field", name=custom_field, attrs=str(attrs), widget=widget
+                    "field",
+                    name=custom_field,
+                    attrs=str(attrs),
+                    widget=widget,
+                    on_change="1",
                 )
                 self.setup_modifiers(node)
                 xml_dynamic_form.append(node)

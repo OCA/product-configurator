@@ -2,6 +2,7 @@ from ast import literal_eval
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools.safe_eval import test_python_expr
 
 
 class ProductAttribute(models.Model):
@@ -83,6 +84,34 @@ class ProductAttribute(models.Model):
     )
     uom_id = fields.Many2one(comodel_name="uom.uom", string="Unit of Measure")
     image = fields.Binary()
+    configurator_extra_price_formula = fields.Text(
+        string="Extra price formula",
+        help="Formula evaluated when computing "
+        "the extra price "
+        "for the custom value of this attribute.\n"
+        "The following variables are available:\n"
+        "- attribute: this attribute,\n"
+        "- config_session: the configuration session that configured the product,\n"
+        "- custom_value: the value provided by the user,\n"
+        "- product: the configured product,\n"
+        "The computed price "
+        "must be assigned to the `price` variable.",
+    )
+
+    @api.constrains(
+        "configurator_extra_price_formula",
+    )
+    def _constrain_configurator_extra_price_formula(self):
+        """Check syntax of added formula for 'exec' evaluation."""
+        for attribute in self:
+            price_formula = attribute.configurator_extra_price_formula
+            if price_formula:
+                error_message = test_python_expr(
+                    expr=price_formula,
+                    mode="exec",
+                )
+                if error_message:
+                    raise ValidationError(error_message)
 
     # TODO prevent the same attribute from being defined twice on the
     # attribute lines
