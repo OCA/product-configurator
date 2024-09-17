@@ -1,0 +1,2 @@
+# https://github.com/OCA/product-attribute/pull/1531
+odoo-addon-product_attribute_value_price_formula @ git+https://github.com/OCA/product-attribute.git@refs/pull/1531/head#subdirectory=setup/product_attribute_value_price_formula
