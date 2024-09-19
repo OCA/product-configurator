@@ -339,7 +339,7 @@ class ProductTemplate(models.Model):
     @api.constrains("config_line_ids")
     def _check_config_line_domain(self):
         attribute_line_ids = self.attribute_line_ids
-        tmpl_value_ids = attribute_line_ids.mapped("value_ids")
+        tmpl_value_ids = attribute_line_ids._configurator_value_ids()
         tmpl_attribute_ids = attribute_line_ids.mapped("attribute_id")
         error_message = False
         for domain_id in self.config_line_ids.mapped("domain_id"):

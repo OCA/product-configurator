@@ -148,6 +148,13 @@ class ProductAttribute(models.Model):
                     _("Maximum value must be greater than Minimum value")
                 )
 
+    def _configurator_value_ids(self):
+        """Values accepted for attributes in `self`."""
+        values = self.value_ids
+        if any(self.mapped("val_custom")):
+            values += self.env["product.config.session"].get_custom_value_id()
+        return values
+
 
 class ProductAttributeLine(models.Model):
     _inherit = "product.template.attribute.line"
@@ -231,6 +238,13 @@ class ProductAttributeLine(models.Model):
                         )
                     )
         return True
+
+    def _configurator_value_ids(self):
+        """Values accepted for template attribute lines in `self`."""
+        values = self.value_ids
+        if any(self.mapped("custom")):
+            values += self.env["product.config.session"].get_custom_value_id()
+        return values
 
 
 class ProductAttributeValue(models.Model):

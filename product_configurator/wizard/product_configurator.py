@@ -149,6 +149,7 @@ class ProductConfigurator(models.TransientModel):
         if not config_session_id:
             config_session_id = self.config_session_id
 
+        custom_val = config_session_id.get_custom_value_id()
         domains = {}
         check_avail_ids = cfg_val_ids[:]
         for line in product_tmpl_id.attribute_line_ids.sorted():
@@ -161,16 +162,18 @@ class ProductConfigurator(models.TransientModel):
 
             # get available values
 
+            attribute_line_values = line._configurator_value_ids()
             avail_ids = config_session_id.values_available(
-                check_val_ids=line.value_ids.ids, value_ids=check_avail_ids
+                check_val_ids=attribute_line_values.ids,
+                value_ids=check_avail_ids,
+                product_template_attribute_line_id=line.id,
             )
             domains[field_name] = [("id", "in", avail_ids)]
             check_avail_ids = list(
                 set(check_avail_ids) - (set(line.value_ids.ids) - set(avail_ids))
             )
             # Include custom value in the domain if attr line permits it
-            if line.custom:
-                custom_val = config_session_id.get_custom_value_id()
+            if line.custom and custom_val.id in avail_ids:
                 domains[field_name][0][2].append(custom_val.id)
                 if line.multi and vals and custom_val.id in vals[0][2]:
                     continue
@@ -470,7 +473,10 @@ class ProductConfigurator(models.TransientModel):
             attribute = line.attribute_id
             value_ids = line.value_ids.ids
 
-            value_ids = wiz.config_session_id.values_available(check_val_ids=value_ids)
+            value_ids = wiz.config_session_id.values_available(
+                check_val_ids=value_ids,
+                product_template_attribute_line_id=line.id,
+            )
 
             # If attribute lines allows custom values add the
             # generic "Custom" attribute.value to the list of options
