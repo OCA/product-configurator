@@ -697,7 +697,9 @@ class ProductConfigSession(models.Model):
             )
             if product_tmpl:
                 default_val_ids = (
-                    product_tmpl.attribute_line_ids.filtered(lambda l: l.default_val)
+                    product_tmpl.attribute_line_ids.filtered(
+                        lambda line: line.default_val
+                    )
                     .mapped("default_val")
                     .ids
                 )
@@ -1081,7 +1083,7 @@ class ProductConfigSession(models.Model):
             return {}
 
         active_cfg_step_line = config_step_lines.filtered(
-            lambda l: l.id == active_step_line_id
+            lambda line: line.id == active_step_line_id
         )
 
         open_step_lines = self.get_open_step_lines(value_ids)
@@ -1171,7 +1173,7 @@ class ProductConfigSession(models.Model):
         # https://en.wikipedia.org/wiki/Polish_notation#Order_of_operations
         stack = []
         for domain in reversed(domains):
-            if type(domain) == tuple:
+            if isinstance(domain, tuple):
                 # evaluate operand and push to stack
                 if domain[1] == "in":
                     if not set(domain[2]) & set(value_ids):
@@ -1237,7 +1239,7 @@ class ProductConfigSession(models.Model):
         avail_val_ids = []
         for attr_val_id in check_val_ids:
             config_lines = product_tmpl.config_line_ids.filtered(
-                lambda l: attr_val_id in l.value_ids.ids
+                lambda line: attr_val_id in line.value_ids.ids
             )
             domains = config_lines.mapped("domain_id").compute_domain()
             avail = self.validate_domains_against_sels(domains, value_ids, custom_vals)
@@ -1384,7 +1386,7 @@ class ProductConfigSession(models.Model):
 
         # Check if there are multiple values passed for non-multi attributes
         mono_attr_lines = product_tmpl.attribute_line_ids.filtered(
-            lambda l: not l.multi
+            lambda line: not line.multi
         )
         attrs_with_error = {}
         for line in mono_attr_lines:

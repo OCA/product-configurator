@@ -219,7 +219,7 @@ class ProductConfigurator(models.TransientModel):
                 continue
             available_val_ids = domains[k][0][2]
             if isinstance(v, list):
-                if any(type(el) != int for el in v):
+                if any(not isinstance(el, int) for el in v):
                     v = v[0][2]
                 value_ids = list(set(v) & set(available_val_ids))
                 dynamic_fields.update({k: value_ids})
@@ -448,7 +448,7 @@ class ProductConfigurator(models.TransientModel):
         try:
             # Get only the attribute lines for the next step if defined
             active_step_line = cfg_step_lines.filtered(
-                lambda l: l.id == int(active_step_id)
+                lambda line: line.id == int(active_step_id)
             )
             if active_step_line:
                 attribute_lines = active_step_line.attribute_line_ids
@@ -646,7 +646,7 @@ class ProductConfigurator(models.TransientModel):
                         attr_depends[attr_field] |= set(domain_line.value_ids.ids)
                     elif domain_line.condition == "not in":
                         val_ids = attr_lines.filtered(
-                            lambda l: l.attribute_id.id == attr_id
+                            lambda line: line.attribute_id.id == attr_id
                         ).value_ids
                         val_ids = val_ids - domain_line.value_ids
                         attr_depends[attr_field] |= set(val_ids.ids)
