@@ -183,7 +183,7 @@ class ProductAttributeLine(models.Model):
     def _check_default_values(self):
         """default value should not be outside of the
         values selected in attribute line"""
-        for line in self.filtered(lambda l: l.default_val):
+        for line in self.filtered(lambda line: line.default_val):
             if line.default_val not in line.value_ids:
                 raise ValidationError(
                     _(
@@ -344,7 +344,7 @@ class ProductAttributeValue(models.Model):
             )
             new_args.append(("id", "in", val_ids))
             mono_tmpl_lines = product_tmpl.attribute_line_ids.filtered(
-                lambda l: not l.multi
+                lambda line: not line.multi
             )
             for line in mono_tmpl_lines:
                 line_val_ids = set(line.mapped("value_ids").ids)
