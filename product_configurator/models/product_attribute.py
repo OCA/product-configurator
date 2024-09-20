@@ -83,6 +83,9 @@ class ProductAttribute(models.Model):
     )
     uom_id = fields.Many2one(comodel_name="uom.uom", string="Unit of Measure")
     image = fields.Binary()
+    configurator_custom_image = fields.Binary(
+        string="Image for custom value",
+    )
 
     # TODO prevent the same attribute from being defined twice on the
     # attribute lines
