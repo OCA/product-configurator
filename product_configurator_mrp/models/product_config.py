@@ -78,7 +78,9 @@ class ProductConfigSession(models.Model):
                                     model="mrp.bom.line"
                                 )
                                 updates = mrpBomLine.onchange(
-                                    parent_bom_line_vals, ["product_id"], specs
+                                    parent_bom_line_vals,
+                                    ["product_id", "product_qty"],
+                                    specs,
                                 )
                                 values = updates.get("value", {})
                                 values = self.get_vals_to_write(
@@ -92,10 +94,9 @@ class ProductConfigSession(models.Model):
                         "product_qty": parent_bom_line.product_qty,
                     }
                     specs = self.get_onchange_specifications(model="mrp.bom.line")
-                    updates = mrpBomLine.onchange(
+                    mrpBomLine.onchange(
                         parent_bom_line_vals, ["product_id", "product_qty"], specs
                     )
-                    values2 = updates.get("value", {})
                     values2 = self.get_vals_to_write(
                         values=values, model="mrp.bom.line"
                     )

@@ -64,9 +64,11 @@
     </record>
 
     <record id="mrp.mrp_production_action" model="ir.actions.act_window">
-        <field
-            name="context"
-        >{"search_default_todo": True, "default_company_id": allowed_company_ids[0], "custom_create_variant": True}</field>
+        <field name="context">{
+            "search_default_todo": True,
+            "default_company_id": allowed_company_ids[0],
+            "custom_create_variant": True,
+        }</field>
     </record>
 
     <record id="mrp_bom_form_view" model="ir.ui.view">

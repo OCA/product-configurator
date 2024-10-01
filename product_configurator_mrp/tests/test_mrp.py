@@ -11,16 +11,40 @@ from odoo.addons.product_configurator.tests.test_product_configurator_test_cases
 class TestMrp(ProductConfiguratorTestCases):
     def setUp(self):
         super(TestMrp, self).setUp()
-        self.mrpBomConfigSet = self.env["mrp.bom.line.configuration.set"]
-        self.mrpBomConfig = self.env["mrp.bom.line.configuration"]
         self.mrpBom = self.env["mrp.bom"]
         self.mrpBomLine = self.env["mrp.bom.line"]
-        self.mrpRoutingWorkcenter = self.env["mrp.routing.workcenter"]
         self.productProduct = self.env["product.product"]
-        self.productTemplate = self.env["product.template"]
         self.mrpProduction = self.env["mrp.production"]
         self.product_id = self.env.ref("product.product_product_3")
-        self.workcenter_id = self.env.ref("mrp.mrp_workcenter_3")
+        self.company = self.env.ref("base.main_company")
+
+        self.selected_products = self.productProduct
+        self.selected_products |= self.env.ref(
+            "product_configurator.product_bmw_model_sport_line"
+        )
+        self.selected_products |= self.env.ref(
+            "product_configurator.product_2_series_transmission_steptronic"
+        )
+        self.selected_products |= self.env.ref(
+            "product_configurator.product_2_series_sunroof"
+        )
+        self.selected_products |= self.env.ref(
+            "product_configurator.product_engine_220i_coupe"
+        )
+
+        self.selected_alt_products = self.productProduct
+        self.selected_alt_products |= self.env.ref(
+            "product_configurator.product_bmw_sport_line"
+        )
+        self.selected_alt_products |= self.env.ref(
+            "product_configurator.product_2_series_transmission_steptronic"
+        )
+        self.selected_alt_products |= self.env.ref(
+            "product_configurator.product_2_series_sunroof"
+        )
+        self.selected_alt_products |= self.env.ref(
+            "product_configurator.product_engine_218i_coupe"
+        )
 
         # create bom
         self.bom_id = self.mrpBom.create(
@@ -39,88 +63,152 @@ class TestMrp(ProductConfiguratorTestCases):
                 "product_qty": 1.00,
             }
         )
-        # create BOM operations line
-        self.mrpRoutingWorkcenter.create(
-            {
-                "bom_id": self.bom_id.id,
-                "name": "Operation 1",
-                "workcenter_id": self.workcenter_id.id,
-            }
-        )
 
-    def test_00_skip_bom_line(self):
-        checkVal = self.mrpBomLine._skip_bom_line(product=self.product_id)
-        self.assertFalse(
-            checkVal,
-            "Error: If value exists\
-            Method: _skip_bom_line()",
-        )
-        self.bom_line_id.bom_id.config_ok = True
-        self.mrp_config_step = self.mrpBomConfigSet.create(
+    def _configure_alt_variant(self):
+        product_config_wizard = self.ProductConfWizard.create(
             {
-                "name": "TestConfigSet",
+                "product_tmpl_id": self.config_product.id,
             }
         )
-        self.bom_line_id.write({"config_set_id": self.mrp_config_step.id})
-        # create bom_line_config
-        self.mrp_bom_config = self.mrpBomConfig.create(
+        product_config_wizard.action_next_step()
+        product_config_wizard.write(
             {
-                "config_set_id": self.mrp_config_step.id,
-                "value_ids": [
-                    (
-                        6,
-                        0,
-                        [
-                            self.value_gasoline.id,
-                            self.value_218i.id,
-                            self.value_220i.id,
-                            self.value_red.id,
-                        ],
-                    )
+                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
+                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
+            }
+        )
+        product_config_wizard.action_next_step()
+        product_config_wizard.write(
+            {
+                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
+                "__attribute_{}".format(self.attr_rims.id): self.value_rims_378.id,
+            }
+        )
+        product_config_wizard.action_next_step()
+        product_config_wizard.write(
+            {
+                "__attribute_{}".format(
+                    self.attr_model_line.id
+                ): self.value_sport_line.id,
+            }
+        )
+        product_config_wizard.action_next_step()
+        product_config_wizard.write(
+            {
+                "__attribute_{}".format(self.attr_tapistry.id): self.value_tapistry.id,
+            }
+        )
+        product_config_wizard.action_next_step()
+        product_config_wizard.write(
+            {
+                "__attribute_{}".format(
+                    self.attr_transmission.id
+                ): self.value_transmission.id,
+                "__attribute_{}".format(self.attr_options.id): [
+                    [6, 0, [self.value_options_2.id]]
                 ],
             }
         )
-        self.product_id.write(
-            {"attribute_value_ids": [(6, 0, self.mrp_bom_config.value_ids.ids)]}
-        )
-        self.mrpProduction.create(
-            {
-                "product_id": self.product_id.id,
-                "product_qty": 1.00,
-                "product_uom_id": 1.00,
-                "bom_id": self.bom_id.id,
-                "date_planned_start": datetime.now(),
-            }
-        )
-        self.mrpBomLine._skip_bom_line(product=self.product_id)
-        self.assertFalse(
-            checkVal,
-            "Error: If value exists\
-            Method: _skip_bom_line()",
+        return product_config_wizard.with_context(
+            allowed_company_ids=[self.company.id]
+        ).action_next_step()
+
+    def _get_product_id(self):
+        self._configure_product_nxt_step()
+        return self.config_product.product_variant_ids[-1]
+
+    def test_00_generate_bom_from_parent(self):
+        variant = self._get_product_id()
+        bom_products = variant.variant_bom_ids.bom_line_ids.mapped("product_id")
+
+        self.assertEqual(
+            bom_products,
+            self.selected_products,
+            "BOM was not generated correctly",
         )
 
-    def test_01_action_config_start(self):
-        mrpProduction = self.mrpProduction.create(
+    def test_01_generate_bom_from_values(self):
+        self.env.ref("product_configurator_mrp.bom_2_series").active = False
+
+        variant = self._get_product_id()
+        bom_products = variant.variant_bom_ids.bom_line_ids.mapped("product_id")
+
+        self.assertEqual(
+            bom_products,
+            self.selected_products,
+            "BOM was not generated correctly",
+        )
+
+    def test_02_action_config_start(self):
+        production = self.mrpProduction.create(
             {
                 "product_id": self.product_id.id,
                 "product_qty": 1.00,
-                "product_uom_id": 1.00,
+                "product_uom_id": self.env.ref("uom.product_uom_unit").id,
                 "bom_id": self.bom_id.id,
                 "date_planned_start": datetime.now(),
             }
         )
         context = dict(
             self.env.context,
-            default_order_id=mrpProduction.id,
+            default_order_id=production.id,
             wizard_model="product.configurator.mrp",
+            allowed_company_ids=[self.company.id],
         )
-        mrpProduction.action_config_start()
+        production.action_config_start()
         self.ProductConfWizard = self.env["product.configurator.mrp"].with_context(
             **context
         )
         self._configure_product_nxt_step()
-        # self.assertEqual(
-        #     vals['res_id'],
-        #     mrpProduction.product_id.id,
-        #     'Not Equal'
-        # )
+        move_products = production.move_raw_ids.mapped("product_id")
+        self.assertEqual(
+            move_products,
+            self.selected_products,
+            "Production BOM not generated correctly",
+        )
+
+    def test_03_reconfigure_product(self):
+        variant = self._get_product_id()
+        production = self.mrpProduction.create(
+            {
+                "product_id": variant.id,
+                "product_qty": 1.00,
+                "product_uom_id": self.env.ref("uom.product_uom_unit").id,
+                "bom_id": variant.variant_bom_ids.id,
+                "date_planned_start": datetime.now(),
+            }
+        )
+
+        action = production.reconfigure_product()
+        wiz = self.env["product.configurator.mrp"].browse(action["res_id"])
+        ctx = action["context"]
+        self.ProductConfWizard = wiz.with_context(**ctx)
+        self._configure_alt_variant()
+
+        move_products = production.move_raw_ids.mapped("product_id")
+        self.assertEqual(
+            move_products,
+            self.selected_alt_products,
+            "Production BOM not generated correctly",
+        )
+
+    def test_04_bom_missing_config_set(self):
+        # If the user fails to (or chooses not to) specify a config set for a BOM line,
+        # that BOM line will be included in all variant BOMs, even if not selected in
+        # the wizard
+        bom_line = self.env.ref("product_configurator_mrp.bom_line_engine_218i_coupe")
+        bom_line.config_set_id = False
+
+        variant = self._get_product_id()
+        bom_products = variant.variant_bom_ids.bom_line_ids.mapped("product_id")
+
+        selected_products = self.selected_products
+        selected_products |= self.env.ref(
+            "product_configurator.product_engine_218i_coupe"
+        )
+
+        self.assertEqual(
+            bom_products,
+            selected_products,
+            "BOM was not generated correctly",
+        )
