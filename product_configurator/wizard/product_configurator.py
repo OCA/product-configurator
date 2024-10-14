@@ -149,6 +149,7 @@ class ProductConfigurator(models.TransientModel):
         if not config_session_id:
             config_session_id = self.config_session_id
 
+        custom_val = config_session_id.get_custom_value_id()
         domains = {}
         check_avail_ids = cfg_val_ids[:]
         for line in product_tmpl_id.attribute_line_ids.sorted():
@@ -161,16 +162,18 @@ class ProductConfigurator(models.TransientModel):
 
             # get available values
 
+            attribute_line_values = line._configurator_value_ids()
             avail_ids = config_session_id.values_available(
-                check_val_ids=line.value_ids.ids, value_ids=check_avail_ids
+                check_val_ids=attribute_line_values.ids,
+                value_ids=check_avail_ids,
+                product_template_attribute_line_id=line.id,
             )
             domains[field_name] = [("id", "in", avail_ids)]
             check_avail_ids = list(
                 set(check_avail_ids) - (set(line.value_ids.ids) - set(avail_ids))
             )
             # Include custom value in the domain if attr line permits it
-            if line.custom:
-                custom_val = config_session_id.get_custom_value_id()
+            if line.custom and custom_val.id in avail_ids:
                 domains[field_name][0][2].append(custom_val.id)
                 if line.multi and vals and custom_val.id in vals[0][2]:
                     continue
@@ -219,7 +222,7 @@ class ProductConfigurator(models.TransientModel):
                 continue
             available_val_ids = domains[k][0][2]
             if isinstance(v, list):
-                if any(type(el) != int for el in v):
+                if any(not isinstance(el, int) for el in v):
                     v = v[0][2]
                 value_ids = list(set(v) & set(available_val_ids))
                 dynamic_fields.update({k: value_ids})
@@ -448,7 +451,7 @@ class ProductConfigurator(models.TransientModel):
         try:
             # Get only the attribute lines for the next step if defined
             active_step_line = cfg_step_lines.filtered(
-                lambda l: l.id == int(active_step_id)
+                lambda line: line.id == int(active_step_id)
             )
             if active_step_line:
                 attribute_lines = active_step_line.attribute_line_ids
@@ -470,7 +473,10 @@ class ProductConfigurator(models.TransientModel):
             attribute = line.attribute_id
             value_ids = line.value_ids.ids
 
-            value_ids = wiz.config_session_id.values_available(check_val_ids=value_ids)
+            value_ids = wiz.config_session_id.values_available(
+                check_val_ids=value_ids,
+                product_template_attribute_line_id=line.id,
+            )
 
             # If attribute lines allows custom values add the
             # generic "Custom" attribute.value to the list of options
@@ -646,7 +652,7 @@ class ProductConfigurator(models.TransientModel):
                         attr_depends[attr_field] |= set(domain_line.value_ids.ids)
                     elif domain_line.condition == "not in":
                         val_ids = attr_lines.filtered(
-                            lambda l: l.attribute_id.id == attr_id
+                            lambda line: line.attribute_id.id == attr_id
                         ).value_ids
                         val_ids = val_ids - domain_line.value_ids
                         attr_depends[attr_field] |= set(val_ids.ids)
