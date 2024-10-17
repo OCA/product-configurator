@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Mrp Bom Line Configuration Set -->
+
+    <record
+        id="config_set_2_series_bmw_sport_line"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Line / Sport Line</field>
+    </record>
+    <record
+        id="config_set_2_series_bmw_luxury_line"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Line / Luxury Line</field>
+    </record>
+    <record
+        id="config_set_2_series_bmw_model_sport_line"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Line / Model Sport Line</field>
+    </record>
+    <record
+        id="config_set_2_series_bmw_model_luxury_line"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Line / Model Luxury Line</field>
+    </record>
+    <record
+        id="config_set_2_series_bmw_model_m_sport"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Line / Model M Sport</field>
+    </record>
+    <record
+        id="config_set_2_series_bmw_model_advantage"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Line / Model Advantage</field>
+    </record>
+    <record
+        id="config_set_2_series_2_series_transmission_steptronic"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Transmission / Automatic Transmission Steptronic</field>
+    </record>
+    <record
+        id="config_set_2_series_2_series_transmission_steptronic_sport"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field
+            name="name"
+        >Transmission / Sport Automatic Transmission Steptronic</field>
+    </record>
+    <record
+        id="config_set_2_series_2_series_sunroof"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Options / Sunroof</field>
+    </record>
+    <record
+        id="config_set_2_series_2_series_armrest"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Options / Armrest</field>
+    </record>
+    <record
+        id="config_set_2_series_2_series_towhook"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Options / Towhook</field>
+    </record>
+    <record
+        id="config_set_2_series_2_series_smoker_package"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Options / Smoker Package</field>
+    </record>
+    <record
+        id="config_set_2_series_engine_218i_coupe"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Engine / 218i Coupé</field>
+    </record>
+    <record
+        id="config_set_2_series_engine_220i_coupe"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Engine / 220i Coupé</field>
+    </record>
+    <record
+        id="config_set_2_series_engine_228i_coupe"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Engine / 228i Coupé</field>
+    </record>
+    <record
+        id="config_set_2_series_engine_m235i_coupe"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Engine / M235i Coupé</field>
+    </record>
+    <record
+        id="config_set_2_series_engine_m2351_xdrive_coupe"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Engine / M235i xDrive Coupe</field>
+    </record>
+    <record
+        id="config_set_2_series_engine_218d_coupe"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Engine / 218d Coupé</field>
+    </record>
+    <record
+        id="config_set_2_series_engine_220d_coupe"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Engine / 220d Coupé</field>
+    </record>
+    <record
+        id="config_set_2_series_engine_220d_xdrive_coupe"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Engine / 220d xDrive Coupé</field>
+    </record>
+    <record
+        id="config_set_2_series_engine_225d_coupe"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Engine / 225d Coupé</field>
+    </record>
+    <record
+        id="config_set_2_series_paint_silver"
+        model="mrp.bom.line.configuration.set"
+    >
+        <field name="name">Paint Color / Silver Paint</field>
+    </record>
+
+    <!-- Mrp Bom Line Configuration -->
+
+    <record id="line_config_2_series_bmw_sport_line" model="mrp.bom.line.configuration">
+        <field name="config_set_id" ref="config_set_2_series_bmw_sport_line" />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_sport_line')])]"
+        />
+    </record>
+    <record
+        id="line_config_2_series_bmw_model_sport_line"
+        model="mrp.bom.line.configuration"
+    >
+        <field name="config_set_id" ref="config_set_2_series_bmw_model_sport_line" />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_model_sport_line')])]"
+        />
+    </record>
+    <record
+        id="line_config_2_series_bmw_luxury_line"
+        model="mrp.bom.line.configuration"
+    >
+        <field name="config_set_id" ref="config_set_2_series_bmw_luxury_line" />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_luxury_line')])]"
+        />
+    </record>
+    <record
+        id="line_config_2_series_bmw_model_luxury_line"
+        model="mrp.bom.line.configuration"
+    >
+        <field name="config_set_id" ref="config_set_2_series_bmw_model_luxury_line" />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_model_luxury_line')])]"
+        />
+    </record>
+    <record
+        id="line_config_2_series_bmw_model_m_sport"
+        model="mrp.bom.line.configuration"
+    >
+        <field name="config_set_id" ref="config_set_2_series_bmw_model_m_sport" />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_model_m_sport')])]"
+        />
+    </record>
+    <record
+        id="line_config_2_series_bmw_model_advantage"
+        model="mrp.bom.line.configuration"
+    >
+        <field name="config_set_id" ref="config_set_2_series_bmw_model_advantage" />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_model_advantage')])]"
+        />
+    </record>
+    <record
+        id="line_config_2_series_2_series_transmission_steptronic"
+        model="mrp.bom.line.configuration"
+    >
+        <field
+            name="config_set_id"
+            ref="config_set_2_series_2_series_transmission_steptronic"
+        />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_steptronic')])]"
+        />
+    </record>
+    <record
+        id="line_config_2_series_2_series_transmission_steptronic_sport"
+        model="mrp.bom.line.configuration"
+    >
+        <field
+            name="config_set_id"
+            ref="config_set_2_series_2_series_transmission_steptronic_sport"
+        />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_steptronic_sport')])]"
+        />
+    </record>
+    <record
+        id="line_config_2_series_2_series_sunroof"
+        model="mrp.bom.line.configuration"
+    >
+        <field name="config_set_id" ref="config_set_2_series_2_series_sunroof" />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_sunroof')])]"
+        />
+    </record>
+    <record
+        id="line_config_2_series_2_series_armrest"
+        model="mrp.bom.line.configuration"
+    >
+        <field name="config_set_id" ref="config_set_2_series_2_series_armrest" />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_armrest')])]"
+        />
+    </record>
+    <record
+        id="line_config_2_series_2_series_towhook"
+        model="mrp.bom.line.configuration"
+    >
+        <field name="config_set_id" ref="config_set_2_series_2_series_towhook" />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_tow_hook')])]"
+        />
+    </record>
+    <record
+        id="line_config_2_series_2_series_smoker_package"
+        model="mrp.bom.line.configuration"
+    >
+        <field name="config_set_id" ref="config_set_2_series_2_series_smoker_package" />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_smoker_package')])]"
+        />
+    </record>
+    <record
+        id="line_config_2_series_engine_218i_coupe"
+        model="mrp.bom.line.configuration"
+    >
+        <field name="config_set_id" ref="config_set_2_series_engine_218i_coupe" />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_218i')])]"
+        />
+    </record>
+    <record
+        id="line_config_2_series_engine_220i_coupe"
+        model="mrp.bom.line.configuration"
+    >
+        <field name="config_set_id" ref="config_set_2_series_engine_220i_coupe" />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_220i')])]"
+        />
+    </record>
+    <record
+        id="line_config_2_series_engine_228i_coupe"
+        model="mrp.bom.line.configuration"
+    >
+        <field name="config_set_id" ref="config_set_2_series_engine_228i_coupe" />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_228i')])]"
+        />
+    </record>
+    <record
+        id="line_config_2_series_engine_m235i_coupe"
+        model="mrp.bom.line.configuration"
+    >
+        <field name="config_set_id" ref="config_set_2_series_engine_m235i_coupe" />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_m235i')])]"
+        />
+    </record>
+    <record
+        id="line_config_2_series_engine_m2351_xdrive_coupe"
+        model="mrp.bom.line.configuration"
+    >
+        <field
+            name="config_set_id"
+            ref="config_set_2_series_engine_m2351_xdrive_coupe"
+        />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_m235i_xdrive')])]"
+        />
+    </record>
+    <record
+        id="line_config_2_series_engine_218d_coupe"
+        model="mrp.bom.line.configuration"
+    >
+        <field name="config_set_id" ref="config_set_2_series_engine_218d_coupe" />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_218d')])]"
+        />
+    </record>
+    <record
+        id="line_config_2_series_engine_220d_coupe"
+        model="mrp.bom.line.configuration"
+    >
+        <field name="config_set_id" ref="config_set_2_series_engine_220d_coupe" />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_220d')])]"
+        />
+    </record>
+    <record
+        id="line_config_2_series_engine_220d_xdrive_coupe"
+        model="mrp.bom.line.configuration"
+    >
+        <field
+            name="config_set_id"
+            ref="config_set_2_series_engine_220d_xdrive_coupe"
+        />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_220d_xdrive')])]"
+        />
+    </record>
+    <record
+        id="line_config_2_series_engine_225d_coupe"
+        model="mrp.bom.line.configuration"
+    >
+        <field name="config_set_id" ref="config_set_2_series_engine_225d_coupe" />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_225d')])]"
+        />
+    </record>
+    <record id="line_config_2_series_paint_silver" model="mrp.bom.line.configuration">
+        <field name="config_set_id" ref="config_set_2_series_paint_silver" />
+        <field
+            name="value_ids"
+            eval="[(6,0,[ref('product_configurator.product_attribute_value_silver')])]"
+        />
+    </record>
+
+</odoo>

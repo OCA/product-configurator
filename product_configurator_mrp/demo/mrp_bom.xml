@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- MRP BOM -->
+
+    <record id="bom_2_series" model="mrp.bom">
+        <field name="product_tmpl_id" ref="product_configurator.bmw_2_series" />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">1</field>
+        <field name="code">BMW 2 Series</field>
+    </record>
+
+    <!-- MRP BOM Line -->
+
+    <record id="bom_line_bmw_sport_line" model="mrp.bom.line">
+        <field name="product_id" ref="product_configurator.product_bmw_sport_line" />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_bmw_sport_line"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_bmw_luxury_line" model="mrp.bom.line">
+        <field name="product_id" ref="product_configurator.product_bmw_luxury_line" />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_bmw_luxury_line"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_bmw_model_sport_line" model="mrp.bom.line">
+        <field
+            name="product_id"
+            ref="product_configurator.product_bmw_model_sport_line"
+        />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_bmw_model_sport_line"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_bmw_model_luxury_line" model="mrp.bom.line">
+        <field
+            name="product_id"
+            ref="product_configurator.product_bmw_model_luxury_line"
+        />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_bmw_model_luxury_line"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_bmw_model_m_sport" model="mrp.bom.line">
+        <field name="product_id" ref="product_configurator.product_bmw_model_m_sport" />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_bmw_model_m_sport"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_bmw_model_advantage" model="mrp.bom.line">
+        <field
+            name="product_id"
+            ref="product_configurator.product_bmw_model_advantage"
+        />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_bmw_model_advantage"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_2_series_transmission_steptronic" model="mrp.bom.line">
+        <field
+            name="product_id"
+            ref="product_configurator.product_2_series_transmission_steptronic"
+        />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_2_series_transmission_steptronic"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_2_series_transmission_steptronic_sport" model="mrp.bom.line">
+        <field
+            name="product_id"
+            ref="product_configurator.product_2_series_transmission_steptronic_sport"
+        />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_2_series_transmission_steptronic_sport"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_2_series_sunroof" model="mrp.bom.line">
+        <field name="product_id" ref="product_configurator.product_2_series_sunroof" />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_2_series_sunroof"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_2_series_armrest" model="mrp.bom.line">
+        <field name="product_id" ref="product_configurator.product_2_series_armrest" />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_2_series_armrest"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_2_series_towhook" model="mrp.bom.line">
+        <field name="product_id" ref="product_configurator.product_2_series_towhook" />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_2_series_towhook"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_2_series_smoker_package" model="mrp.bom.line">
+        <field
+            name="product_id"
+            ref="product_configurator.product_2_series_smoker_package"
+        />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_2_series_smoker_package"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_engine_218i_coupe" model="mrp.bom.line">
+        <field name="product_id" ref="product_configurator.product_engine_218i_coupe" />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_engine_218i_coupe"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_engine_220i_coupe" model="mrp.bom.line">
+        <field name="product_id" ref="product_configurator.product_engine_220i_coupe" />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_engine_220i_coupe"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_engine_228i_coupe" model="mrp.bom.line">
+        <field name="product_id" ref="product_configurator.product_engine_228i_coupe" />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_engine_228i_coupe"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_engine_m235i_coupe" model="mrp.bom.line">
+        <field
+            name="product_id"
+            ref="product_configurator.product_engine_m235i_coupe"
+        />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_engine_m235i_coupe"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_engine_m2351_xdrive_coupe" model="mrp.bom.line">
+        <field
+            name="product_id"
+            ref="product_configurator.product_engine_m2351_xdrive_coupe"
+        />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_engine_m2351_xdrive_coupe"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_engine_218d_coupe" model="mrp.bom.line">
+        <field name="product_id" ref="product_configurator.product_engine_218d_coupe" />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_engine_218d_coupe"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_engine_220d_coupe" model="mrp.bom.line">
+        <field name="product_id" ref="product_configurator.product_engine_220d_coupe" />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_engine_220d_coupe"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_engine_220d_xdrive_coupe" model="mrp.bom.line">
+        <field
+            name="product_id"
+            ref="product_configurator.product_engine_220d_xdrive_coupe"
+        />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_engine_220d_xdrive_coupe"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_engine_225d_coupe" model="mrp.bom.line">
+        <field name="product_id" ref="product_configurator.product_engine_225d_coupe" />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_engine_225d_coupe"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+    <record id="bom_line_paint_silver" model="mrp.bom.line">
+        <field name="product_id" ref="product_configurator.product_paint_silver" />
+        <field
+            name="config_set_id"
+            ref="product_configurator_mrp.config_set_2_series_paint_silver"
+        />
+        <field name="product_uom_id" ref="uom.product_uom_unit" />
+        <field name="sequence">5</field>
+        <field name="bom_id" ref="bom_2_series" />
+    </record>
+
+</odoo>
