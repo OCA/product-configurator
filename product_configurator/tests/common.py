@@ -92,11 +92,10 @@ class ProductConfiguratorTestCases(BaseCommon):
         )
         product_config_wizard.action_next_step()
         product_config_wizard.action_next_step()
-        product_config_wizard.write(
-            {
-                f"__attribute_{self.attr_model_line.id}": self.value_model_sport_line.id,
-            }
-        )
+        vals = {
+            f"__attribute_{self.attr_model_line.id}": self.value_model_sport_line.id,
+        }
+        product_config_wizard.write(vals)
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {

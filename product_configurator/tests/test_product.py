@@ -377,22 +377,19 @@ class TestProduct(ProductConfiguratorTestCases):
 
     def test_11_compute_product_weight_extra(self):
         product_id = self.env.ref("product.product_delivery_01")
-        product_template_attribute_value_ids = self.env.ref(
+        product_template_attr_value_ids = self.env.ref(
             "product.product_4_attribute_1_value_2"
         )
-        product_template_attribute_value_ids.write(
+        product_template_attr_value_ids.write(
             {
                 "weight_extra": 50.0,
             }
         )
         product_id._compute_product_weight_extra()
-        product_id.write(
-            {
-                "product_template_attribute_value_ids": product_template_attribute_value_ids
-            }
-        )
+        vals = {"product_template_attribute_value_ids": product_template_attr_value_ids}
+        product_id.write(vals)
         self.assertEqual(
-            product_template_attribute_value_ids.weight_extra,
+            product_template_attr_value_ids.weight_extra,
             50.0,
             product_id.weight_extra,
         )

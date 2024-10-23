@@ -472,8 +472,6 @@ class ProductConfig(ProductConfiguratorTestCases):
         product_config_wizard.write(
             {
                 f"__attribute_{self.attribute_1.id}": self.custom_vals.id,
-                f"__custom_{self.attribute_1.id}": self.irAttachement.id,
-                f"__attribute_{self.attribute_1.id}": self.custom_vals.id,
                 f"__custom_{self.attribute_1.id}": "Test",
             }
         )
@@ -566,8 +564,6 @@ class ProductConfig(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                f"__attribute_{self.attribute_1.id}": self.custom_vals.id,
-                f"__custom_{self.attribute_1.id}": self.irAttachement.id,
                 f"__attribute_{self.attribute_1.id}": self.custom_vals.id,
                 f"__custom_{self.attribute_1.id}": "Test",
             }
