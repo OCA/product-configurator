@@ -396,7 +396,7 @@ class ProductProduct(models.Model):
             duplicates = config_session_obj.search_variant(
                 product_tmpl_id=product.product_tmpl_id,
                 value_ids=ptav_ids.ids,
-            ).filtered(lambda p: p.id != product.id)
+            ).filtered(lambda p, product=product: p.id != product.id)
 
             if duplicates:
                 raise ValidationError(
