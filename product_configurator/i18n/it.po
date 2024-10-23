@@ -163,6 +163,11 @@ msgid "Allow selection of multiple values for this attribute?"
 msgstr "Consentire selezione di valori multipli per questo attributo?"
 
 #. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line__attr_line_val_ids
+msgid "Allowed Attribute Values"
+msgstr ""
+
+#. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
@@ -217,11 +222,6 @@ msgid "Attribute Line Val"
 msgstr "Valore riga attributo"
 
 #. module: product_configurator
-#: model:ir.model.fields,field_description:product_configurator.field_product_config_line__attr_line_val_ids
-msgid "Attribute Line Values"
-msgstr "Valori riga attributo"
-
-#. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line__attribute_line_ids
 msgid "Attribute Lines"
 msgstr "Righe attributo"
@@ -265,8 +265,7 @@ msgstr ""
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
 msgid ""
-"Attribute custom type must be 'binary' for saving attachments to custom "
-"value"
+"Attribute custom type must be 'binary' for saving attachments to custom value"
 msgstr ""
 "Il tipo attributo personalizzato deve essere 'binary' per salvare allegati "
 "nel valore personalizzato"
@@ -770,6 +769,14 @@ msgstr ""
 "corrette"
 
 #. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_config_line__attr_line_val_ids
+msgid ""
+"For normal attributes the values configured for the product can be "
+"selected.\n"
+"For custom attributes the 'Custom' value can also be selected."
+msgstr ""
+
+#. module: product_configurator
 #: model:product.attribute,name:product_configurator.product_attribute_fuel
 msgid "Fuel"
 msgstr "Carburante"
@@ -845,7 +852,6 @@ msgstr "Interno"
 
 #. module: product_configurator
 #. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
 msgid "Invalid Configuration"
@@ -1034,8 +1040,8 @@ msgstr "Successiva"
 #: code:addons/product_configurator/models/product_attribute.py:0
 #, python-format
 msgid ""
-"On the product %(product)s you cannot associate the value %(value)s with the"
-" attribute %(attr)s because they do not match."
+"On the product %(product)s you cannot associate the value %(value)s with the "
+"attribute %(attr)s because they do not match."
 msgstr ""
 "Nel prodotto %(product)s non si può associare il valore %(value)s per "
 "l'attributo %(attr)s perché non corrispondono."
@@ -1222,7 +1228,8 @@ msgstr "Restrizioni"
 #: code:addons/product_configurator/models/product.py:0
 #, python-format
 msgid ""
-"Restrictions added make the current default values generate an invalid configuration.                      \n"
+"Restrictions added make the current default values generate an invalid "
+"configuration.                      \n"
 "%s"
 msgstr ""
 "Le restrizioni aggiunte rendono i valori attuali predefiniti una "
@@ -1335,7 +1342,6 @@ msgstr "Pacchetto fumatore"
 
 #. module: product_configurator
 #. odoo-python
-#: code:addons/product_configurator/models/product.py:0
 #: code:addons/product_configurator/models/product.py:0
 #, python-format
 msgid ""
@@ -1574,7 +1580,9 @@ msgstr "Non si può avere una configurazione duplicata per lo stesso valore"
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
-#: code:addons/product_configurator/models/product_config.py:0
 #, python-format
 msgid "You must select at least one attribute in order to configure a product"
 msgstr "Bisogna selezionare almeno un attributo per confiugrare un prodotto"
+
+#~ msgid "Attribute Line Values"
+#~ msgstr "Valori riga attributo"
