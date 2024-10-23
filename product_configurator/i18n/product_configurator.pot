@@ -152,6 +152,11 @@ msgid "Allow selection of multiple values for this attribute?"
 msgstr ""
 
 #. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line__attr_line_val_ids
+msgid "Allowed Attribute Values"
+msgstr ""
+
+#. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
 #, python-format
@@ -202,11 +207,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator.field_product_product__attribute_line_val_ids
 #: model:ir.model.fields,field_description:product_configurator.field_product_template__attribute_line_val_ids
 msgid "Attribute Line Val"
-msgstr ""
-
-#. module: product_configurator
-#: model:ir.model.fields,field_description:product_configurator.field_product_config_line__attr_line_val_ids
-msgid "Attribute Line Values"
 msgstr ""
 
 #. module: product_configurator
@@ -731,6 +731,13 @@ msgstr ""
 msgid ""
 "Following Attribute/Value from restriction are not present in template "
 "attributes/values. Please make sure you are adding right restriction"
+msgstr ""
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_config_line__attr_line_val_ids
+msgid ""
+"For normal attributes the values configured for the product can be selected.\n"
+"For custom attributes the 'Custom' value can also be selected."
 msgstr ""
 
 #. module: product_configurator
