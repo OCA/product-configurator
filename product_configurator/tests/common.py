@@ -1,4 +1,4 @@
-from odoo.tests.common import TransactionCase
+from odoo.addons.base.tests.common import BaseCommon
 
 
 class ProductConfiguratorTestCases(TransactionCase):

@@ -1,6 +1,6 @@
 from odoo.exceptions import UserError
 
-from ..tests.test_product_configurator_test_cases import ProductConfiguratorTestCases
+from ..tests.common import ProductConfiguratorTestCases
 
 
 class ConfigurationWizard(ProductConfiguratorTestCases):
