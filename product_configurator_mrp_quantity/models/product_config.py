@@ -17,10 +17,25 @@ class ProductConfigSession(models.Model):
         session_attrs_qtys = self.session_value_quantity_ids
         duplicate_product = self.env["product.product"]
         for product in products:
-            if product.product_attribute_value_qty_ids and product.product_attribute_value_qty_ids.mapped(
-                "qty"
-            ) == session_attrs_qtys.mapped("qty"):
+            attribute_value_qty_ids = session_attrs_qtys.mapped(
+                "attribute_value_qty_id"
+            )
+            if not attribute_value_qty_ids:
                 duplicate_product = product
+            else:
+                for value_qty in attribute_value_qty_ids:
+                    if product.product_attribute_value_qty_ids.filtered(
+                        lambda x: x.attribute_value_qty_id.id == value_qty.id
+                    ):
+                        duplicate_product = product
+                    elif (
+                        not duplicate_product
+                        and value_qty.id
+                        not in product.product_attribute_value_qty_ids.mapped(
+                            "attribute_value_qty_id"
+                        ).ids
+                    ):
+                        duplicate_product = self.env["product.product"]
         return duplicate_product
 
     def create_get_variant(self, value_ids=None, custom_vals=None):
