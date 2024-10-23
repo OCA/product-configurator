@@ -287,9 +287,7 @@ class ProductConfigurator(models.TransientModel):
             and not field_name.startswith(custom_field_prefix)
         ):
             values = self._remove_dynamic_fields(values)
-            res = super(ProductConfigurator, self).onchange(
-                values, field_name, field_onchange
-            )
+            res = super().onchange(values, field_name, field_onchange)
             return res
 
         view_val_ids = set()
@@ -594,7 +592,7 @@ class ProductConfigurator(models.TransientModel):
                 continue
 
             config_steps = wiz.product_tmpl_id.config_step_line_ids.filtered(
-                lambda x: attr_line in x.attribute_line_ids
+                lambda x, attr_line=attr_line: attr_line in x.attribute_line_ids
             )
 
             # attrs property for dynamic fields
@@ -622,7 +620,7 @@ class ProductConfigurator(models.TransientModel):
 
             config_lines = wiz.product_tmpl_id.config_line_ids
             dependencies = config_lines.filtered(
-                lambda cl: cl.attribute_line_id == attr_line
+                lambda cl, attr_line=attr_line: cl.attribute_line_id == attr_line
             )
 
             # If an attribute field depends on another field from the same
@@ -630,39 +628,38 @@ class ProductConfigurator(models.TransientModel):
             # required and readonly depending on the value entered in the
             # dependee
 
-            if attr_line.value_ids <= dependencies.mapped("value_ids"):
-                attr_depends = {}
-                domain_lines = dependencies.mapped("domain_id.domain_line_ids")
-                for domain_line in domain_lines:
-                    attr_id = domain_line.attribute_id.id
-                    attr_field = field_prefix + str(attr_id)
-                    attr_lines = wiz.product_tmpl_id.attribute_line_ids
-                    # If the fields it depends on are not in the config step
-                    # allow to update attrs for all attribute.\ otherwise
-                    # required will not work with stepchange using statusbar.
-                    # if config_steps and wiz.state not in cfg_step_ids:
-                    #     continue
-                    if attr_field not in attr_depends:
-                        attr_depends[attr_field] = set()
-                    if domain_line.condition == "in":
-                        attr_depends[attr_field] |= set(domain_line.value_ids.ids)
-                    elif domain_line.condition == "not in":
-                        val_ids = attr_lines.filtered(
-                            lambda line: line.attribute_id.id == attr_id
-                        ).value_ids
-                        val_ids = val_ids - domain_line.value_ids
-                        attr_depends[attr_field] |= set(val_ids.ids)
+            if attr_line.value_ids > dependencies.mapped("value_ids"):
+                continue
+            attr_depends = {}
+            domain_lines = dependencies.mapped("domain_id.domain_line_ids")
+            for domain_line in domain_lines:
+                attr_id = domain_line.attribute_id.id
+                attr_field = field_prefix + str(attr_id)
+                attr_lines = wiz.product_tmpl_id.attribute_line_ids
+                # If the fields it depends on are not in the config step
+                # allow to update attrs for all attribute.\ otherwise
+                # required will not work with stepchange using statusbar.
+                # if config_steps and wiz.state not in cfg_step_ids:
+                #     continue
+                if attr_field not in attr_depends:
+                    attr_depends[attr_field] = set()
+                if domain_line.condition == "in":
+                    attr_depends[attr_field] |= set(domain_line.value_ids.ids)
+                elif domain_line.condition == "not in":
+                    val_ids = attr_lines.filtered(
+                        lambda line, attr_id=attr_id: line.attribute_id.id == attr_id
+                    ).value_ids
+                    val_ids = val_ids - domain_line.value_ids
+                    attr_depends[attr_field] |= set(val_ids.ids)
 
-                for dependee_field, val_ids in attr_depends.items():
-                    if not val_ids:
-                        continue
-                    if not attr_line.custom:
-                        attrs["readonly"].append(
-                            (dependee_field, "not in", list(val_ids))
-                        )
+            for dependee_field, val_ids in attr_depends.items():
+                if not val_ids:
+                    continue
+                if not attr_line.custom:
+                    attrs["readonly"].append((dependee_field, "not in", list(val_ids)))
 
-                    if attr_line.required and not attr_line.custom:
-                        attrs["required"].append((dependee_field, "in", list(val_ids)))
+                if attr_line.required and not attr_line.custom:
+                    attrs["required"].append((dependee_field, "in", list(val_ids)))
         return attrs, field_name, custom_field, config_steps, cfg_step_ids
 
     @api.model
@@ -835,7 +832,7 @@ class ProductConfigurator(models.TransientModel):
             res[0].update({field_name: False, custom_field_name: False})
 
             custom_vals = self.custom_value_ids.filtered(
-                lambda x: x.attribute_id.id == attr_id
+                lambda x, attr_id=attr_id: x.attribute_id.id == attr_id
             ).with_context(show_attribute=False)
             vals = attr_line.value_ids.filtered(
                 lambda v: v in self.value_ids

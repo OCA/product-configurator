@@ -204,7 +204,8 @@ class ProductConfigLine(models.Model):
         comodel_name="product.attribute.value",
         compute="_compute_attr_line_val_ids",
         string="Allowed Attribute Values",
-        help="For normal attributes the values configured for the product can be selected.\n"
+        help="For normal attributes "
+        "the values configured for the product can be selected.\n"
         "For custom attributes the 'Custom' value can also be selected.",
     )
     value_ids = fields.Many2many(
@@ -328,7 +329,7 @@ class ProductConfigStepLine(models.Model):
         for config_step in self:
             cfg_step_lines = config_step.product_tmpl_id.config_step_line_ids
             cfg_steps = cfg_step_lines.filtered(
-                lambda line: line != config_step
+                lambda line, config_step=config_step: line != config_step
             ).mapped("config_step_id")
             if config_step.config_step_id in cfg_steps:
                 raise ValidationError(
@@ -392,7 +393,7 @@ class ProductConfigSession(models.Model):
             try:
                 config_step = int(session.config_step)
                 config_step_line = cfg_step_lines.filtered(
-                    lambda x: x.id == config_step
+                    lambda x, config_step=config_step: x.id == config_step
                 )
                 session.config_step_name = config_step_line.name
             except Exception:
@@ -618,7 +619,7 @@ class ProductConfigSession(models.Model):
         value_ids = self.value_ids.ids
         for attr_id, vals in attr_val_dict.items():
             attr_val_ids = self.value_ids.filtered(
-                lambda x: x.attribute_id.id == int(attr_id)
+                lambda x, attr_id=attr_id: x.attribute_id.id == int(attr_id)
             ).ids
             # Remove all values for this attribute and add vals from dict
             value_ids = list(set(value_ids) - set(attr_val_ids))
@@ -689,7 +690,7 @@ class ProductConfigSession(models.Model):
         try:
             self.validate_configuration(final=False)
         except ValidationError as exc:
-            raise ValidationError(_(f"{exc}"))
+            raise ValidationError(_(f"{exc}")) from exc
         except Exception as exc:
             raise ValidationError(_("Invalid Configuration")) from exc
         return res
@@ -1258,7 +1259,7 @@ class ProductConfigSession(models.Model):
         avail_val_ids = []
         for attr_val_id in check_val_ids:
             config_lines = product_tmpl.config_line_ids.filtered(
-                lambda line: attr_val_id in line.value_ids.ids
+                lambda line, attr_val_id=attr_val_id: attr_val_id in line.value_ids.ids
             )
             if product_template_attribute_lines:
                 config_lines = config_lines.filtered(
@@ -1646,10 +1647,12 @@ class ProductConfigSessionCustomValue(models.Model):
     @api.constrains("cfg_session_id", "attribute_id")
     def unique_attribute(self):
         for custom_val in self:
+            values = custom_val.cfg_session_id.custom_value_ids
             if (
                 len(
-                    custom_val.cfg_session_id.custom_value_ids.filtered(
-                        lambda x: x.attribute_id == custom_val.attribute_id
+                    values.filtered(
+                        lambda x, custom_val=custom_val: x.attribute_id
+                        == custom_val.attribute_id
                     )
                 )
                 > 1

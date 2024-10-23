@@ -304,11 +304,11 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
         )
         product_config_wizard_1.action_next_step()
         product_config_wizard_1.action_next_step()
-        product_config_wizard_1.write(
-            {
-                f"__attribute_{self.attr_model_line.id}": self.value_model_sport_line.id,
-            }
-        )
+
+        vals = {
+            f"__attribute_{self.attr_model_line.id}": self.value_model_sport_line.id,
+        }
+        product_config_wizard_1.write(vals)
         product_config_wizard_1.action_next_step()
         product_config_wizard_1.write(
             {
@@ -375,11 +375,10 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
         )
         product_config_wizard_1.action_next_step()
         product_config_wizard_1.action_next_step()
-        product_config_wizard_1.write(
-            {
-                f"__attribute_{self.attr_model_line.id}": self.value_model_sport_line.id,
-            }
-        )
+        vals = {
+            f"__attribute_{self.attr_model_line.id}": self.value_model_sport_line.id,
+        }
+        product_config_wizard_1.write(vals)
         product_config_wizard_1.action_next_step()
         product_config_wizard_1.write(
             {
