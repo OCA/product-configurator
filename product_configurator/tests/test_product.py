@@ -2,6 +2,10 @@ from odoo.exceptions import ValidationError
 
 from ..tests.common import ProductConfiguratorTestCases
 
+# FIXME: many tests here do not have any assertions.
+# They simply run something and expect it to not raise an exception.
+# This is not a good practice. Tests should have assertions.
+
 
 class TestProduct(ProductConfiguratorTestCases):
     @classmethod
