@@ -57,57 +57,58 @@ class ProductConfiguratorTestCases(BaseCommon):
             "product_configurator.product_attribute_value_sunroof"
         )
 
-    def _configure_product_nxt_step(self):
-        product_config_wizard = self.ProductConfWizard.create(
+    @classmethod
+    def _configure_product_nxt_step(cls):
+        product_config_wizard = cls.ProductConfWizard.create(
             {
-                "product_tmpl_id": self.config_product.id,
+                "product_tmpl_id": cls.config_product.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                f"__attribute_{self.attr_fuel.id}": self.value_gasoline.id,
-                f"__attribute_{self.attr_engine.id}": self.value_218i.id,
+                f"__attribute_{cls.attr_fuel.id}": cls.value_gasoline.id,
+                f"__attribute_{cls.attr_engine.id}": cls.value_218i.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                f"__attribute_{self.attr_color.id}": self.value_red.id,
-                f"__attribute_{self.attr_rims.id}": self.value_rims_378.id,
+                f"__attribute_{cls.attr_color.id}": cls.value_red.id,
+                f"__attribute_{cls.attr_rims.id}": cls.value_rims_378.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                f"__attribute_{self.attr_model_line.id}": self.value_sport_line.id,
+                f"__attribute_{cls.attr_model_line.id}": cls.value_sport_line.id,
             }
         )
         product_config_wizard.action_previous_step()
         product_config_wizard.action_previous_step()
         product_config_wizard.write(
             {
-                f"__attribute_{self.attr_engine.id}": self.value_220i.id,
+                f"__attribute_{cls.attr_engine.id}": cls.value_220i.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.action_next_step()
         vals = {
-            f"__attribute_{self.attr_model_line.id}": self.value_model_sport_line.id,
+            f"__attribute_{cls.attr_model_line.id}": cls.value_model_sport_line.id,
         }
         product_config_wizard.write(vals)
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                f"__attribute_{self.attr_tapistry.id}": self.value_tapistry.id,
+                f"__attribute_{cls.attr_tapistry.id}": cls.value_tapistry.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                f"__attribute_{self.attr_transmission.id}": self.value_transmission.id,
-                f"__attribute_{self.attr_options.id}": [
-                    [6, 0, [self.value_options_2.id]]
+                f"__attribute_{cls.attr_transmission.id}": cls.value_transmission.id,
+                f"__attribute_{cls.attr_options.id}": [
+                    [6, 0, [cls.value_options_2.id]]
                 ],
             }
         )
