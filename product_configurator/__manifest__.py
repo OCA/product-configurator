@@ -47,7 +47,7 @@
     "qweb": ["static/xml/create_button.xml"],
     "development_status": "Beta",
     "maintainers": ["PCatinean"],
-    "installable": True,
+    "installable": False,
     "application": True,
     "auto_install": False,
 }
