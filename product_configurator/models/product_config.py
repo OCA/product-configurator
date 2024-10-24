@@ -3,7 +3,7 @@ from ast import literal_eval
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools.misc import flatten, formatLang
+from odoo.tools.misc import formatLang
 
 _logger = logging.getLogger(__name__)
 
@@ -281,9 +281,9 @@ class ProductConfigImage(models.Model):
                 raise ValidationError(
                     _(
                         "Values entered for line '%s' generate "
-                        "a incompatible configuration",
-                        cfg_img.name,
+                        "a incompatible configuration"
                     )
+                    % cfg_img.name
                 ) from exc
 
 
@@ -352,7 +352,7 @@ class ProductConfigSession(models.Model):
     def _compute_cfg_price(self):
         for session in self:
             if session.product_tmpl_id:
-                price = session.get_cfg_price()
+                price = session.with_company(session.company_id).get_cfg_price()
             else:
                 price = 0.00
             session.price = price
@@ -420,7 +420,7 @@ class ProductConfigSession(models.Model):
 
         self = self.with_context(active_id=product_tmpl.id)
 
-        value_ids = flatten(value_ids)
+        value_ids = self.flatten_val_ids(value_ids)
 
         weight_extra = 0.0
         product_attr_val_obj = self.env["product.template.attribute.value"]
@@ -506,6 +506,9 @@ class ProductConfigSession(models.Model):
         domain="[('product_tmpl_id', '=', product_tmpl_id),\
             ('config_preset_ok', '=', True)]",
     )
+    company_id = fields.Many2one(
+        "res.company", string="Company", default=lambda self: self.env.company
+    )
 
     def action_confirm(self, product_id=None):
         for session in self:
@@ -547,7 +550,6 @@ class ProductConfigSession(models.Model):
             attr_id = attr_line.attribute_id.id
             field_name = field_prefix + str(attr_id)
             custom_field_name = custom_field_prefix + str(attr_id)
-
             if field_name not in vals and custom_field_name not in vals:
                 continue
 
@@ -559,15 +561,31 @@ class ProductConfigSession(models.Model):
                     if not vals[field_name]:
                         field_val = None
                     else:
-                        field_val = vals[field_name][0][2]
+                        value_ids = self.value_ids.filtered(
+                            lambda value, attr_line=attr_line: value.attribute_id.id
+                            == attr_line.attribute_id.id
+                        )
+                        field_val = value_ids and value_ids.ids or []
+                        for field_vals in vals[field_name]:
+                            if field_vals and field_vals[0] == 6:
+                                field_val += field_vals[2] or []
+                            elif field_vals and field_vals[0] == 4:
+                                field_val.append(field_vals[1])
+                            elif (
+                                field_vals
+                                and field_vals[0] == 3
+                                and field_vals[1] in field_val
+                            ):
+                                field_val.remove(field_vals[1])
+                        # field_val = [
+                        #     i[1] for i in vals[field_name] if vals[field_name][0]
+                        # ] or vals[field_name][0][1]
                 elif not attr_line.multi and isinstance(vals[field_name], int):
                     field_val = vals[field_name]
                 else:
                     raise UserError(
-                        _(
-                            "An error occurred while parsing value for attribute %s",
-                            attr_line.attribute_id.name,
-                        )
+                        _("An error occurred while parsing value for attribute %s")
+                        % attr_line.attribute_id.name
                     )
                 attr_val_dict.update({attr_id: field_val})
                 # Ensure there is no custom value stored if we have switched
@@ -792,9 +810,7 @@ class ProductConfigSession(models.Model):
             pricelist=pricelist.id
         )
         values = (
-            value_obj.sudo()
-            .browse(value_ids)
-            .filtered(lambda x: x.product_id._get_contextual_price())
+            value_obj.sudo().browse(value_ids).filtered(lambda x: x.product_id.price)
         )
         return values
 
@@ -809,12 +825,12 @@ class ProductConfigSession(models.Model):
                 (
                     val.attribute_id.name,
                     val.product_id.name,
-                    val.product_id._get_contextual_price(),
+                    val.product_id.price,
                 )
             )
             product = val.product_id.with_context(pricelist=pricelist.id)
             product_prices = product.taxes_id.sudo().compute_all(
-                price_unit=product._get_contextual_price(),
+                price_unit=product.price,
                 currency=pricelist.currency_id,
                 quantity=1,
                 product=self,
@@ -835,13 +851,18 @@ class ProductConfigSession(models.Model):
         :param value_ids: list of attribute value_ids
         :param custom_vals: dictionary of custom attribute values
         :returns: final configuration price"""
-
-        if value_ids is None:
+        if not value_ids:
             value_ids = self.value_ids.ids
 
         if custom_vals is None:
             custom_vals = {}
-
+        value_ids = value_ids + self.value_ids.ids
+        if self.env.context.get("tobe_remove_attr", []):
+            value_ids = self.flatten_val_ids(value_ids)
+            value_ids = set(value_ids) - set(
+                self.env.context.get("tobe_remove_attr", [])
+            )
+            value_ids = list(value_ids)
         product_tmpl = self.product_tmpl_id
         self = self.with_context(active_id=product_tmpl.id)
 
@@ -934,6 +955,7 @@ class ProductConfigSession(models.Model):
             ("product_tmpl_id", "=", product_tmpl_id),
             ("user_id", "=", self.env.uid),
             ("state", "=", state),
+            ("company_id", "=", self.env.company.id),
         ]
         if parent_id:
             domain.append(("parent_id", "=", parent_id))
@@ -1312,7 +1334,7 @@ class ProductConfigSession(models.Model):
                 ):
                     # TODO: Verify custom value type to be correct
                     raise ValidationError(
-                        _("Required attribute '%s' is empty", attr.name)
+                        _("Required attribute '%s' is empty") % (attr.name)
                     )
 
     @api.model
@@ -1505,8 +1527,14 @@ class ProductConfigSession(models.Model):
         :param value_ids: list of value ids or mix of ids and list of ids
                            (e.g: [1, 2, 3, [4, 5, 6]])
         :returns: flattened list of ids ([1, 2, 3, 4, 5, 6])"""
-        flat_val_ids = set(flatten(value_ids))
-        return list(flat_val_ids)
+        flatList = []
+        for value in value_ids:
+            if isinstance(value, list):
+                for sub in value:
+                    flatList.append(sub)
+            else:
+                flatList.append(value)
+        return flatList
 
     def formatPrices(self, prices=None, dp="Product Price"):
         if prices is None:
@@ -1562,13 +1590,16 @@ class ProductConfigSession(models.Model):
         intead of view in that field"""
         model_obj = self.env[model]
         specs = model_obj._onchange_spec()
-        for name, field in model_obj._fields.items():
-            if field.type not in ["one2many", "many2many"]:
-                continue
-            ch_specs = self.get_child_specification(
-                model=field.comodel_name, parent=name
-            )
-            specs.update(ch_specs)
+
+        # TODO :- Commented a code and ths code already base in a odoo base modules.
+        # for name, field in model_obj._fields.items():
+        #     if field.type not in ["one2many", "many2many"]:
+        #         continue
+        #     ch_specs = self.get_child_specification(
+        #         model=field.comodel_name, parent=name
+        #     )
+        #     specs.update(ch_specs)
+
         return specs
 
     @api.model

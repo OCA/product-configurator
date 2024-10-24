@@ -221,13 +221,14 @@ class TestProduct(ProductConfiguratorTestCases):
                 "attribute_line_ids": [(6, 0, [self.attributeLine3.id])],
             }
         )
-        self.product_tmpl_id.write(
-            {
-                "config_step_line_ids": [
-                    (6, 0, [self.configStepLine1.id, self.configStepLine2.id])
-                ],
-            }
-        )
+        with self.assertRaises(ValidationError):
+            self.product_tmpl_id.write(
+                {
+                    "config_step_line_ids": [
+                        (6, 0, [self.configStepLine1.id, self.configStepLine2.id])
+                    ],
+                }
+            )
 
         # configure product
         self.product_tmpl_id.configure_product()
@@ -644,6 +645,10 @@ class TestProduct(ProductConfiguratorTestCases):
     def test_17_fields_view_get(self):
         product_product = self._get_product_id()
         product_product.with_context(default_config_ok=True).get_view()
+
+    def test_18_get_conversions_dict(self):
+        product_product = self._get_product_id()
+        product_product._get_conversions_dict()
 
     def test_19_compute_product_variant_count(self):
         self.product_tmpl_id = self.env["product.template"].create(

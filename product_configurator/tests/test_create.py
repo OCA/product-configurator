@@ -8,7 +8,6 @@ class ConfigurationCreate(BaseCommon):
         cls.ProductConfWizard = cls.env["product.configurator"]
         cls.config_product = cls.env.ref("product_configurator.bmw_2_series")
         cls.product_category = cls.env.ref("product.product_category_5")
-
         # attributes
         cls.attr_fuel = cls.env.ref("product_configurator.product_attribute_fuel")
         cls.attr_engine = cls.env.ref("product_configurator.product_attribute_engine")
