@@ -1,5 +1,6 @@
 from odoo.exceptions import ValidationError
-from odoo.tests.common import TransactionCase
+
+from odoo.addons.base.tests.common import BaseCommon
 
 # FIXME: many tests here do not have any assertions.
 # They simply run something and expect it to not raise an exception.
