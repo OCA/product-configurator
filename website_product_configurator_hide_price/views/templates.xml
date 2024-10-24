@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2024 Simone Rubino - Aion Tech
+  ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+  -->
+<odoo>
+    <template
+        id="product_configurator"
+        inherit_id="website_product_configurator.product_configurator"
+    >
+        <!-- Hide price and show message -->
+        <xpath expr="//div[hasclass('config_price')]" position="before">
+            <t
+                t-set="product_hide_price"
+                t-value="product.website_hide_price or not website.website_show_price"
+            />
+            <t t-if="product_hide_price">
+                <t
+                    t-set="product_hide_price_message"
+                    t-value="product.website_hide_price_message or website.website_hide_price_default_message"
+                />
+                <div
+                    t-if="product_hide_price_message"
+                    class="alert alert-info"
+                    role="alert"
+                >
+                    <span t-esc="product_hide_price_message" />
+                </div>
+            </t>
+        </xpath>
+        <xpath expr="//div[hasclass('config_price')]" position="attributes">
+            <attribute name="t-if">not product_hide_price</attribute>
+        </xpath>
+    </template>
+
+    <template id="cfg_product" inherit_id="website_product_configurator.cfg_product">
+        <xpath
+            expr="//t[@t-call='website_product_configurator.product_price']"
+            position="before"
+        >
+            <t
+                t-set="product_hide_price"
+                t-value="product.website_hide_price or not website.website_show_price"
+            />
+        </xpath>
+        <!-- Hide price and show message -->
+        <xpath
+            expr="//t[@t-call='website_product_configurator.product_price']"
+            position="attributes"
+        >
+            <attribute name="t-if">not product_hide_price</attribute>
+        </xpath>
+        <xpath expr="//div[@id='add_to_cart_wrap']" position="before">
+            <t t-if="product_hide_price">
+                <t
+                    t-set="product_hide_price_message"
+                    t-value="product.website_hide_price_message or website.website_hide_price_default_message"
+                />
+                <div
+                    t-if="product_hide_price_message"
+                    class="alert alert-info"
+                    role="alert"
+                >
+                    <span t-esc="product_hide_price_message" />
+                </div>
+            </t>
+        </xpath>
+        <!-- Hide Add to cart -->
+        <xpath expr="//div[@id='add_to_cart_wrap']" position="attributes">
+            <attribute name="t-if">not product_hide_price</attribute>
+        </xpath>
+    </template>
+
+    <template
+        id="config_form_select"
+        inherit_id="website_product_configurator.config_form_select"
+    >
+        <t t-if="price_extra" position="before">
+            <t
+                t-set="product_hide_price"
+                t-value="product_tmpl.website_hide_price or not website.website_show_price"
+            />
+        </t>
+        <!-- Hide extra price -->
+        <t t-if="price_extra" position="attributes">
+            <attribute name="t-if" separator=" " add="and not product_hide_price" />
+        </t>
+    </template>
+
+    <template
+        id="config_form_radio"
+        inherit_id="website_product_configurator.config_form_radio"
+    >
+        <t t-if="price_extra" position="before">
+            <t
+                t-set="product_hide_price"
+                t-value="product_tmpl.website_hide_price or not website.website_show_price"
+            />
+        </t>
+        <!-- Hide extra price -->
+        <t t-if="price_extra" position="attributes">
+            <attribute name="t-if" separator=" " add="and not product_hide_price" />
+        </t>
+    </template>
+</odoo>
