@@ -250,27 +250,6 @@ msgid "Attribute Weight Extra"
 msgstr "Extra peso attributo"
 
 #. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
-#, python-format
-msgid ""
-"Attribute custom type is binary, attachments are the only accepted values "
-"with this custom field type"
-msgstr ""
-"Il tipo attributo personalizzato è binario, sono consentiti solo allegati "
-"con questo tipo di campo personalizzato"
-
-#. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
-#, python-format
-msgid ""
-"Attribute custom type must be 'binary' for saving attachments to custom value"
-msgstr ""
-"Il tipo attributo personalizzato deve essere 'binary' per salvare allegati "
-"nel valore personalizzato"
-
-#. module: product_configurator
 #: model:ir.model.fields,help:product_configurator.field_product_attribute_value__image
 msgid "Attribute value image (Display on website for radio buttons)"
 msgstr ""
@@ -338,17 +317,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator.field_product_template__config_ok
 msgid "Can be Configured"
 msgstr "Può essere configurato"
-
-#. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
-#, python-format
-msgid ""
-"Cannot conduct search on an empty config session without product_tmpl_id "
-"kwarg"
-msgstr ""
-"Non si può eseguire una ricerca in una sessione con configurazione vuota "
-"senza kwarg product_tmpl_id"
 
 #. module: product_configurator
 #. odoo-python
@@ -494,13 +462,6 @@ msgstr "ID passo configurazione"
 #: model_terms:ir.ui.view,arch_db:product_configurator.product_template_only_form_view_inherited
 msgid "Configuration Steps"
 msgstr "Passi configurazione"
-
-#. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
-#, python-format
-msgid "Configuration cannot have the same value inserted twice"
-msgstr "La configurazione non può avere lo stesso valore inserito due volte"
 
 #. module: product_configurator
 #: model:ir.ui.menu,name:product_configurator.menu_product_configurable
@@ -657,7 +618,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product.py:0
-#: code:addons/product_configurator/models/product_config.py:0
 #, python-format
 msgid "Default values provided generate an invalid configuration"
 msgstr "I valori predefiniti forniti generano una configurazione non valida"
@@ -851,13 +811,6 @@ msgid "Interior"
 msgstr "Interno"
 
 #. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
-#, python-format
-msgid "Invalid Configuration"
-msgstr "Configurazione non valida"
-
-#. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_product__config_preset_ok
 msgid "Is Preset"
 msgstr "È preimpostato"
@@ -1024,13 +977,6 @@ msgid "Name"
 msgstr "Nome"
 
 #. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
-#, python-format
-msgid "New"
-msgstr "Nuova"
-
-#. module: product_configurator
 #: model_terms:ir.ui.view,arch_db:product_configurator.product_configurator_form
 msgid "Next"
 msgstr "Successiva"
@@ -1183,13 +1129,6 @@ msgid "Product configuration Wizard"
 msgstr "Procedura guidata configurazione prodotto"
 
 #. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
-#, python-format
-msgid "Product created via configuration wizard"
-msgstr "Prodotto creato attraverso la procedura guidata configurazione"
-
-#. module: product_configurator
 #: model_terms:ir.ui.view,arch_db:product_configurator.product_form_view_custom_vals_inherit
 msgid "Reconfigure Product"
 msgstr "Riconfigura prodotto"
@@ -1204,13 +1143,6 @@ msgstr "Rossa"
 #: model:ir.model.fields,field_description:product_configurator.field_product_template_attribute_line__required
 msgid "Required"
 msgstr "Richiesto"
-
-#. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
-#, python-format
-msgid "Required attribute '%s' is empty"
-msgstr "L'attributo richiesto '%s' è vuoto"
 
 #. module: product_configurator
 #: model_terms:ir.ui.view,arch_db:product_configurator.product_configurator_form
@@ -1577,12 +1509,54 @@ msgstr ""
 msgid "You cannot have a duplicate configuration for the same value"
 msgstr "Non si può avere una configurazione duplicata per lo stesso valore"
 
-#. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
 #, python-format
-msgid "You must select at least one attribute in order to configure a product"
-msgstr "Bisogna selezionare almeno un attributo per confiugrare un prodotto"
+#~ msgid ""
+#~ "Attribute custom type is binary, attachments are the only accepted values "
+#~ "with this custom field type"
+#~ msgstr ""
+#~ "Il tipo attributo personalizzato è binario, sono consentiti solo allegati "
+#~ "con questo tipo di campo personalizzato"
+
+#, python-format
+#~ msgid ""
+#~ "Attribute custom type must be 'binary' for saving attachments to custom "
+#~ "value"
+#~ msgstr ""
+#~ "Il tipo attributo personalizzato deve essere 'binary' per salvare "
+#~ "allegati nel valore personalizzato"
+
+#, python-format
+#~ msgid ""
+#~ "Cannot conduct search on an empty config session without product_tmpl_id "
+#~ "kwarg"
+#~ msgstr ""
+#~ "Non si può eseguire una ricerca in una sessione con configurazione vuota "
+#~ "senza kwarg product_tmpl_id"
+
+#, python-format
+#~ msgid "Configuration cannot have the same value inserted twice"
+#~ msgstr "La configurazione non può avere lo stesso valore inserito due volte"
+
+#, python-format
+#~ msgid "Invalid Configuration"
+#~ msgstr "Configurazione non valida"
+
+#, python-format
+#~ msgid "New"
+#~ msgstr "Nuova"
+
+#, python-format
+#~ msgid "Product created via configuration wizard"
+#~ msgstr "Prodotto creato attraverso la procedura guidata configurazione"
+
+#, python-format
+#~ msgid "Required attribute '%s' is empty"
+#~ msgstr "L'attributo richiesto '%s' è vuoto"
+
+#, python-format
+#~ msgid ""
+#~ "You must select at least one attribute in order to configure a product"
+#~ msgstr "Bisogna selezionare almeno un attributo per confiugrare un prodotto"
 
 #~ msgid "Attribute Line Values"
 #~ msgstr "Valori riga attributo"
