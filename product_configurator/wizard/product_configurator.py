@@ -1031,9 +1031,11 @@ class ProductConfigurator(models.TransientModel):
             # session = self.env["product.config.step"]
             # FIXME sounds useless (coming from v17 mig commit from OSI)
             pass
+        # TODO: is this full ctx override readlly needed?
+        # Linting disabled for v17 migration
         action = session_product_tmpl_id.with_context({}).create_config_wizard(
             click_next=False
-        )
+        )  # noqa: W8121
         return action
 
     def get_wizard_action(self, view_cache=False, wizard=None):
@@ -1114,69 +1116,64 @@ class ProductConfigurator(models.TransientModel):
         values_list = super().web_read(specification)
         for field_name, field_spec in specification.items():
             field = self._fields.get(field_name)
-            if field is None:
-                if (
-                    field_spec.get("context")
-                    and "is_m2m" in field_spec.get("context")
-                    and field_spec.get("context").get("is_m2m")
-                ):
-                    if not field_spec:
-                        continue
-
-                    co_records = self.env["product.attribute.value"]
-                    if "order" in field_spec and field_spec["order"]:
-                        co_records = co_records.search(
-                            [("id", "in", co_records.ids)], order=field_spec["order"]
-                        )
-                        order_key = {
-                            co_record.id: index
-                            for index, co_record in enumerate(co_records)
-                        }
-                        for values in values_list:
-                            # filter out inaccessible corecords in case of "cache pollution"
-                            values[field_name] = [
-                                id_ for id_ in values[field_name] if id_ in order_key
-                            ]
-                            values[field_name] = sorted(
-                                values[field_name], key=order_key.__getitem__
-                            )
-
-                    if "context" in field_spec:
-                        co_records = co_records.with_context(**field_spec["context"])
-                    if "fields" in field_spec:
-                        if field_spec.get("limit") is not None:
-                            limit = field_spec["limit"]
-                            ids_to_read = OrderedSet(
-                                id_
-                                for values in values_list
-                                for id_ in values[field_name][:limit]
-                            )
-                            co_records = co_records.browse(ids_to_read)
-                        x2many_data = {
-                            vals["id"]: vals
-                            for vals in co_records.web_read(field_spec["fields"])
-                        }
-                        for values in values_list:
-                            if values[field_name]:
-                                attribute_ids = self.env[
-                                    "product.attribute.value"
-                                ].browse(values[field_name])
-                                x2many_data = {
-                                    vals["id"]: vals
-                                    for vals in attribute_ids.web_read(
-                                        field_spec["fields"]
-                                    )
-                                }
-                                values[field_name] = [
-                                    x2many_data.get(id_) or {"id": id_}
-                                    for id_ in x2many_data
-                                ]
-                            else:
-                                values[field_name] = [
-                                    x2many_data.get(id_) or {"id": id_}
-                                    for id_ in x2many_data
-                                ]
+            if field is not None:
+                continue
+            if (
+                field_spec.get("context")
+                and "is_m2m" in field_spec.get("context")
+                and field_spec.get("context").get("is_m2m")
+            ):
+                if not field_spec:
+                    continue
+                co_records = self.env["product.attribute.value"]
+                if "order" in field_spec and field_spec["order"]:
+                    self._web_read_handle_order(
+                        co_records, field_name, field_spec, values_list
+                    )
+                if "context" in field_spec:
+                    co_records = co_records.with_context(**field_spec["context"])
+                if "fields" in field_spec:
+                    self._web_read_handle_fields(
+                        co_records, field_name, field_spec, values_list
+                    )
         return values_list
+
+    def _web_read_handle_order(self, co_records, field_name, field_spec, values_list):
+        co_records = co_records.search(
+            [("id", "in", co_records.ids)], order=field_spec["order"]
+        )
+        order_key = {co_record.id: index for index, co_record in enumerate(co_records)}
+        for values in values_list:
+            # filter out inaccessible corecords in case of "cache pollution"
+            values[field_name] = [id_ for id_ in values[field_name] if id_ in order_key]
+            values[field_name] = sorted(values[field_name], key=order_key.__getitem__)
+
+    def _web_read_handle_fields(self, co_records, field_name, field_spec, values_list):
+        if field_spec.get("limit") is not None:
+            limit = field_spec["limit"]
+            ids_to_read = OrderedSet(
+                id_ for values in values_list for id_ in values[field_name][:limit]
+            )
+            co_records = co_records.browse(ids_to_read)
+        x2many_data = {
+            vals["id"]: vals for vals in co_records.web_read(field_spec["fields"])
+        }
+        for values in values_list:
+            if values[field_name]:
+                attribute_ids = self.env["product.attribute.value"].browse(
+                    values[field_name]
+                )
+                x2many_data = {
+                    vals["id"]: vals
+                    for vals in attribute_ids.web_read(field_spec["fields"])
+                }
+                values[field_name] = [
+                    x2many_data.get(id_) or {"id": id_} for id_ in x2many_data
+                ]
+            else:
+                values[field_name] = [
+                    x2many_data.get(id_) or {"id": id_} for id_ in x2many_data
+                ]
 
 
 # class ProductConfiguratorCustomValue(models.TransientModel):
