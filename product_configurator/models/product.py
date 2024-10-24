@@ -351,7 +351,8 @@ class ProductTemplate(models.Model):
                 ]
                 raise ValidationError(
                     _(
-                        "The following attributes are missing from Configuration Steps: %s",
+                        "The following attributes are missing "
+                        "from Configuration Steps: %s",
                         (",".join(attrs)),
                     )
                 )
@@ -370,7 +371,8 @@ class ProductTemplate(models.Model):
                 duplicates = ",".join(duplicates.mapped("attribute_id.name"))
                 raise ValidationError(
                     _(
-                        "The following attributes have duplicates in Configuration Steps: %s",
+                        "The following attributes "
+                        "have duplicates in Configuration Steps: %s",
                         (duplicates),
                     )
                 )
