@@ -82,6 +82,9 @@
                         <group>
                             <field name="search_ok" />
                         </group>
+                        <group>
+                            <field name="configurator_extra_price_formula" />
+                        </group>
                     </group>
                 </page>
             </xpath>
