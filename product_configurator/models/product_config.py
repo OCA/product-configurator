@@ -562,7 +562,7 @@ class ProductConfigSession(models.Model):
                         field_val = None
                     else:
                         value_ids = self.value_ids.filtered(
-                            lambda value: value.attribute_id.id
+                            lambda value, attr_line=attr_line: value.attribute_id.id
                             == attr_line.attribute_id.id
                         )
                         field_val = value_ids and value_ids.ids or []
@@ -844,7 +844,7 @@ class ProductConfigSession(models.Model):
         return prices
 
     @api.model
-    def get_cfg_price(self, value_ids=[], custom_vals=None):
+    def get_cfg_price(self, value_ids=None, custom_vals=None):
         """Computes the price of the configured product based on the
             configuration passed in via value_ids and custom_values
 

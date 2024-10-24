@@ -306,8 +306,9 @@ class ProductAttributeValue(models.Model):
             extra_prices[attr_val_id.id] += line.price_extra
         return extra_prices
 
-    def _compute_display_name(self):  # noqa: W8110
-        super()._compute_display_name()
+    def _compute_display_name(self):
+        # useless return to make pylint happy
+        res = super()._compute_display_name()
         if self.env.context.get("show_price_extra"):
             product_template_id = self.env.context.get("active_id", False)
             price_precision = self.env["decimal.precision"].precision_get(
@@ -324,6 +325,7 @@ class ProductAttributeValue(models.Model):
                         ("{0:,.%sf}" % (price_precision)).format(price_extra),
                     )
                     rec.display_name = name or rec.display_name
+        return res
 
     @api.model
     def web_search_read(
@@ -468,10 +470,10 @@ class ProductAttributeValue(models.Model):
                 if attrs_split and len(attrs_split) == 2 and args and not args[0][2]:
                     attribute_id = int(attrs_split[1])
                     domain_attr_ids = wiz.domain_attr_ids.filtered(
-                        lambda l: l.attribute_id.id == attribute_id
+                        lambda x, attr_id=attribute_id: x.attribute_id.id == attr_id
                     )
                     domain_attr_2_ids = wiz.domain_attr_2_ids.filtered(
-                        lambda l: l.attribute_id.id == attribute_id
+                        lambda x, attr_id=attribute_id: x.attribute_id.id == attr_id
                     )
                     if domain_attr_ids.ids:
                         args[0][2] = domain_attr_ids.ids
@@ -507,7 +509,7 @@ class ProductAttributeValue(models.Model):
         if preset_val_ids:
             val_ids -= set(arg[2])
         val_ids = self.env["product.config.session"].values_available(
-            val_ids, preset_val_ids, product_tmpl_id=product_tmpl_id
+            val_ids, preset_val_ids, product_tmpl_id=product_tmpl.id
         )
         new_args.append(("id", "in", val_ids))
         mono_tmpl_lines = product_tmpl.attribute_line_ids.filtered(

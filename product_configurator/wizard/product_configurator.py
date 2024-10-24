@@ -238,22 +238,96 @@ class ProductConfigurator(models.TransientModel):
         vals = {}
         dynamic_fields = {k: v for k, v in dynamic_fields.items() if v}
         tobe_remove_attr = []
+        tobe_remove_attr_m2m = []
         available_val_ids_m2m = []
+        self._get_form_vals_prepare(
+            vals,
+            domains,
+            dynamic_fields,
+            tobe_remove_attr,
+            tobe_remove_attr_m2m,
+            available_val_ids_m2m,
+        )
+        if not (
+            (
+                self.env.context.get("is_action_previous")
+                or self.env.context.get("is_preset")
+                or self.env.context.get("is_m2m")
+            )
+            and config_session_id
+            and config_session_id.value_ids
+        ):
+            return vals
+        session_attrb_values = config_session_id.value_ids
+        tmpl_config_lines = config_session_id.product_tmpl_id.config_line_ids.mapped(
+            "attribute_line_id.attribute_id"
+        )
+        domain_line_attrbs = config_session_id.product_tmpl_id.config_line_ids.mapped(
+            "domain_id.domain_line_ids.attribute_id"
+        )
+        dynamic_fields2 = {}
+        restricted_attrs = list(set(tmpl_config_lines.ids + domain_line_attrbs.ids))
+        is_m2m = self.env.context.get("is_m2m", False)
+        if (
+            self.env.context.get("is_action_previous")
+            or self.env.context.get("is_preset")
+            or is_m2m
+        ):
+            self._get_form_vals_prepare_session_attrs(
+                session_attrb_values,
+                dynamic_fields,
+                tobe_remove_attr,
+                available_val_ids_m2m,
+                restricted_attrs,
+                dynamic_fields2,
+            )
+        origin_updated_fields = set(dynamic_fields)
+        to_updated_fields = set(dynamic_fields2)
+        updated_fields = to_updated_fields - origin_updated_fields
+        for fi in updated_fields:
+            dynamic_fields.update({fi: None})
+            vals.update({fi: None})
+        final_cfg_val_ids = list(dynamic_fields.values())
+        vals.update(
+            self.with_context(tobe_remove_attr=tobe_remove_attr).get_onchange_vals(
+                final_cfg_val_ids, config_session_id
+            )
+        )
+        # To solve the Multi selection problem removing extra []
+        if "value_ids" in vals:
+            val_ids = vals["value_ids"][0]
+            vals["value_ids"] = [[val_ids[0], val_ids[1], tools.flatten(val_ids[2])]]
+        return vals
+
+    def _get_form_vals_prepare(
+        self,
+        vals,
+        domains,
+        dynamic_fields,
+        tobe_remove_attr,
+        tobe_remove_attr_m2m,
+        available_val_ids_m2m,
+    ):
+        # FIXME: this metho modifies the input values
+        # TODO: NC: Refactor this method to be more readable
+        attr_lines = self.product_tmpl_id.attribute_line_ids
+
         for k, v in dynamic_fields.items():
             if not v:
                 continue
             available_val_ids = domains[k][0][2]
             value_ids = self.config_session_id.value_ids
-            attribute_line_ids = self.product_tmpl_id.attribute_line_ids.filtered(
-                lambda line: line.multi
-                and line.attribute_id.id in value_ids.mapped("attribute_id").ids
+            attr_line_ids = attr_lines.filtered(
+                lambda line, value_ids=value_ids: (
+                    line.multi and line.attribute_id in value_ids.attribute_id
+                )
             )
             multi_value_ids = self.config_session_id.value_ids.filtered(
-                lambda value: value.attribute_id.id
-                in attribute_line_ids.mapped("attribute_id").ids
+                lambda value, attr_line_ids=attr_line_ids: (
+                    value.attribute_id.id in attr_line_ids.mapped("attribute_id").ids
+                )
             )
             available_val_ids_m2m = multi_value_ids.ids
-            tobe_remove_attr_m2m = []
             if isinstance(v, list) or self.env.context.get("is_m2m"):
                 if isinstance(v, list):
                     for sub_value in v:
@@ -270,89 +344,60 @@ class ProductConfigurator(models.TransientModel):
 
             else:
                 vals[k] = v
-        if (
-            (
-                self.env.context.get("is_action_previous")
-                or self.env.context.get("is_preset")
-                or self.env.context.get("is_m2m")
-            )
-            and config_session_id
-            and config_session_id.value_ids
-        ):
-            session_attrb_values = config_session_id.value_ids
-            tmpl_config_lines = (
-                config_session_id.product_tmpl_id.config_line_ids.mapped(
-                    "attribute_line_id.attribute_id"
-                )
-            )
-            domain_line_attrbs = (
-                config_session_id.product_tmpl_id.config_line_ids.mapped(
-                    "domain_id.domain_line_ids.attribute_id"
-                )
-            )
-            dynamic_fields2 = {}
-            restricted_attrs = list(set(tmpl_config_lines.ids + domain_line_attrbs.ids))
-            field_prefix = self._prefixes.get("field_prefix")
-            if (
-                self.env.context.get("is_action_previous")
-                or self.env.context.get("is_preset")
-                or self._context.get("is_m2m", False)
-            ):
-                for attrb_value in session_attrb_values:
-                    dyn_key = field_prefix + str(attrb_value.attribute_id.id)
-                    if not self._context.get("is_m2m", False):
-                        if (
-                            dynamic_fields.get(dyn_key)
-                            and dynamic_fields.get(dyn_key)
-                            not in session_attrb_values.ids
-                        ):
-                            tobe_remove_attr.append(attrb_value.id)
-                            if attrb_value.attribute_id.id in restricted_attrs:
-                                local_attrb_value = attrb_value
-                                for i in range(len(restricted_attrs)):
-                                    valve_ids = product_tmpl_id.config_line_ids.filtered(
-                                        lambda line: int(local_attrb_value.id)
-                                        in line.domain_id.domain_line_ids.value_ids.ids
-                                    ).mapped("value_ids")
-                                    local_attrb_value = session_attrb_values.filtered(
-                                        lambda lk: lk.id in valve_ids.ids
-                                    )
-                                    if local_attrb_value:
-                                        tobe_remove_attr.append(local_attrb_value.id)
-                                        dynamic_fields2.update(
-                                            {
-                                                field_prefix
-                                                + str(
-                                                    local_attrb_value.attribute_id.id
-                                                ): local_attrb_value.id
-                                            }
-                                        )
-                    elif (
-                        self._context.get("is_m2m", False) and dyn_key in dynamic_fields
-                    ):
-                        tobe_remove_attr_m2m = set(tobe_remove_attr_m2m) - set(
-                            available_val_ids_m2m
-                        )
-                        tobe_remove_attr.extend(list(tobe_remove_attr_m2m))
-            origin_updated_fields = set(dynamic_fields)
-            to_updated_fields = set(dynamic_fields2)
-            updated_fields = to_updated_fields - origin_updated_fields
-            for fi in updated_fields:
-                dynamic_fields.update({fi: None})
-                vals.update({fi: None})
-        final_cfg_val_ids = list(dynamic_fields.values())
-        vals.update(
-            self.with_context(tobe_remove_attr=tobe_remove_attr).get_onchange_vals(
-                final_cfg_val_ids, config_session_id
-            )
-        )
-        # To solve the Multi selection problem removing extra []
-        if "value_ids" in vals:
-            val_ids = vals["value_ids"][0]
-            vals["value_ids"] = [[val_ids[0], val_ids[1], tools.flatten(val_ids[2])]]
-        return vals
 
-    def apply_onchange_values(self, values, field_name, field_onchange):
+    def _get_form_vals_prepare_session_attrs(
+        self,
+        session_attrb_values,
+        dynamic_fields,
+        tobe_remove_attr,
+        tobe_remove_attr_m2m,
+        available_val_ids_m2m,
+        restricted_attrs,
+        dynamic_fields2,
+    ):
+        # FIXME: this metho modifies the input values
+        # TODO: NC: Refactor this method to be more readable
+        field_prefix = self._prefixes.get("field_prefix")
+        is_m2m = self.env.context.get("is_m2m", False)
+        for attrb_value in session_attrb_values:
+            dyn_key = field_prefix + str(attrb_value.attribute_id.id)
+            if not is_m2m:
+                if (
+                    dynamic_fields.get(dyn_key)
+                    and dynamic_fields.get(dyn_key) not in session_attrb_values.ids
+                ):
+                    tobe_remove_attr.append(attrb_value.id)
+                    if attrb_value.attribute_id.id not in restricted_attrs:
+                        continue
+                    local_attrb_value = attrb_value
+                    for __ in range(len(restricted_attrs)):
+                        value_ids = self.product_tmpl_id.config_line_ids.filtered(
+                            lambda line, local_attrb_value=local_attrb_value: (
+                                int(local_attrb_value.id)
+                                in line.domain_id.domain_line_ids.value_ids.ids
+                            )
+                        ).mapped("value_ids")
+                        local_attrb_value = session_attrb_values.filtered(
+                            lambda lk, value_ids=value_ids: lk.id in value_ids.ids
+                        )
+                        if local_attrb_value:
+                            tobe_remove_attr.append(local_attrb_value.id)
+                            dynamic_fields2.update(
+                                {
+                                    field_prefix
+                                    + str(
+                                        local_attrb_value.attribute_id.id
+                                    ): local_attrb_value.id
+                                }
+                            )
+            elif is_m2m and dyn_key in dynamic_fields:
+                tobe_remove_attr_m2m = set(tobe_remove_attr_m2m) - set(
+                    available_val_ids_m2m
+                )
+                tobe_remove_attr.extend(list(tobe_remove_attr_m2m))
+
+    # FIXME: too complex
+    def apply_onchange_values(self, values, field_name, field_onchange):  # noqa
         """Called from web-controller
         - original onchage return M2o values in formate
         (attr-value.id, attr-value.name) but on website
@@ -374,7 +419,6 @@ class ProductConfigurator(models.TransientModel):
             state = self.state
 
         cfg_vals = self.env["product.attribute.value"]
-        config_line_ids = product_tmpl_id.config_line_ids
         # TODO: VP Need to Check
         # if values.get("value_ids", []):
         #     cfg_vals = self.env["product.attribute.value"].browse(
@@ -410,15 +454,15 @@ class ProductConfigurator(models.TransientModel):
         # Get the unstored values from the client view
         for k, v in dynamic_fields.items():
             attr_id = int(k.split(field_prefix)[1])
-            valve_ids = self.env["product.attribute.value"]
+            value_ids = self.env["product.attribute.value"]
             if isinstance(v, list):
                 for att in v:
-                    valve_ids |= product_tmpl_id.config_line_ids.filtered(
+                    value_ids |= product_tmpl_id.config_line_ids.filtered(
                         lambda line, att=att: int(att[1])
                         in line.domain_id.domain_line_ids.value_ids.ids
                     ).mapped("value_ids")
             else:
-                valve_ids = product_tmpl_id.config_line_ids.filtered(
+                value_ids = product_tmpl_id.config_line_ids.filtered(
                     lambda line, v=v: int(v)
                     in line.domain_id.domain_line_ids.value_ids.ids
                 ).mapped("value_ids")
@@ -427,28 +471,30 @@ class ProductConfigurator(models.TransientModel):
                     and json.loads(self.dyn_restricted_attrs_dicts)
                     or {}
                 )
-                field_name = field_prefix + str(valve_ids.mapped("attribute_id").id)
-                if attr_id and valve_ids.filtered(
-                    lambda value: value.attribute_id.id != attr_id
+                field_name = field_prefix + str(value_ids.mapped("attribute_id").id)
+                if attr_id and value_ids.filtered(
+                    lambda value, attr_id=attr_id: value.attribute_id.id != attr_id
                 ):
                     if field_name in dyn_restricted_attrs_dicts:
-                        dyn_restricted_attrs_dicts[field_name] = valve_ids.ids
+                        dyn_restricted_attrs_dicts[field_name] = value_ids.ids
                     else:
-                        dyn_restricted_attrs_dicts.update({field_name: valve_ids.ids})
+                        dyn_restricted_attrs_dicts.update({field_name: value_ids.ids})
                 self.dyn_restricted_attrs_dicts = json.dumps(dyn_restricted_attrs_dicts)
             is_custom = self.product_tmpl_id.attribute_line_ids.filtered(
-                lambda l: l.attribute_id.id == valve_ids.mapped("attribute_id").id
-                and l.custom
+                lambda x, value_ids=value_ids: (
+                    x.attribute_id.id == value_ids.mapped("attribute_id").id
+                )
+                and x.custom
             )
             non_custom = self.product_tmpl_id.attribute_line_ids - is_custom
-            self.domain_attr_2_ids = [(6, 0, valve_ids.ids)]
-            if valve_ids.mapped("attribute_id").id in is_custom.ids:
+            self.domain_attr_2_ids = [(6, 0, value_ids.ids)]
+            if value_ids.mapped("attribute_id").id in is_custom.ids:
                 self.dyn_field_2_value = custom_field_prefix + str(
-                    valve_ids.mapped("attribute_id").id
+                    value_ids.mapped("attribute_id").id
                 )
-            if valve_ids.mapped("attribute_id").id in non_custom.ids:
+            if value_ids.mapped("attribute_id").id in non_custom.ids:
                 self.dyn_field_2_value = field_prefix + str(
-                    valve_ids.mapped("attribute_id").id
+                    value_ids.mapped("attribute_id").id
                 )
 
             line_attributes = cfg_step.attribute_line_ids.mapped("attribute_id")
