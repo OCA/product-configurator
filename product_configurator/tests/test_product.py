@@ -2,6 +2,10 @@ from odoo.exceptions import ValidationError
 
 from ..tests.common import ProductConfiguratorTestCases
 
+# FIXME: many tests here do not have any assertions.
+# They simply run something and expect it to not raise an exception.
+# This is not a good practice. Tests should have assertions.
+
 
 class TestProduct(ProductConfiguratorTestCases):
     @classmethod
@@ -143,9 +147,9 @@ class TestProduct(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
-                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
+                f"__attribute_{self.attr_fuel.id}": self.value_gasoline.id,
+                f"__attribute_{self.attr_engine.id}": self.value_218i.id,
+                f"__attribute_{self.attr_color.id}": self.value_red.id,
             }
         )
         product_config_wizard.action_next_step()
@@ -179,9 +183,9 @@ class TestProduct(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
-                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
+                f"__attribute_{self.attr_fuel.id}": self.value_gasoline.id,
+                f"__attribute_{self.attr_engine.id}": self.value_218i.id,
+                f"__attribute_{self.attr_color.id}": self.value_red.id,
             }
         )
         wizard_action = product_config_wizard.action_next_step()
@@ -235,14 +239,14 @@ class TestProduct(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
+                f"__attribute_{self.attr_fuel.id}": self.value_gasoline.id,
+                f"__attribute_{self.attr_engine.id}": self.value_218i.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
+                f"__attribute_{self.attr_color.id}": self.value_red.id,
             }
         )
         product_config_wizard.action_previous_step()
@@ -330,9 +334,9 @@ class TestProduct(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
-                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
+                f"__attribute_{self.attr_fuel.id}": self.value_gasoline.id,
+                f"__attribute_{self.attr_engine.id}": self.value_218i.id,
+                f"__attribute_{self.attr_color.id}": self.value_red.id,
             }
         )
         product_config_wizard.action_next_step()
@@ -347,14 +351,14 @@ class TestProduct(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute_{}".format(self.attr_engine.id): self.value_218d.id,
+                f"__attribute_{self.attr_fuel.id}": self.value_gasoline.id,
+                f"__attribute_{self.attr_engine.id}": self.value_218d.id,
             }
         )
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_color.id): self.value_silver.id,
+                f"__attribute_{self.attr_color.id}": self.value_silver.id,
             }
         )
         product_config_wizard.action_next_step()
@@ -377,22 +381,19 @@ class TestProduct(ProductConfiguratorTestCases):
 
     def test_11_compute_product_weight_extra(self):
         product_id = self.env.ref("product.product_delivery_01")
-        product_template_attribute_value_ids = self.env.ref(
+        product_template_attr_value_ids = self.env.ref(
             "product.product_4_attribute_1_value_2"
         )
-        product_template_attribute_value_ids.write(
+        product_template_attr_value_ids.write(
             {
                 "weight_extra": 50.0,
             }
         )
         product_id._compute_product_weight_extra()
-        product_id.write(
-            {
-                "product_template_attribute_value_ids": product_template_attribute_value_ids
-            }
-        )
+        vals = {"product_template_attribute_value_ids": product_template_attr_value_ids}
+        product_id.write(vals)
         self.assertEqual(
-            product_template_attribute_value_ids.weight_extra,
+            product_template_attr_value_ids.weight_extra,
             50.0,
             product_id.weight_extra,
         )
@@ -618,9 +619,9 @@ class TestProduct(ProductConfiguratorTestCases):
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
-                "__attribute_{}".format(self.attr_fuel.id): self.value_gasoline.id,
-                "__attribute_{}".format(self.attr_engine.id): self.value_218i.id,
-                "__attribute_{}".format(self.attr_color.id): self.value_red.id,
+                f"__attribute_{self.attr_fuel.id}": self.value_gasoline.id,
+                f"__attribute_{self.attr_engine.id}": self.value_218i.id,
+                f"__attribute_{self.attr_color.id}": self.value_red.id,
             }
         )
         product_config_wizard.action_next_step()

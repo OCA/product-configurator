@@ -130,8 +130,9 @@ class ProductAttribute(models.Model):
             elif maxv and val > maxv:
                 raise ValidationError(
                     _(
-                        "Selected custom value '%(name)s' must be lower than %(max_value)s",
-                        **{"name": self.name, "max_val": self.max_val + 1},
+                        "Selected custom value '%(name)s' "
+                        "must be lower than %(max_value)s",
+                        **{"name": self.name, "max_value": self.max_val + 1},
                     )
                 )
 
@@ -256,7 +257,7 @@ class ProductAttributeValue(models.Model):
         if not default:
             default = {}
         default.update({"name": self.name + " (copy)"})
-        product = super(ProductAttributeValue, self).copy(default)
+        product = super().copy(default)
         return product
 
     active = fields.Boolean(
@@ -302,8 +303,8 @@ class ProductAttributeValue(models.Model):
         return extra_prices
 
     def name_get(self):
-        res = super(ProductAttributeValue, self).name_get()
-        if not self._context.get("show_price_extra"):
+        res = super().name_get()
+        if not self.env.context.get("show_price_extra"):
             return res
         product_template_id = self.env.context.get("active_id", False)
 
@@ -318,8 +319,7 @@ class ProductAttributeValue(models.Model):
             if price_extra:
                 val = (
                     val[0],
-                    "%s ( +%s )"
-                    % (
+                    "{} ( +{} )".format(
                         val[1],
                         ("{0:,.%sf}" % (price_precision)).format(price_extra),
                     ),
@@ -367,9 +367,7 @@ class ProductAttributeValue(models.Model):
             if attr_restrict_ids:
                 new_args.append(("attribute_id", "not in", attr_restrict_ids))
             args = new_args
-        res = super(ProductAttributeValue, self).name_search(
-            name=name, args=args, operator=operator, limit=limit
-        )
+        res = super().name_search(name=name, args=args, operator=operator, limit=limit)
         return res
 
     # TODO: Prevent unlinking custom options by overriding unlink
@@ -402,7 +400,7 @@ class ProductAttributeValueLine(models.Model):
     )
     value_id = fields.Many2one(
         comodel_name="product.attribute.value",
-        required="True",
+        required=True,
         string="Attribute Value",
     )
     attribute_id = fields.Many2one(

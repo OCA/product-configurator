@@ -14,15 +14,22 @@ from odoo.addons.base.models.ir_ui_view import (
 
 class FreeSelection(fields.Selection):
     def convert_to_cache(self, value, record, validate=True):
-        return super(FreeSelection, self).convert_to_cache(
-            value=value, record=record, validate=False
-        )
+        return super().convert_to_cache(value=value, record=record, validate=False)
 
 
 class ProductConfigurator(models.TransientModel):
     _name = "product.configurator"
     _inherits = {"product.config.session": "config_session_id"}
     _description = "Product configuration Wizard"
+
+    def _find_wizard_context(self):
+        # TODO: For more ref. https://github.com/odoo/odoo/pull/135145
+        wizard_id = (
+            self.env.context.get("wizard_id_view_ref")
+            or self.env.context.get("wizard_id")
+            or False
+        )
+        return wizard_id
 
     @property
     def _prefixes(self):
@@ -84,11 +91,10 @@ class ProductConfigurator(models.TransientModel):
         """Get the states of the wizard using standard values and optional
         configuration steps set on the product.template via
         config_step_line_ids"""
-
         steps = [("select", "Select Template")]
 
         # Get the wizard id from context set via action_next_step method
-        wizard_id = self.env.context.get("wizard_id")
+        wizard_id = self._find_wizard_context()
         wiz = self.browse(wizard_id).exists()
 
         if not wiz:
@@ -168,6 +174,7 @@ class ProductConfigurator(models.TransientModel):
                 value_ids=check_avail_ids,
                 product_template_attribute_line_id=line.id,
             )
+
             domains[field_name] = [("id", "in", avail_ids)]
             check_avail_ids = list(
                 set(check_avail_ids) - (set(line.value_ids.ids) - set(avail_ids))
@@ -232,7 +239,6 @@ class ProductConfigurator(models.TransientModel):
                 vals[k] = None
             else:
                 vals[k] = v
-
         final_cfg_val_ids = list(dynamic_fields.values())
 
         vals.update(self.get_onchange_vals(final_cfg_val_ids, config_session_id))
@@ -281,9 +287,7 @@ class ProductConfigurator(models.TransientModel):
             and not field_name.startswith(custom_field_prefix)
         ):
             values = self._remove_dynamic_fields(values)
-            res = super(ProductConfigurator, self).onchange(
-                values, field_name, field_onchange
-            )
+            res = super().onchange(values, field_name, field_onchange)
             return res
 
         view_val_ids = set()
@@ -406,7 +410,6 @@ class ProductConfigurator(models.TransientModel):
 
     @api.model
     def get_field_default_attrs(self):
-
         return {
             "company_dependent": False,
             "depends": (),
@@ -427,12 +430,8 @@ class ProductConfigurator(models.TransientModel):
         field_prefix = self._prefixes.get("field_prefix")
         custom_field_prefix = self._prefixes.get("custom_field_prefix")
 
-        res = super(ProductConfigurator, self).fields_get(
-            allfields=allfields, attributes=attributes
-        )
-
-        wizard_id = self.env.context.get("wizard_id")
-
+        res = super().fields_get(allfields=allfields, attributes=attributes)
+        wizard_id = self._find_wizard_context()
         # If wizard_id is not defined in the context then the wizard was just
         # launched and is not stored in the database yet
         if not wizard_id:
@@ -521,15 +520,11 @@ class ProductConfigurator(models.TransientModel):
     def get_view(self, view_id=None, view_type="form", **options):
         """Generate view dynamically using attributes stored on the
         product.template"""
-
         if view_type == "form" and not view_id:
             view_ext_id = "product_configurator.product_configurator_form"
             view_id = self.env.ref(view_ext_id).id
-        res = super(ProductConfigurator, self).get_view(
-            view_id=view_id, view_type=view_type, **options
-        )
-
-        wizard_id = self.env.context.get("wizard_id")
+        res = super().get_view(view_id=view_id, view_type=view_type, **options)
+        wizard_id = self._find_wizard_context()
 
         wizard_model = res["model"]
         if not wizard_id or not res["models"].get(wizard_model):
@@ -588,7 +583,6 @@ class ProductConfigurator(models.TransientModel):
     ):
         cfg_step_ids = []
         for attr_line in attr_lines:
-
             attribute_id = attr_line.attribute_id.id
             field_name = field_prefix + str(attribute_id)
             custom_field = custom_field_prefix + str(attribute_id)
@@ -598,7 +592,7 @@ class ProductConfigurator(models.TransientModel):
                 continue
 
             config_steps = wiz.product_tmpl_id.config_step_line_ids.filtered(
-                lambda x: attr_line in x.attribute_line_ids
+                lambda x, attr_line=attr_line: attr_line in x.attribute_line_ids
             )
 
             # attrs property for dynamic fields
@@ -626,7 +620,7 @@ class ProductConfigurator(models.TransientModel):
 
             config_lines = wiz.product_tmpl_id.config_line_ids
             dependencies = config_lines.filtered(
-                lambda cl: cl.attribute_line_id == attr_line
+                lambda cl, attr_line=attr_line: cl.attribute_line_id == attr_line
             )
 
             # If an attribute field depends on another field from the same
@@ -634,39 +628,38 @@ class ProductConfigurator(models.TransientModel):
             # required and readonly depending on the value entered in the
             # dependee
 
-            if attr_line.value_ids <= dependencies.mapped("value_ids"):
-                attr_depends = {}
-                domain_lines = dependencies.mapped("domain_id.domain_line_ids")
-                for domain_line in domain_lines:
-                    attr_id = domain_line.attribute_id.id
-                    attr_field = field_prefix + str(attr_id)
-                    attr_lines = wiz.product_tmpl_id.attribute_line_ids
-                    # If the fields it depends on are not in the config step
-                    # allow to update attrs for all attribute.\ otherwise
-                    # required will not work with stepchange using statusbar.
-                    # if config_steps and wiz.state not in cfg_step_ids:
-                    #     continue
-                    if attr_field not in attr_depends:
-                        attr_depends[attr_field] = set()
-                    if domain_line.condition == "in":
-                        attr_depends[attr_field] |= set(domain_line.value_ids.ids)
-                    elif domain_line.condition == "not in":
-                        val_ids = attr_lines.filtered(
-                            lambda line: line.attribute_id.id == attr_id
-                        ).value_ids
-                        val_ids = val_ids - domain_line.value_ids
-                        attr_depends[attr_field] |= set(val_ids.ids)
+            if attr_line.value_ids > dependencies.mapped("value_ids"):
+                continue
+            attr_depends = {}
+            domain_lines = dependencies.mapped("domain_id.domain_line_ids")
+            for domain_line in domain_lines:
+                attr_id = domain_line.attribute_id.id
+                attr_field = field_prefix + str(attr_id)
+                attr_lines = wiz.product_tmpl_id.attribute_line_ids
+                # If the fields it depends on are not in the config step
+                # allow to update attrs for all attribute.\ otherwise
+                # required will not work with stepchange using statusbar.
+                # if config_steps and wiz.state not in cfg_step_ids:
+                #     continue
+                if attr_field not in attr_depends:
+                    attr_depends[attr_field] = set()
+                if domain_line.condition == "in":
+                    attr_depends[attr_field] |= set(domain_line.value_ids.ids)
+                elif domain_line.condition == "not in":
+                    val_ids = attr_lines.filtered(
+                        lambda line, attr_id=attr_id: line.attribute_id.id == attr_id
+                    ).value_ids
+                    val_ids = val_ids - domain_line.value_ids
+                    attr_depends[attr_field] |= set(val_ids.ids)
 
-                for dependee_field, val_ids in attr_depends.items():
-                    if not val_ids:
-                        continue
-                    if not attr_line.custom:
-                        attrs["readonly"].append(
-                            (dependee_field, "not in", list(val_ids))
-                        )
+            for dependee_field, val_ids in attr_depends.items():
+                if not val_ids:
+                    continue
+                if not attr_line.custom:
+                    attrs["readonly"].append((dependee_field, "not in", list(val_ids)))
 
-                    if attr_line.required and not attr_line.custom:
-                        attrs["required"].append((dependee_field, "in", list(val_ids)))
+                if attr_line.required and not attr_line.custom:
+                    attrs["required"].append((dependee_field, "in", list(val_ids)))
         return attrs, field_name, custom_field, config_steps, cfg_step_ids
 
     @api.model
@@ -801,7 +794,7 @@ class ProductConfigurator(models.TransientModel):
                 (wz_value_ids and not wz_value_ids[0][2]) or not wz_value_ids
             ):
                 vals.update({"value_ids": [(6, 0, session.value_ids.ids)]})
-        return super(ProductConfigurator, self).create(vals_list)
+        return super().create(vals_list)
 
     def read(self, fields=None, load="_classic_read"):
         """Remove dynamic fields from the fields list and update the
@@ -819,7 +812,10 @@ class ProductConfigurator(models.TransientModel):
         custom_val = self.env["product.config.session"].get_custom_value_id()
         dynamic_vals = {}
 
-        res = super(ProductConfigurator, self).read(fields=fields, load=load)
+        res = super().read(fields=fields, load=load)
+
+        if not load:
+            load = "_classic_read"
 
         if not dynamic_fields:
             return res
@@ -827,7 +823,6 @@ class ProductConfigurator(models.TransientModel):
         for attr_line in self.product_tmpl_id.attribute_line_ids:
             attr_id = attr_line.attribute_id.id
             field_name = field_prefix + str(attr_id)
-
             if field_name not in dynamic_fields:
                 continue
 
@@ -837,7 +832,7 @@ class ProductConfigurator(models.TransientModel):
             res[0].update({field_name: False, custom_field_name: False})
 
             custom_vals = self.custom_value_ids.filtered(
-                lambda x: x.attribute_id.id == attr_id
+                lambda x, attr_id=attr_id: x.attribute_id.id == attr_id
             ).with_context(show_attribute=False)
             vals = attr_line.value_ids.filtered(
                 lambda v: v in self.value_ids
@@ -884,7 +879,7 @@ class ProductConfigurator(models.TransientModel):
         )
         vals = self._remove_dynamic_fields(vals)
 
-        return super(ProductConfigurator, self).write(vals)
+        return super().write(vals)
 
     def action_next_step(self):
         """Proceeds to the next step of the configuration process. This usually
@@ -983,7 +978,8 @@ class ProductConfigurator(models.TransientModel):
             }
         )
         if wizard:
-            ctx.update({"wizard_id": wizard.id})
+            ctx.update({"wizard_id": wizard.id, "wizard_id_view_ref": wizard.id})
+
         wizard_action = {
             "type": "ir.actions.act_window",
             "res_model": self._name,
