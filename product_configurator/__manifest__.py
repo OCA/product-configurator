@@ -28,6 +28,7 @@
     "assets": {
         "web.assets_backend": [
             "/product_configurator/static/src/scss/form_widget.scss",
+            "/product_configurator/static/src/js/form_controller.esm.js",
             "/product_configurator/static/src/js/form_widgets.js",
             "/product_configurator/static/src/js/boolean_button_widget.esm.js",
             "/product_configurator/static/src/js/boolean_button_widget.xml",
