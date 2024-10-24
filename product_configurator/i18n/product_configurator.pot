@@ -238,24 +238,6 @@ msgid "Attribute Weight Extra"
 msgstr ""
 
 #. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
-#, python-format
-msgid ""
-"Attribute custom type is binary, attachments are the only accepted values "
-"with this custom field type"
-msgstr ""
-
-#. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
-#, python-format
-msgid ""
-"Attribute custom type must be 'binary' for saving attachments to custom "
-"value"
-msgstr ""
-
-#. module: product_configurator
 #: model:ir.model.fields,help:product_configurator.field_product_attribute_value__image
 msgid "Attribute value image (Display on website for radio buttons)"
 msgstr ""
@@ -316,15 +298,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator.field_product_product__config_ok
 #: model:ir.model.fields,field_description:product_configurator.field_product_template__config_ok
 msgid "Can be Configured"
-msgstr ""
-
-#. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
-#, python-format
-msgid ""
-"Cannot conduct search on an empty config session without product_tmpl_id "
-"kwarg"
 msgstr ""
 
 #. module: product_configurator
@@ -466,13 +439,6 @@ msgstr ""
 #: model:ir.ui.menu,name:product_configurator.menu_product_config_steps_action
 #: model_terms:ir.ui.view,arch_db:product_configurator.product_template_only_form_view_inherited
 msgid "Configuration Steps"
-msgstr ""
-
-#. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
-#, python-format
-msgid "Configuration cannot have the same value inserted twice"
 msgstr ""
 
 #. module: product_configurator
@@ -628,7 +594,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product.py:0
-#: code:addons/product_configurator/models/product_config.py:0
 #, python-format
 msgid "Default values provided generate an invalid configuration"
 msgstr ""
@@ -815,14 +780,6 @@ msgid "Interior"
 msgstr ""
 
 #. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
-#: code:addons/product_configurator/models/product_config.py:0
-#, python-format
-msgid "Invalid Configuration"
-msgstr ""
-
-#. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_product__config_preset_ok
 msgid "Is Preset"
 msgstr ""
@@ -989,13 +946,6 @@ msgid "Name"
 msgstr ""
 
 #. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
-#, python-format
-msgid "New"
-msgstr ""
-
-#. module: product_configurator
 #: model_terms:ir.ui.view,arch_db:product_configurator.product_configurator_form
 msgid "Next"
 msgstr ""
@@ -1146,13 +1096,6 @@ msgid "Product configuration Wizard"
 msgstr ""
 
 #. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
-#, python-format
-msgid "Product created via configuration wizard"
-msgstr ""
-
-#. module: product_configurator
 #: model_terms:ir.ui.view,arch_db:product_configurator.product_form_view_custom_vals_inherit
 msgid "Reconfigure Product"
 msgstr ""
@@ -1166,13 +1109,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute__required
 #: model:ir.model.fields,field_description:product_configurator.field_product_template_attribute_line__required
 msgid "Required"
-msgstr ""
-
-#. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
-#, python-format
-msgid "Required attribute '%s' is empty"
 msgstr ""
 
 #. module: product_configurator
@@ -1511,12 +1447,4 @@ msgstr ""
 #: code:addons/product_configurator/models/product.py:0
 #, python-format
 msgid "You cannot have a duplicate configuration for the same value"
-msgstr ""
-
-#. module: product_configurator
-#. odoo-python
-#: code:addons/product_configurator/models/product_config.py:0
-#: code:addons/product_configurator/models/product_config.py:0
-#, python-format
-msgid "You must select at least one attribute in order to configure a product"
 msgstr ""
