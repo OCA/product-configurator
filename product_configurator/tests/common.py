@@ -58,12 +58,12 @@ class ProductConfiguratorTestCases(BaseCommon):
         )
 
     @classmethod
-    def _configure_product_nxt_step(cls):
-        product_config_wizard = cls.ProductConfWizard.create(
-            {
-                "product_tmpl_id": cls.config_product.id,
-            }
-        )
+    def _configure_product_nxt_step(cls, **defaults):
+        vals = {
+            "product_tmpl_id": cls.config_product.id,
+        }
+        vals.update(defaults)
+        product_config_wizard = cls.ProductConfWizard.create(vals)
         product_config_wizard.action_next_step()
         product_config_wizard.write(
             {
