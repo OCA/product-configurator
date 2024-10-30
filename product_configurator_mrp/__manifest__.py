@@ -18,14 +18,18 @@
     ],
     "assets": {
         "web.assets_backend": [
-            "/product_configurator_mrp/static/src/js/list_controller.js",
-            "/product_configurator_mrp/static/src/js/kanban_controller.js",
-            "/product_configurator_mrp/static/src/js/form_controller.js",
+            "/product_configurator_mrp/static/src/js/list_controller.esm.js",
+            "/product_configurator_mrp/static/src/js/kanban_controller.esm.js",
+            "/product_configurator_mrp/static/src/js/form_controller.esm.js",
             "/product_configurator_mrp/static/src/scss/mrp_config.scss",
             "/product_configurator_mrp/static/src/xml/mrp_production_views.xml",
         ],
     },
-    "demo": ["demo/product_template.xml"],
+    "demo": [
+        "demo/product_template.xml",
+        "demo/configuration_set.xml",
+        "demo/mrp_bom.xml",
+    ],
     "qweb": ["static/src/xml/mrp_production_views.xml"],
     "installable": True,
     "auto_install": False,
