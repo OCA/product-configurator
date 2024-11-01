@@ -341,35 +341,25 @@ class ProductTemplate(models.Model):
         attribute_line_ids = self.attribute_line_ids
         tmpl_value_ids = attribute_line_ids._configurator_value_ids()
         tmpl_attribute_ids = attribute_line_ids.mapped("attribute_id")
-        error_message = False
+        error_message = ""
         for domain_id in self.config_line_ids.mapped("domain_id"):
-            domain_attr_ids = domain_id.domain_line_ids.mapped("attribute_id")
-            domain_value_ids = domain_id.domain_line_ids.mapped("value_ids")
-            invalid_value_ids = domain_value_ids - tmpl_value_ids
-            invalid_attribute_ids = domain_attr_ids - tmpl_attribute_ids
-            if not invalid_attribute_ids and not invalid_value_ids:
-                continue
-            if not error_message:
-                error_message = _(
-                    "Following Attribute/Value from restriction "
-                    "are not present in template attributes/values. "
-                    "Please make sure you are adding right restriction"
-                )
-            error_message += _("\nRestriction: %s", domain_id.name)
-            error_message += (
-                invalid_attribute_ids
-                and _(
-                    "\nAttribute/s: %s", ", ".join(invalid_attribute_ids.mapped("name"))
-                )
-                or ""
-            )
-            error_message += (
-                invalid_value_ids
-                and _("\nValue/s: %s\n", ", ".join(invalid_value_ids.mapped("name")))
-                or ""
-            )
+            has_effect = False
+            for line_id in domain_id.domain_line_ids:
+                if line_id.attribute_id in tmpl_attribute_ids and set(
+                    line_id.value_ids
+                ).intersection(set(tmpl_value_ids)):
+                    has_effect = True
+                    break
+            if not has_effect:
+                error_message += _("\n\nRestriction: %s", domain_id.name)
         if error_message:
-            raise ValidationError(error_message)
+            base_message = _(
+                "The following Configuration Restrictions have no effect on this "
+                "Template. i.e. They have no Attribute/Value combinations that are "
+                "present in the Template Attributes/Values.\n"
+                "Please only select Restrictions that relate to this Template."
+            )
+            raise ValidationError(base_message + error_message)
 
 
 class ProductProduct(models.Model):
