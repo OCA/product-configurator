@@ -532,7 +532,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
         pricelist = get_pricelist()
         product_config_session = request.session.get("product_config_session")
         if product_config_session and product_config_session.get(product_tmpl_id.id):
-
             # Bizzappdev end code
             del product_config_session[product_tmpl_id.id]
             request.session["product_config_session"] = product_config_session
@@ -619,7 +618,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             product_custom_attribute_values=product_custom_attribute_values,
             no_variant_attribute_values=no_variant_attribute_values,
             # BizzAppDev Customization
-            config_session_id=kw.get("config_session_id", False)
+            config_session_id=kw.get("config_session_id", False),
             # BizzAppDev Customization End
         )
         if kw.get("express"):
