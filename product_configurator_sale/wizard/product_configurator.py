@@ -5,7 +5,6 @@ from odoo import api, fields, models
 
 
 class ProductConfiguratorSale(models.TransientModel):
-
     _name = "product.configurator.sale"
     _inherit = "product.configurator"
     _description = "Product Configurator Sale"
