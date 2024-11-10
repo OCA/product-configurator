@@ -1,4 +1,8 @@
-from ..tests.test_website_product_configurator_values import (
+from datetime import timedelta
+
+from odoo import fields
+
+from ..tests.common import (
     TestProductConfiguratorValues,
 )
 
@@ -40,24 +44,61 @@ class TestProductConfigStepLine(TestProductConfiguratorValues):
 
 class TestProductConfig(TestProductConfiguratorValues):
     def test_remove_inactive_config_sessions(self):
-        self.session_id.remove_inactive_config_sessions()
+        session_id = self.productConfigSession.create(
+            {
+                "product_tmpl_id": self.config_product.id,
+                "value_ids": [
+                    (
+                        6,
+                        0,
+                        [
+                            self.value_gasoline.id,
+                            self.value_transmission.id,
+                            self.value_red.id,
+                        ],
+                    )
+                ],
+                "user_id": self.env.user.id,
+                "write_date": fields.Datetime.now() - timedelta(days=5),
+            }
+        )
+        session_id2 = self.productConfigSession.create(
+            {
+                "product_tmpl_id": self.config_product_1.id,
+                "value_ids": [
+                    (
+                        6,
+                        0,
+                        [
+                            self.value_gasoline.id,
+                            self.value_transmission.id,
+                            self.value_red.id,
+                        ],
+                    )
+                ],
+                "user_id": self.env.user.id,
+                "write_date": fields.Datetime.now(),
+            }
+        )
+
+        session_id.remove_inactive_config_sessions()
         sessions_to_remove = self.productConfigSession.search(
             [
                 (
                     "id",
                     "=",
-                    self.session_id.id,
+                    session_id.id,
                 )
             ]
         )
         self.assertFalse(sessions_to_remove, "session_id is not deleted")
-        self.session_id2.remove_inactive_config_sessions()
+        session_id2.remove_inactive_config_sessions()
         sessions_to_remove2 = self.productConfigSession.search(
             [
                 (
                     "id",
                     "=",
-                    self.session_id2.id,
+                    session_id2.id,
                 )
             ]
         )

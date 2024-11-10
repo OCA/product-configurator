@@ -1,12 +1,37 @@
-import json
+import logging
 
 from odoo import http, models
 from odoo.exceptions import UserError, ValidationError
-from odoo.http import request
+from odoo.http import request, route
 from odoo.tools.safe_eval import safe_eval
 
 from odoo.addons.http_routing.models.ir_http import slug
 from odoo.addons.website_sale.controllers.main import WebsiteSale
+from odoo.addons.website_sale_product_configurator.controllers.main import (
+    WebsiteSaleProductConfiguratorController,
+)
+
+_logger = logging.getLogger(__name__)
+
+
+class CustomWebsiteSaleProductConfigurator(WebsiteSaleProductConfiguratorController):
+    @route()
+    def show_advanced_configurator(
+        self,
+        product_id,
+        variant_values,
+        add_qty=1,
+        force_dialog=False,
+        **kw,
+    ):
+        """Inherit: skips showing the advanced product configurator modal for
+        a product"""
+        product = request.env["product.product"].browse(int(product_id))
+        if product.config_ok:
+            return False
+        return super().show_advanced_configurator(
+            product_id, variant_values, add_qty=add_qty, force_dialog=force_dialog, **kw
+        )
 
 
 def get_pricelist():
@@ -30,16 +55,18 @@ class ProductConfigWebsiteSale(WebsiteSale):
         is_public_user = request.env.user.has_group("base.group_public")
         cfg_session_id = product_config_sessions.get(product_tmpl_id.id)
         if cfg_session_id:
-            cfg_session = cfg_session_obj.browse(int(cfg_session_id))
+            cfg_session = cfg_session_obj.search(
+                [("id", "=", int(cfg_session_id))], limit=1
+            )
 
-        # Retrieve an active configuration session or create a new one
+        # Retrieve an active configuration session or create a new one.
         if not cfg_session or not cfg_session.exists():
             cfg_session = cfg_session_obj.sudo().create_get_session(
                 product_tmpl_id.id,
                 force_create=is_public_user,
                 user_id=request.env.user.id,
             )
-            product_config_sessions.update({product_tmpl_id.id: cfg_session.id})
+            product_config_sessions = {product_tmpl_id.id: cfg_session.id}
             request.session["product_config_session"] = product_config_sessions
 
         if cfg_session.user_id.has_group("base.group_public") and not is_public_user:
@@ -50,9 +77,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
     def product(self, product, category="", search="", **kwargs):
         # Use parent workflow for regular products
         if not product.config_ok or not product.attribute_line_ids:
-            return super(ProductConfigWebsiteSale, self).product(
-                product, category, search, **kwargs
-            )
+            return super().product(product, category=category, search=search, **kwargs)
         try:
             cfg_session = self.get_config_session(product_tmpl_id=product)
         except Exception:
@@ -129,7 +154,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             request.env["decimal.precision"].precision_get("Stock Weight") or 2
         )
         website_tmpl_xml_id = cfg_session.get_config_form_website_template()
-        pricelist = request.website.get_current_pricelist()
+        pricelist = request.website._get_current_pricelist()
         product_tmpl = cfg_session.product_tmpl_id
         attr_value_ids = product_tmpl.attribute_line_ids.mapped("value_ids")
         av_obj = request.env["product.attribute.value"]
@@ -213,7 +238,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         product_attribute_lines = product_tmpl_id.attribute_line_ids
         value_ids = []
         for attr_line in product_attribute_lines:
-            field_name = "%s%s" % (field_prefix, attr_line.attribute_id.id)
+            field_name = f"{field_prefix}{attr_line.attribute_id.id}"
             attr_values = form_values.get(field_name, False)
             if attr_line.custom and attr_values == custom_val_id.id:
                 pass
@@ -272,8 +297,8 @@ class ProductConfigWebsiteSale(WebsiteSale):
         config_vals = {}
         for attr_line in product_tmpl_id.attribute_line_ids.sorted():
             attribute_id = attr_line.attribute_id.id
-            field_name = "%s%s" % (field_prefix, attribute_id)
-            custom_field = "%s%s" % (custom_field_prefix, attribute_id)
+            field_name = f"{field_prefix}{attribute_id}"
+            custom_field = f"{custom_field_prefix}{attribute_id}"
 
             field_value = values.get(field_name, [])
             field_value = [int(s) for s in field_value]
@@ -344,7 +369,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         updates = {}
         try:
             updates = product_configurator_obj.sudo().apply_onchange_values(
-                values=config_vals, field_name=field_name, field_onchange=specs
+                values=config_vals, field_names=[field_name], field_onchange=specs
             )
             updates["value"] = self.remove_recursive_list(updates["value"])
         except Exception as Ex:
@@ -378,7 +403,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             image_line_ids=config_image_ids,
             model_name=config_image_ids[:1]._name,
         )
-        pricelist = request.website.get_current_pricelist()
+        pricelist = request.website._get_current_pricelist()
         updates["open_cfg_step_line_ids"] = open_cfg_step_line_ids
         updates["config_image_vals"] = image_vals
         decimal_prec_obj = request.env["decimal.precision"]
@@ -409,8 +434,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 next_step = config_session_id.check_and_open_incomplete_step()
             if not next_step:
                 return {"next_step": False}
-
-        # Bizzappdev end code
 
         if not next_step:
             try:
@@ -468,7 +491,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                     if valid:
                         check_next_step = False
                 except Exception:
-                    pass
+                    _logger.error("Error validating configuration.")
             if check_next_step:
                 result = self.set_config_next_step(
                     config_session_id=config_session_id,
@@ -516,7 +539,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             or cfg_session_id.state != "done"
         ):
             return request.render("website.page_404")
-        product_id = cfg_session_id.product_id
+        product_id = cfg_session_id.product_id.sudo()
         product_tmpl_id = product_id.product_tmpl_id
 
         custom_vals = sorted(
@@ -531,10 +554,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
         )
         pricelist = get_pricelist()
         product_config_session = request.session.get("product_config_session")
+
         if product_config_session and product_config_session.get(product_tmpl_id.id):
-            # Bizzappdev end code
-            del product_config_session[product_tmpl_id.id]
-            request.session["product_config_session"] = product_config_session
+            request.session.pop("product_config_session", None)
 
         reconfigure_product_url = "/product_configurator/reconfigure/%s" % slug(
             product_id
@@ -590,37 +612,3 @@ class ProductConfigWebsiteSale(WebsiteSale):
             )
         vals = {"message": message, "error": error}
         return request.render("website_product_configurator.error_page", vals)
-
-    @http.route()
-    def cart_update(self, product_id, add_qty=1, set_qty=0, **kw):
-        """This route is called when adding a product to cart (no options)."""
-        sale_order = request.website.sale_get_order(force_create=True)
-        if sale_order.state != "draft":
-            request.session["sale_order_id"] = None
-            sale_order = request.website.sale_get_order(force_create=True)
-
-        product_custom_attribute_values = None
-        if kw.get("product_custom_attribute_values"):
-            product_custom_attribute_values = json.loads(
-                kw.get("product_custom_attribute_values")
-            )
-
-        no_variant_attribute_values = None
-        if kw.get("no_variant_attribute_values"):
-            no_variant_attribute_values = json.loads(
-                kw.get("no_variant_attribute_values")
-            )
-
-        sale_order._cart_update(
-            product_id=int(product_id),
-            add_qty=add_qty,
-            set_qty=set_qty,
-            product_custom_attribute_values=product_custom_attribute_values,
-            no_variant_attribute_values=no_variant_attribute_values,
-            # BizzAppDev Customization
-            config_session_id=kw.get("config_session_id", False),
-            # BizzAppDev Customization End
-        )
-        if kw.get("express"):
-            return request.redirect("/shop/checkout?express=1")
-        return request.redirect("/shop/cart")

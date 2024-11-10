@@ -21,7 +21,7 @@ class ProductConfigStepLine(models.Model):
     def get_website_template(self):
         """Return the external id of the qweb template linked to this step"""
         if self.website_tmpl_id:
-            xml_id_dict = self.website_tmpl_id.get_xml_id()
+            xml_id_dict = self.website_tmpl_id.get_external_id()
             view_id = xml_id_dict.get(self.website_tmpl_id.id)
         else:
             view_id = self.env[
@@ -34,11 +34,12 @@ class ProductConfigSession(models.Model):
     _inherit = "product.config.session"
 
     def remove_inactive_config_sessions(self):
-        check_date = fields.Datetime.from_string(fields.Datetime.now()) - timedelta(
-            days=3
-        )
+        check_date = fields.Datetime.now() - timedelta(days=3)
         sessions_to_remove = self.search(
-            [("write_date", "<", fields.Datetime.to_string(check_date))]
+            [
+                ("write_date", "<", check_date),
+                ("state", "=", "draft"),
+            ]
         )
         if sessions_to_remove:
             sessions_to_remove.unlink()
@@ -50,9 +51,6 @@ class ProductConfigSession(models.Model):
         xml_id = ICPSudo.get_param(
             "product_configurator.default_configuration_step_website_view_id"
         )
-        website_tmpl_id = self.env["res.config.settings"].xml_id_to_record_id(
-            xml_id=xml_id
-        )
-        if not website_tmpl_id:
+        if not xml_id or not xml_id.isdigit():
             return default_tmpl_xml_id
-        return xml_id
+        return self.env["ir.ui.view"].browse(int(xml_id)).xml_id
