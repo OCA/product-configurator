@@ -68,7 +68,9 @@ class TestSaleOrderLine(BaseCommon):
         return wizard.action_config_done()
 
     def _configure_product(self, sale_order, product_template, template_values):
-        """Configure `product_template` in `sale_order` with values `template_values`."""
+        """
+        Configure `product_template` in `sale_order` with values `template_values`.
+        """
         wizard = self._create_wizard(sale_order, product_template)
 
         return self._configure_wizard(wizard, template_values)

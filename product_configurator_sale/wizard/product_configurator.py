@@ -27,7 +27,7 @@ class ProductConfiguratorSale(models.TransientModel):
 
     def action_config_done(self):
         """Parse values and execute final code before closing the wizard"""
-        res = super(ProductConfiguratorSale, self).action_config_done()
+        res = super().action_config_done()
         if res.get("res_model") == self._name:
             return res
         model_name = "sale.order.line"
@@ -37,8 +37,16 @@ class ProductConfiguratorSale(models.TransientModel):
         # will not trigger onchange automatically
         order_line_obj = self.env[model_name]
         cfg_session = self.config_session_id
-        specs = cfg_session.get_onchange_specifications(model=model_name)
-        updates = order_line_obj.onchange(line_vals, ["product_id"], specs)
+        fields_spec = cfg_session.get_onchange_specifications(model=model_name)
+        # Filter the fields_spec dictionary to keep only the keys present in line_vals.
+        fields_spec = {
+            key: val
+            for key, val in fields_spec.items()
+            if key in list(line_vals.keys())
+        }
+        # Trigger the onchange event for the 'product_id' field, passing in line_vals
+        # and the filtered fields_spec to update the order line accordingly
+        updates = order_line_obj.onchange(line_vals, ["product_id"], fields_spec)
         values = updates.get("value", {})
         values = cfg_session.get_vals_to_write(values=values, model=model_name)
         values.update(line_vals)
@@ -60,7 +68,7 @@ class ProductConfiguratorSale(models.TransientModel):
                     vals["custom_value_ids"] = self._get_custom_values(
                         sale_line.config_session_id
                     )
-        return super(ProductConfiguratorSale, self).create(vals_list)
+        return super().create(vals_list)
 
     def _get_custom_values(self, session):
         custom_values = [(5,)] + [
