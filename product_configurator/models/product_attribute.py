@@ -302,30 +302,21 @@ class ProductAttributeValue(models.Model):
             extra_prices[attr_val_id.id] += line.price_extra
         return extra_prices
 
-    def name_get(self):
-        res = super().name_get()
+    def _compute_display_name(self):
+        # useless return to make pylint happy
+        res = super()._compute_display_name()
         if not self.env.context.get("show_price_extra"):
             return res
         product_template_id = self.env.context.get("active_id", False)
-
         price_precision = self.env["decimal.precision"].precision_get("Product Price")
-        extra_prices = self.get_attribute_value_extra_prices(
-            product_tmpl_id=product_template_id, pt_attr_value_ids=self
-        )
-
-        res_prices = []
-        for val in res:
-            price_extra = extra_prices.get(val[0])
+        for attribute in self:
+            extra_prices = attribute.get_attribute_value_extra_prices(
+                product_tmpl_id=product_template_id, pt_attr_value_ids=attribute
+            )
+            price_extra = extra_prices.get(attribute.id)
             if price_extra:
-                val = (
-                    val[0],
-                    "{} ( +{} )".format(
-                        val[1],
-                        ("{0:,.%sf}" % (price_precision)).format(price_extra),
-                    ),
-                )
-            res_prices.append(val)
-        return res_prices
+                name = f"{attribute.name} ( +{price_extra:.{price_precision}f} )"
+                attribute.display_name = name
 
     @api.model
     def name_search(self, name="", args=None, operator="ilike", limit=100):

@@ -57,9 +57,9 @@ Authors
 Contributors
 ------------
 
--  `Aion Tech <https://aiontech.company/>`__:
+- `Aion Tech <https://aiontech.company/>`__:
 
-   -  Simone Rubino <simone.rubino@aion-tech.it>
+  - Simone Rubino <simone.rubino@aion-tech.it>
 
 Maintainers
 -----------

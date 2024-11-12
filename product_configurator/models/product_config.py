@@ -3,6 +3,7 @@ from ast import literal_eval
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.fields import Command
 from odoo.tools.misc import flatten, formatLang
 
 _logger = logging.getLogger(__name__)
@@ -540,9 +541,9 @@ class ProductConfigSession(models.Model):
         )
 
         custom_val = self.get_custom_value_id()
-
         attr_val_dict = {}
         custom_val_dict = {}
+
         for attr_line in product_tmpl_id.attribute_line_ids:
             attr_id = attr_line.attribute_id.id
             field_name = field_prefix + str(attr_id)
@@ -553,13 +554,10 @@ class ProductConfigSession(models.Model):
 
             # Add attribute values from the client except custom attribute
             # If a custom value is being written, but field name is not in
-            #   the write dictionary, then it must be a custom value!
+            # the write dictionary, then it must be a custom value!
             if vals.get(field_name, custom_val.id) != custom_val.id:
                 if attr_line.multi and isinstance(vals[field_name], list):
-                    if not vals[field_name]:
-                        field_val = None
-                    else:
-                        field_val = vals[field_name][0][2]
+                    field_val = self._update_field_values(vals, field_name, attr_line)
                 elif not attr_line.multi and isinstance(vals[field_name], int):
                     field_val = vals[field_name]
                 else:
@@ -582,9 +580,35 @@ class ProductConfigSession(models.Model):
                 custom_val_dict.update({attr_id: val})
                 # Ensure there is no standard value stored if we have switched
                 # from selected value to custom value.
-                attr_val_dict.update({attr_id: False})
+                attr_val_dict.update({attr_id: custom_val.id})
 
         self.update_config(attr_val_dict, custom_val_dict)
+
+    def _update_field_values(self, vals, field_name, attr_line):
+        """New method for update field values for a given attribute."""
+        final_val = None
+        if not vals[field_name]:
+            return final_val
+        # Retrieve existing values for the attribute
+        value_ids = self.value_ids.filtered(
+            lambda value, attr_line=attr_line: value.attribute_id.id
+            == attr_line.attribute_id.id
+        )
+        # Initialize `final_val` with IDs
+        final_val = value_ids.ids or []
+
+        # Process each `field_vals` operation for the current attribute
+        for field_vals in vals.get(field_name, []):
+            if field_vals and field_vals[0] == Command.SET:
+                final_val = list(set(field_vals[2] or []))
+            elif field_vals and field_vals[0] == Command.LINK:
+                if field_vals[1] not in final_val:
+                    final_val.append(field_vals[1])
+            elif field_vals and field_vals[0] in (Command.UNLINK, Command.DELETE):
+                if field_vals[1] in final_val:
+                    final_val.remove(field_vals[1])
+
+        return final_val
 
     def update_config(self, attr_val_dict=None, custom_val_dict=None):
         """Update the session object with the given value_ids and custom values.

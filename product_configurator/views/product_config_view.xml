@@ -55,7 +55,7 @@
                                 <field name="condition" />
                                 <field
                                     name="template_attribute_value_ids"
-                                    invisible="1"
+                                    column_invisible="1"
                                 />
                                 <field
                                     name="value_ids"
@@ -101,7 +101,7 @@
                                 <field name="condition" />
                                 <field
                                     name="template_attribute_value_ids"
-                                    invisible="1"
+                                    column_invisible="1"
                                 />
                                 <field
                                     name="value_ids"

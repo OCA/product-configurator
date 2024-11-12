@@ -304,9 +304,11 @@ class ConfigurationRules(TransactionCase):
                 ],
                 **{wiz_field: False for wiz_field in wizard_values.keys()},
             },
-            regular_attribute_field_name,
+            [regular_attribute_field_name],
             {
-                regular_attribute_field_name: "1",
+                regular_attribute_field_name: {"fields": "display_name"},
+                custom_attribute_field_name: {"fields": "display_name"},
+                other_custom_attribute_field_name: {"fields": "display_name"},
             },
         )
 
