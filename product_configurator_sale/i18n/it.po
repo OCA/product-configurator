@@ -102,11 +102,6 @@ msgid "ID"
 msgstr "ID"
 
 #. module: product_configurator_sale
-#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale____last_update
-msgid "Last Modified on"
-msgstr "Ultima modifica il"
-
-#. module: product_configurator_sale
 #: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__write_uid
 msgid "Last Updated by"
 msgstr "Ultimo aggiornamento di"
@@ -190,3 +185,6 @@ msgstr "Valore"
 #: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__weight
 msgid "Weight"
 msgstr "Peso"
+
+#~ msgid "Last Modified on"
+#~ msgstr "Ultima modifica il"
