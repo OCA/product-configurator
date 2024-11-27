@@ -815,20 +815,6 @@ msgid "Is this attribute required?"
 msgstr "Este atributo é obrigatório?"
 
 #. module: product_configurator
-#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_line____last_update
-#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain____last_update
-#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line____last_update
-#: model:ir.model.fields,field_description:product_configurator.field_product_config_image____last_update
-#: model:ir.model.fields,field_description:product_configurator.field_product_config_line____last_update
-#: model:ir.model.fields,field_description:product_configurator.field_product_config_session____last_update
-#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value____last_update
-#: model:ir.model.fields,field_description:product_configurator.field_product_config_step____last_update
-#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line____last_update
-#: model:ir.model.fields,field_description:product_configurator.field_product_configurator____last_update
-msgid "Last Modified on"
-msgstr "Última Modificação em"
-
-#. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_line__write_uid
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain__write_uid
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line__write_uid
@@ -1498,6 +1484,9 @@ msgstr ""
 #, python-format
 msgid "You cannot have a duplicate configuration for the same value"
 msgstr "Não pode ter uma configuração duplicada para o mesmo valor"
+
+#~ msgid "Last Modified on"
+#~ msgstr "Última Modificação em"
 
 #, python-format
 #~ msgid ""
