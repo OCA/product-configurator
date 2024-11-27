@@ -6,15 +6,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2024-04-03 09:36+0000\n"
-"Last-Translator: Simone Rubino <simone.rubino@aion-tech.it>\n"
+"PO-Revision-Date: 2024-11-27 11:52+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.17\n"
+"X-Generator: Weblate 5.6.2\n"
 
 #. module: product_configurator
 #. odoo-python
@@ -165,7 +165,7 @@ msgstr "Consentire selezione di valori multipli per questo attributo?"
 #. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_line__attr_line_val_ids
 msgid "Allowed Attribute Values"
-msgstr ""
+msgstr "Valori attributo consentiti"
 
 #. module: product_configurator
 #. odoo-python
@@ -735,6 +735,9 @@ msgid ""
 "selected.\n"
 "For custom attributes the 'Custom' value can also be selected."
 msgstr ""
+"Per gli attributi normali possono essere selezionati i valori configurati.\n"
+"Per i valori personalizzati deve essere selezionato il valore "
+"'Personalizzato'."
 
 #. module: product_configurator
 #: model:product.attribute,name:product_configurator.product_attribute_fuel
