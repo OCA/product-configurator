@@ -156,7 +156,7 @@
                             />
                         <field
                                 name="domain_id"
-                                context="{'product_tmpl_id': product_tmpl_id or active_id or parent.id, 'product_attribute_ids': template_attribute_ids, 'form_view_ref': 'product_configurator.product_config_domain_form_view_template'}"
+                                context="{'product_tmpl_id': product_tmpl_id or id or parent.id, 'product_attribute_ids': template_attribute_ids, 'form_view_ref': 'product_configurator.product_config_domain_form_view_template'}"
                             />
                         <field name="product_tmpl_id" column_invisible="1" />
                         <field name="template_attribute_ids" column_invisible="1" />
