@@ -1,0 +1,2 @@
+# https://github.com/OCA/server-tools/pull/3152
+odoo-addon-onchange_helper @ git+https://github.com/OCA/server-tools.git@refs/pull/3152/head#subdirectory=setup/onchange_helper
