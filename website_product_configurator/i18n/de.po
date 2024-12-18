@@ -104,18 +104,7 @@ msgstr ""
 
 #. module: website_product_configurator
 #: model:ir.actions.server,name:website_product_configurator.cron_delete_sessions_with_no_activity_ir_actions_server
-#: model:ir.cron,cron_name:website_product_configurator.cron_delete_sessions_with_no_activity
-#: model:ir.cron,name:website_product_configurator.cron_delete_sessions_with_no_activity
 msgid "Delete inactive config-sessions"
-msgstr ""
-
-#. module: website_product_configurator
-#: model:ir.model.fields,field_description:website_product_configurator.field_product_config_session__display_name
-#: model:ir.model.fields,field_description:website_product_configurator.field_product_config_step_line__display_name
-#: model:ir.model.fields,field_description:website_product_configurator.field_res_config_settings__display_name
-#: model:ir.model.fields,field_description:website_product_configurator.field_sale_order__display_name
-#: model:ir.model.fields,field_description:website_product_configurator.field_sale_order_line__display_name
-msgid "Display Name"
 msgstr ""
 
 #. module: website_product_configurator
@@ -126,30 +115,6 @@ msgstr ""
 #. module: website_product_configurator
 #: model_terms:ir.ui.view,arch_db:website_product_configurator.error_page
 msgid "Go Back"
-msgstr ""
-
-#. module: website_product_configurator
-#: model:ir.model.fields,field_description:website_product_configurator.field_product_config_session__id
-#: model:ir.model.fields,field_description:website_product_configurator.field_product_config_step_line__id
-#: model:ir.model.fields,field_description:website_product_configurator.field_res_config_settings__id
-#: model:ir.model.fields,field_description:website_product_configurator.field_sale_order__id
-#: model:ir.model.fields,field_description:website_product_configurator.field_sale_order_line__id
-msgid "ID"
-msgstr ""
-
-#. module: website_product_configurator
-#: code:addons/website_product_configurator/models/sale_order.py:0
-#, python-format
-msgid "It is forbidden to modify a sales order which is not in draft status."
-msgstr ""
-
-#. module: website_product_configurator
-#: model:ir.model.fields,field_description:website_product_configurator.field_product_config_session____last_update
-#: model:ir.model.fields,field_description:website_product_configurator.field_product_config_step_line____last_update
-#: model:ir.model.fields,field_description:website_product_configurator.field_res_config_settings____last_update
-#: model:ir.model.fields,field_description:website_product_configurator.field_sale_order____last_update
-#: model:ir.model.fields,field_description:website_product_configurator.field_sale_order_line____last_update
-msgid "Last Modified on"
 msgstr ""
 
 #. module: website_product_configurator
@@ -189,19 +154,8 @@ msgid "Sales Order"
 msgstr ""
 
 #. module: website_product_configurator
-#: model:ir.model,name:website_product_configurator.model_sale_order_line
-msgid "Sales Order Line"
-msgstr "Auftragsposition"
-
-#. module: website_product_configurator
 #: model_terms:ir.ui.view,arch_db:website_product_configurator.configurator_settings_view_form
 msgid "Set the default template for configurator tabs(Radio/Select)."
-msgstr ""
-
-#. module: website_product_configurator
-#: code:addons/website_product_configurator/models/sale_order.py:0
-#, python-format
-msgid "The given product does not exist therefore it cannot be added to cart."
 msgstr ""
 
 #. module: website_product_configurator
@@ -224,6 +178,9 @@ msgstr "Website"
 #: model:ir.model.fields,field_description:website_product_configurator.field_res_config_settings__website_tmpl_id
 msgid "Website Template"
 msgstr ""
+
+#~ msgid "Sales Order Line"
+#~ msgstr "Auftragsposition"
 
 #~ msgid ""
 #~ "<span class=\"fa fa-exclamation\" aria-hidden=\"true\"/>\n"
