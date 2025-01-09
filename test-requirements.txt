@@ -1,0 +1,2 @@
+# https://github.com/OCA/product-attribute/pull/1839
+odoo-addon-product_attribute_custom_value_variant @ git+https://github.com/OCA/product-attribute.git@refs/pull/1839/head#subdirectory=setup/product_attribute_custom_value_variant
