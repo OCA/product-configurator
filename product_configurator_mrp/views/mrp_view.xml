@@ -1,5 +1,4 @@
 <odoo>
-
     <!-- configuration start -->
     <record id="mrp_production_form_view_config" model="ir.ui.view">
         <field name="name">product.config.mrp.form.view</field>
@@ -74,7 +73,6 @@
         <field name="model">mrp.bom</field>
         <field name="inherit_id" ref="mrp.mrp_bom_form_view" />
         <field name="arch" type="xml">
-
             <xpath expr="//field[@name='product_tmpl_id']" position="after">
                 <field name="config_ok" readonly="True" force_save="True" />
             </xpath>
@@ -95,7 +93,7 @@
                 >{'column_invisible': [('parent.type','not in', ('normal', 'phantom'))], 'readonly': [('parent.config_ok', '=', True)]}</attribute>
             </xpath>
 
-             <xpath
+            <xpath
                 expr="//field[@name='bom_product_template_attribute_value_ids']"
                 position="after"
             >
@@ -104,7 +102,7 @@
                     attrs="{'readonly': [('parent.config_ok', '=', False)]}"
                     options="{'create_edit': True, 'open': 'True'}"
                 />
-             </xpath>
+            </xpath>
         </field>
     </record>
 
@@ -161,5 +159,4 @@
         parent="product_configurator.menu_product_configurable_settings"
         sequence="45"
     />
-
 </odoo>

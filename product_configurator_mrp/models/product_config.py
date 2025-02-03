@@ -8,7 +8,6 @@ class ProductConfigSession(models.Model):
     _inherit = "product.config.session"
 
     def create_get_bom(self, variant, product_tmpl_id=None, values=None):
-
         # default_type is set as 'product' when the user navigates
         # through menu item "Products". This conflicts
         # with the type for mrp.bom when mrpBom.onchange() is executed.
@@ -126,7 +125,7 @@ class ProductConfigSession(models.Model):
         return False
 
     def create_get_variant(self, value_ids=None, custom_vals=None):
-        variant = super(ProductConfigSession, self).create_get_variant(
+        variant = super().create_get_variant(
             value_ids=value_ids, custom_vals=custom_vals
         )
         self.create_get_bom(variant=variant, product_tmpl_id=self.product_tmpl_id)

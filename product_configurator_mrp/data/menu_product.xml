@@ -1,5 +1,4 @@
 <odoo>
-
     <record id="mrp.product_template_action" model="ir.actions.act_window">
         <field
             name="context"
@@ -10,5 +9,4 @@
             name="context"
         >{&quot;search_default_filter_standard_products&quot;: 1}</field>
     </record>
-
 </odoo>
