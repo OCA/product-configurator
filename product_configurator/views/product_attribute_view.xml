@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <!-- Product Attributes -->
 
     <record id="product_attribute_tree_view" model="ir.ui.view">
@@ -59,7 +58,6 @@
                     invisible="not context.get('flag_config_ok') or not val_custom"
                     groups="product_configurator.group_product_configurator_manager"
                 >
-
                     <group>
                         <group>
                             <field name="custom_type" />
@@ -168,8 +166,11 @@
                     <div class="oe_left" style="width: 500px;">
                         <div class="oe_title" style="width: 390px;">
                             <label class="oe_edit_only" for="name" string="Value" />
-                            <h1><field name="name" class="oe_inline" /></h1>
-                            <label for="active" /><field name="active" />
+                            <h1>
+                                <field name="name" class="oe_inline" />
+                            </h1>
+                            <label for="active" />
+                            <field name="active" />
                         </div>
                     </div>
                     <group>
@@ -213,5 +214,4 @@
             </xpath>
         </field>
     </record>
-
 </odoo>

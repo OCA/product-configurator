@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <!-- Image Lines -->
 
     <record id="config_image_1" model="product.config.image">
@@ -152,5 +151,4 @@
         ])]"
         />
     </record>
-
 </odoo>

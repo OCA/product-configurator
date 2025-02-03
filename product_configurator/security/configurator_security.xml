@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record id="product_config_category" model="ir.module.category">
         <field name="name">Product Configurator</field>
     </record>
@@ -34,5 +33,4 @@
             name="groups_id"
         />
     </record>
-
 </odoo>

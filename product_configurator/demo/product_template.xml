@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <!-- Product Category -->
 
     <record id="product_category_bmw" model="product.category">
@@ -266,5 +265,4 @@
             file="product_configurator/static/img/product-paint-silver.jpg"
         />
     </record>
-
 </odoo>

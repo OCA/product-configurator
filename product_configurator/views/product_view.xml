@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record id="product_template_form_view_config_inherited" model="ir.ui.view">
         <field name="name">product.template.common.form</field>
         <field name="model">product.template</field>
@@ -123,30 +122,30 @@
                     invisible="not config_ok"
                     groups="product_configurator.group_product_configurator"
                 >
-                <separator
+                    <separator
                         colspan="4"
                         string="Configuration Restrictions"
                         name="configurator_restrictions"
                     />
-                <field
+                    <field
                         name="config_line_ids"
                         readonly="not attribute_line_ids"
                         context="{'show_attribute': False}"
                     >
-                    <tree editable="bottom">
-                        <field name="sequence" widget="handle" />
-                        <field
+                        <tree editable="bottom">
+                            <field name="sequence" widget="handle" />
+                            <field
                                 name="attribute_line_id"
                                 domain="[('product_tmpl_id','=',parent.id)]"
                                 options="{'no_create': True, 'no_create_edit': True}"
                             />
-                        <!-- # TODO: Find a more elegant way to restrict the value_ids -->
-                        <field
+                            <!-- # TODO: Find a more elegant way to restrict the value_ids -->
+                            <field
                                 name="attr_line_val_ids"
                                 widget="many2many_tags"
                                 column_invisible="1"
                             />
-                        <field
+                            <field
                                 name="value_ids"
                                 widget="many2many_tags"
                                 readonly="not attribute_line_id"
@@ -154,68 +153,70 @@
                                 options="{'no_create': True, 'no_create_edit': True}"
                                 context="{'show_attribute': False}"
                             />
-                        <field
+                            <field
                                 name="domain_id"
                                 context="{'product_tmpl_id': product_tmpl_id or id or parent.id, 'product_attribute_ids': template_attribute_ids, 'form_view_ref': 'product_configurator.product_config_domain_form_view_template'}"
                             />
-                        <field name="product_tmpl_id" column_invisible="1" />
-                        <field name="template_attribute_ids" column_invisible="1" />
-
-                    </tree>
-                </field>
-                <separator
+                            <field name="product_tmpl_id" column_invisible="1" />
+                            <field name="template_attribute_ids" column_invisible="1" />
+                        </tree>
+                    </field>
+                    <separator
                         colspan="4"
                         string="Configuration Steps"
                         name="configurator_steps"
                     />
-                <field name="config_step_line_ids" readonly="not attribute_line_ids">
-                    <tree editable="bottom">
-                        <field name="sequence" widget="handle" />
-                        <field name="config_step_id" />
-                        <field
+                    <field
+                        name="config_step_line_ids"
+                        readonly="not attribute_line_ids"
+                    >
+                        <tree editable="bottom">
+                            <field name="sequence" widget="handle" />
+                            <field name="config_step_id" />
+                            <field
                                 name="attribute_line_ids"
                                 required="1"
                                 domain="[('product_tmpl_id', '=', parent.id)]"
                                 options="{'no_create': True, 'no_create_edit': True}"
                                 widget="many2many_tags"
                             />
-                    </tree>
-                </field>
-                <separator
+                        </tree>
+                    </field>
+                    <separator
                         colspan="4"
                         string="Configuration Images"
                         name="configurator_images"
                     />
-                <field name="config_image_ids">
-                    <tree editable="bottom">
-                        <field name="sequence" widget="handle" />
-                        <field name="name" />
-                        <field
+                    <field name="config_image_ids">
+                        <tree editable="bottom">
+                            <field name="sequence" widget="handle" />
+                            <field name="name" />
+                            <field
                                 name="value_ids"
                                 widget="many2many_tags"
                                 context="{'_cfg_product_tmpl_id': parent.id}"
                             />
-                        <field
+                            <field
                                 name="image_1920"
                                 widget="image"
                                 class="oe_prod_config_image"
                             />
-                    </tree>
-                </field>
-                <field name="attribute_line_val_ids" invisible="1" />
-                <field name="attribute_value_line_ids" invisible="1">
-                    <tree
+                        </tree>
+                    </field>
+                    <field name="attribute_line_val_ids" invisible="1" />
+                    <field name="attribute_value_line_ids" invisible="1">
+                        <tree
                             editable="bottom"
                             context="{'default_product_tmpl_id': self.id}"
                         >
-                        <field name="product_tmpl_id" invisible="1" />
-                        <field name="attribute_id" invisible="1" />
-                        <field name="sequence" widget="handle" />
-                        <field
+                            <field name="product_tmpl_id" invisible="1" />
+                            <field name="attribute_id" invisible="1" />
+                            <field name="sequence" widget="handle" />
+                            <field
                                 name="value_id"
                                 domain="[('id', 'in', parent.attribute_line_val_ids)]"
                             />
-                        <field
+                            <field
                                 name="value_ids"
                                 domain="[
                                 ('id', 'in', parent.attribute_line_val_ids),
@@ -223,9 +224,9 @@
                                ]"
                                 widget="many2many_tags"
                             />
-                    </tree>
-                </field>
-                <separator
+                        </tree>
+                    </field>
+                    <separator
                         string="Variant Name"
                         colspan="4"
                         groups="product_configurator.group_product_configurator_manager"
@@ -240,7 +241,6 @@
             <xpath expr="//field[@name='default_code']" position="attributes">
                 <attribute name="invisible">config_ok</attribute>
             </xpath>
-
         </field>
     </record>
 
@@ -359,11 +359,9 @@
                         name="reconfigure_product"
                         type="object"
                         class="fa fa-repeat fa-lg"
-                    >
-                    </a>
+                    />
                 </div>
             </xpath>
         </field>
     </record>
-
 </odoo>
