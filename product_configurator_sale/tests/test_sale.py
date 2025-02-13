@@ -4,15 +4,16 @@ from odoo.addons.product_configurator.tests import (
 
 
 class SaleOrder(TC.ProductConfiguratorTestCases):
-    def setUp(self):
-        super().setUp()
-        self.SaleOrder = self.env["sale.order"]
-        self.productPricelist = self.env["product.pricelist"]
-        self.resPartner = self.env.ref("product_configurator_sale.partenr_sale_1")
-        self.currency_id = self.env.ref("base.USD")
-        self.ProductConfWizard = self.env["product.configurator.sale"]
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.SaleOrder = cls.env["sale.order"]
+        cls.productPricelist = cls.env["product.pricelist"]
+        cls.resPartner = cls.env.ref("product_configurator_sale.partenr_sale_1")
+        cls.currency_id = cls.env.ref("base.USD")
+        cls.ProductConfWizard = cls.env["product.configurator.sale"]
 
-        self.config_product = self.env.ref("product_configurator.bmw_2_series")
+        cls.config_product = cls.env.ref("product_configurator.bmw_2_series")
 
     def test_00_reconfigure_product(self):
         product_id = self.env["product.product"].create(
@@ -50,7 +51,10 @@ class SaleOrder(TC.ProductConfiguratorTestCases):
             **context
         )
         sale_order_id.action_config_start()
-        self._configure_product_nxt_step()
+        product_tmpl_id = sale_order_id.order_line.product_id.product_tmpl_id.id
+        self.ProductConfWizard.create(
+            {"order_id": sale_order_id.id, "product_tmpl_id": product_tmpl_id}
+        )
         sale_order_id.order_line.reconfigure_product()
         product_tmpl = sale_order_id.order_line.product_id.product_tmpl_id
         self.assertEqual(
