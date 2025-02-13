@@ -1,6 +1,6 @@
 from ast import literal_eval
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -93,7 +93,7 @@ class ProductAttribute(models.Model):
             nosearch_fields = attribute._get_nosearch_fields()
             if attribute.custom_type in nosearch_fields and attribute.search_ok:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "Selected custom field type '%s' is not searchable",
                         attribute.custom_type,
                     )
@@ -110,7 +110,7 @@ class ProductAttribute(models.Model):
             val = literal_eval(str(val))
             if minv and maxv and (val < minv or val > maxv):
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "Selected custom value '%(name)s' must be "
                         "between %(min_val)s and %(max_val)s",
                         **{
@@ -122,14 +122,14 @@ class ProductAttribute(models.Model):
                 )
             elif minv and val < minv:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "Selected custom value '%(name)s' must be at least %(min_val)s",
                         **{"name": self.name, "min_val": self.min_val},
                     )
                 )
             elif maxv and val > maxv:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "Selected custom value '%(name)s' "
                         "must be lower than %(max_value)s",
                         **{"name": self.name, "max_value": self.max_val + 1},
@@ -146,7 +146,7 @@ class ProductAttribute(models.Model):
             maxv = attribute.max_val
             if maxv and minv and maxv < minv:
                 raise ValidationError(
-                    _("Maximum value must be greater than Minimum value")
+                    self.env._("Maximum value must be greater than Minimum value")
                 )
 
     def _configurator_value_ids(self):
@@ -194,7 +194,7 @@ class ProductAttributeLine(models.Model):
         for line in self.filtered(lambda line: line.default_val):
             if line.default_val not in line.value_ids:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "Default values for each attribute line must exist in "
                         "the attribute values (%(attr_name)s: %(default_val)s)",
                         **{
@@ -215,7 +215,7 @@ class ProductAttributeLine(models.Model):
                 # if ptal.active and not ptal.value_ids:
                 # Customization End
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "The attribute %(attr)s must have at least one value for "
                         "the product %(product)s.",
                         **{
@@ -227,7 +227,7 @@ class ProductAttributeLine(models.Model):
             for pav in ptal.value_ids:
                 if pav.attribute_id != ptal.attribute_id:
                     raise ValidationError(
-                        _(
+                        self.env._(
                             "On the product %(product)s you cannot associate the "
                             "value %(value)s with the attribute %(attr)s because they "
                             "do not match.",
@@ -438,7 +438,7 @@ class ProductAttributeValueLine(models.Model):
             )
             if not valid:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "Values provided to the attribute value line are "
                         "incompatible with the current rules"
                     )

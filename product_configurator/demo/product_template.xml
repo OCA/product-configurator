@@ -13,6 +13,7 @@
         <field name="name">2 Series</field>
         <field name="config_ok" eval="True" />
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="categ_id" ref="product_category_bmw" />
         <field name="list_price" eval="25000" />
         <field
@@ -27,6 +28,7 @@
     <record id="product_bmw_sport_line" model="product.product">
         <field name="name">Sport Line</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="0" />
         <field
             name="image_1920"
@@ -38,6 +40,7 @@
     <record id="product_bmw_luxury_line" model="product.product">
         <field name="name">Luxury Line</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="0" />
         <field
             name="image_1920"
@@ -49,6 +52,7 @@
     <record id="product_bmw_model_sport_line" model="product.product">
         <field name="name">Model Sport Line</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="2666" />
         <field
             name="image_1920"
@@ -60,6 +64,7 @@
     <record id="product_bmw_model_luxury_line" model="product.product">
         <field name="name">Model Luxury Line</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="3844" />
         <field
             name="image_1920"
@@ -71,6 +76,7 @@
     <record id="product_bmw_model_m_sport" model="product.product">
         <field name="name">Model M Sport</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="4526" />
         <field
             name="image_1920"
@@ -82,6 +88,7 @@
     <record id="product_bmw_model_advantage" model="product.product">
         <field name="name">Model Advantage</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="992" />
         <field
             name="image_1920"
@@ -93,6 +100,7 @@
     <record id="product_2_series_transmission_steptronic" model="product.product">
         <field name="name">Automatic Transmission Steptronic</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="0" />
         <field
             name="image_1920"
@@ -104,6 +112,7 @@
     <record id="product_2_series_transmission_steptronic_sport" model="product.product">
         <field name="name">Sport Automatic Transmission Steptronic</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="156" />
         <field
             name="image_1920"
@@ -115,6 +124,7 @@
     <record id="product_2_series_sunroof" model="product.product">
         <field name="name">Sunroof</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="842" />
         <field
             name="image_1920"
@@ -126,6 +136,7 @@
     <record id="product_2_series_armrest" model="product.product">
         <field name="name">Armrest</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="0" />
         <field
             name="image_1920"
@@ -137,6 +148,7 @@
     <record id="product_2_series_towhook" model="product.product">
         <field name="name">Towhook</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="842" />
         <field
             name="image_1920"
@@ -148,6 +160,7 @@
     <record id="product_2_series_smoker_package" model="product.product">
         <field name="name">Smoker Package</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="32" />
         <field
             name="image_1920"
@@ -159,6 +172,7 @@
     <record id="product_engine_218i_coupe" model="product.product">
         <field name="name">218i Coupé</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="4078" />
         <field
             name="image_1920"
@@ -170,6 +184,7 @@
     <record id="product_engine_220i_coupe" model="product.product">
         <field name="name">220i Coupé</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="7240" />
         <field
             name="image_1920"
@@ -181,6 +196,7 @@
     <record id="product_engine_228i_coupe" model="product.product">
         <field name="name">228i Coupé</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="12634" />
         <field
             name="image_1920"
@@ -192,6 +208,7 @@
     <record id="product_engine_m235i_coupe" model="product.product">
         <field name="name">M235i Coupé</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="23236" />
         <field
             name="image_1920"
@@ -203,6 +220,7 @@
     <record id="product_engine_m2351_xdrive_coupe" model="product.product">
         <field name="name">M235i xDrive Coupe</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="23236" />
         <field
             name="image_1920"
@@ -214,6 +232,7 @@
     <record id="product_engine_218d_coupe" model="product.product">
         <field name="name">218d Coupé</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="7116" />
         <field
             name="image_1920"
@@ -225,6 +244,7 @@
     <record id="product_engine_220d_coupe" model="product.product">
         <field name="name">220d Coupé</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="9596" />
         <field
             name="image_1920"
@@ -236,6 +256,7 @@
     <record id="product_engine_220d_xdrive_coupe" model="product.product">
         <field name="name">220d xDrive Coupé</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="16181" />
         <field
             name="image_1920"
@@ -247,6 +268,7 @@
     <record id="product_engine_225d_coupe" model="product.product">
         <field name="name">225d Coupé</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="16987" />
         <field
             name="image_1920"
@@ -258,6 +280,7 @@
     <record id="product_paint_silver" model="product.product">
         <field name="name">Silver Paint</field>
         <field name="type">consu</field>
+        <field name="is_storable" eval="True" />
         <field name="lst_price" eval="726" />
         <field
             name="image_1920"

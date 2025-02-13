@@ -1,8 +1,10 @@
 import logging
+from collections.abc import Iterable
+from itertools import chain
 
 from lxml import etree
 
-from odoo import _, api, fields, models, tools
+from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Command
 from odoo.tools import frozendict
@@ -53,19 +55,17 @@ class ProductConfigurator(models.TransientModel):
 
         prefixes = self._prefixes.values()
 
-        field_type = type(fields)
-
-        if field_type == list:
+        if isinstance(fields, list):
             static_fields = []
-        elif field_type == dict:
+        elif isinstance(fields, dict):
             static_fields = {}
 
         for field_name in fields:
             if any(prefix in field_name for prefix in prefixes):
                 continue
-            if field_type == list:
+            if isinstance(fields, list):
                 static_fields.append(field_name)
-            elif field_type == dict:
+            elif isinstance(fields, dict):
                 static_fields[field_name] = fields[field_name]
         return static_fields
 
@@ -127,7 +127,7 @@ class ProductConfigurator(models.TransientModel):
         if self.value_ids:
             # TODO: Add confirmation button an delete cfg session
             raise UserError(
-                _(
+                self.env._(
                     "Changing the product template while having an active "
                     "configuration will erase reset/clear all values"
                 )
@@ -276,12 +276,21 @@ class ProductConfigurator(models.TransientModel):
         # To solve the Multi selection problem removing extra []
         if "value_ids" in vals:
             val_ids = vals["value_ids"][0]
-            vals["value_ids"] = [[val_ids[0], val_ids[1], tools.flatten(val_ids[2])]]
+            value_data = val_ids[2]
+            if not isinstance(value_data, list | tuple):
+                flattened_values = [value_data]
+            else:
+                flattened_values = list(
+                    chain.from_iterable(
+                        i if isinstance(i, Iterable) else [i] for i in value_data
+                    )
+                )
+            vals["value_ids"] = [Command.set(flattened_values)]
         return vals
 
     def apply_onchange_values(self, values, field_names, field_onchange):
         """Called from web-controller
-        - original onchage return M2o values in formate
+        - original onchange returns M2o values in format
         (attr-value.id, attr-value.name) but on website
         we need only attr-value.id"""
         product_tmpl_id = self.env["product.template"].browse(
@@ -300,9 +309,10 @@ class ProductConfigurator(models.TransientModel):
         if not state:
             state = self.state
         cfg_vals = self.env["product.attribute.value"]
-        if values.get("value_ids", []):
+        value_ids = values.get("value_ids", [])
+        if value_ids and isinstance(value_ids, list) and value_ids[0]:
             cfg_vals = self.env["product.attribute.value"].browse(
-                values.get("value_ids", [])[0][2]
+                value_ids[0][2] if len(value_ids[0]) > 2 else []
             )
         if not cfg_vals:
             cfg_vals = self.value_ids
@@ -339,9 +349,6 @@ class ProductConfigurator(models.TransientModel):
         # Get the unstored values from the client view
         for k, v in dynamic_fields.items():
             attr_id = int(k.split(field_prefix)[1])
-            # if isinstance(v, list):
-            #    dynamic_fields[k] = v[0][2]
-
             line_attributes = cfg_step.attribute_line_ids.mapped("attribute_id")
             if not cfg_step or attr_id in line_attributes.ids:
                 view_attribute_ids.add(attr_id)
@@ -455,8 +462,8 @@ class ProductConfigurator(models.TransientModel):
             preset_id = self.env["product.product"].browse(preset_id)
         pta_value_ids = preset_id.product_template_attribute_value_ids
         attr_value_ids = pta_value_ids.mapped("product_attribute_value_id")
-        self._origin.value_ids = attr_value_ids
-        self._origin.price = (
+        self.value_ids = attr_value_ids
+        self.price = (
             preset_id and preset_id.lst_price or self.product_tmpl_id.list_price
         )
 
@@ -557,7 +564,7 @@ class ProductConfigurator(models.TransientModel):
             res[domain_field] = dict(
                 default_attrs,
                 type="binary",
-                string="Domain %s" % line.attribute_id.name,
+                string=f"Domain {line.attribute_id.name}",
                 change_default=True,
             )
 
@@ -566,7 +573,7 @@ class ProductConfigurator(models.TransientModel):
             res[field_prefix + str(attribute.id)] = dict(
                 default_attrs,
                 type="many2many" if line.multi else "many2one",
-                domain="%s" % domain_field,
+                domain=f"{domain_field}",
                 string=line.attribute_id.name,
                 relation="product.attribute.value",
                 change_default=True,
@@ -748,7 +755,9 @@ class ProductConfigurator(models.TransientModel):
             xml_dynamic_form = xml_view.xpath("//group[@name='dynamic_form']")[0]
         except Exception as exc:
             raise UserError(
-                _("There was a problem rendering the view " "(dynamic_form not found)")
+                self.env._(
+                    "There was a problem rendering the view " "(dynamic_form not found)"
+                )
             ) from exc
 
         # Get all dynamic fields inserted via fields_get method
@@ -878,8 +887,10 @@ class ProductConfigurator(models.TransientModel):
             )
             vals.update({"user_id": self.env.uid, "config_session_id": session.id})
             wz_value_ids = vals.get("value_ids", [])
+            # Check if wz_value_ids is not empty and has a valid structure.
             if session.value_ids and (
-                (wz_value_ids and not wz_value_ids[0][2]) or not wz_value_ids
+                not wz_value_ids
+                or (len(wz_value_ids[0]) > 2 and not wz_value_ids[0][2])
             ):
                 vals.update({"value_ids": [(6, 0, session.value_ids.ids)]})
         return super().create(vals_list)
@@ -1004,7 +1015,7 @@ class ProductConfigurator(models.TransientModel):
 
         if not self.product_tmpl_id.attribute_line_ids:
             raise ValidationError(
-                _("Product Template does not have any attribute lines defined")
+                self.env._("Product Template does not have any attribute lines defined")
             )
         next_step = self.config_session_id.get_next_step(
             state=self.state,
@@ -1106,7 +1117,7 @@ class ProductConfigurator(models.TransientModel):
         if not step:
             return wizard_action
         if isinstance(step, type(self.env["product.config.step.line"])):
-            step = "%s" % (step.id)
+            step = str(step.id)
         self.state = step
         self.config_session_id.config_step = step
         return wizard_action

@@ -63,7 +63,7 @@
 
             <!-- TODO: Implement a method to hide this field for non-configurable product templates -->
             <xpath
-                expr="//field[@name='attribute_line_ids']/tree/field[@name='value_ids']"
+                expr="//field[@name='attribute_line_ids']/list/field[@name='value_ids']"
                 position="after"
             >
                 <field
@@ -92,26 +92,19 @@
             </xpath>
 
             <xpath
-                expr="//field[@name='attribute_line_ids']/tree/field[@name='value_ids']"
+                expr="//field[@name='attribute_line_ids']/list/field[@name='value_ids']"
                 position="attributes"
             >
                 <attribute name="required">not custom</attribute>
             </xpath>
 
             <xpath
-                expr="//field[@name='attribute_line_ids']/tree/field[@name='attribute_id']"
+                expr="//field[@name='attribute_line_ids']/list/field[@name='attribute_id']"
                 position="attributes"
             >
                 <attribute
                     name="context"
                 >{'flag_config_ok': context.get('default_config_ok', False)}</attribute>
-            </xpath>
-
-            <xpath
-                expr="//field[@name='attribute_line_ids']/tree/field[@name='attribute_id']"
-                position="before"
-            >
-                <field name="sequence" widget="handle" />
             </xpath>
 
             <!-- TODO: Apply domains so only values from template are available -->
@@ -132,7 +125,7 @@
                         readonly="not attribute_line_ids"
                         context="{'show_attribute': False}"
                     >
-                        <tree editable="bottom">
+                        <list editable="bottom">
                             <field name="sequence" widget="handle" />
                             <field
                                 name="attribute_line_id"
@@ -159,7 +152,7 @@
                             />
                             <field name="product_tmpl_id" column_invisible="1" />
                             <field name="template_attribute_ids" column_invisible="1" />
-                        </tree>
+                        </list>
                     </field>
                     <separator
                         colspan="4"
@@ -170,7 +163,7 @@
                         name="config_step_line_ids"
                         readonly="not attribute_line_ids"
                     >
-                        <tree editable="bottom">
+                        <list editable="bottom">
                             <field name="sequence" widget="handle" />
                             <field name="config_step_id" />
                             <field
@@ -180,7 +173,7 @@
                                 options="{'no_create': True, 'no_create_edit': True}"
                                 widget="many2many_tags"
                             />
-                        </tree>
+                        </list>
                     </field>
                     <separator
                         colspan="4"
@@ -188,7 +181,7 @@
                         name="configurator_images"
                     />
                     <field name="config_image_ids">
-                        <tree editable="bottom">
+                        <list editable="bottom">
                             <field name="sequence" widget="handle" />
                             <field name="name" />
                             <field
@@ -201,11 +194,11 @@
                                 widget="image"
                                 class="oe_prod_config_image"
                             />
-                        </tree>
+                        </list>
                     </field>
                     <field name="attribute_line_val_ids" invisible="1" />
                     <field name="attribute_value_line_ids" invisible="1">
-                        <tree
+                        <list
                             editable="bottom"
                             context="{'default_product_tmpl_id': self.id}"
                         >
@@ -224,7 +217,7 @@
                                ]"
                                 widget="many2many_tags"
                             />
-                        </tree>
+                        </list>
                     </field>
                     <separator
                         string="Variant Name"
@@ -286,9 +279,9 @@
             <xpath expr="//kanban" position="inside">
                 <field name="config_ok" />
             </xpath>
-            <xpath expr="//field[@name='priority']" position="before">
+            <xpath expr="//field[@name='is_favorite']" position="before">
                 <div
-                    class="pull-right"
+                    class="float-end"
                     groups="product_configurator.group_product_configurator"
                     invisible="not config_ok"
                 >
@@ -349,9 +342,9 @@
             <xpath expr="//kanban" position="inside">
                 <field name="config_ok" />
             </xpath>
-            <xpath expr="//strong[hasclass('o_kanban_record_title')]" position="after">
+            <xpath expr="//field[@name='is_favorite']" position="before">
                 <div
-                    class="pull-right"
+                    class="float-end"
                     groups="product_configurator.group_product_configurator"
                     invisible="not config_ok"
                 >
@@ -359,6 +352,7 @@
                         name="reconfigure_product"
                         type="object"
                         class="fa fa-repeat fa-lg"
+                        title="Reconfigure Product"
                     />
                 </div>
             </xpath>

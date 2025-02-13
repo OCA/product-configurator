@@ -4,7 +4,7 @@ from io import StringIO
 from mako.runtime import Context
 from mako.template import Template
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -49,7 +49,7 @@ class ProductTemplate(models.Model):
             attr_val_ids = attr_val_lines.mapped("value_ids")
             if not attr_val_ids <= product_tmpl.attribute_line_val_ids:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "All attribute values used in attribute value lines "
                         "must be defined in the attribute lines of the "
                         "template"
@@ -70,7 +70,9 @@ class ProductTemplate(models.Model):
             ]
             if len(set(attr_val_line_vals)) != len(attr_val_line_vals):
                 raise ValidationError(
-                    _("You cannot have a duplicate configuration for the same value")
+                    self.env._(
+                        "You cannot have a duplicate configuration for the same value"
+                    )
                 )
 
     config_ok = fields.Boolean(string="Can be Configured")
@@ -162,7 +164,7 @@ class ProductTemplate(models.Model):
             raise ValidationError(exc.args[0]) from exc
         except Exception as exc:
             raise ValidationError(
-                _("Default values provided generate an invalid configuration")
+                self.env._("Default values provided generate an invalid configuration")
             ) from exc
 
     @api.constrains("config_line_ids", "attribute_line_ids")
@@ -172,7 +174,7 @@ class ProductTemplate(models.Model):
                 template._check_default_values()
             except ValidationError as exc:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "Restrictions added make the current default values "
                         "generate an invalid configuration.\
                       \n%s"
@@ -312,7 +314,7 @@ class ProductTemplate(models.Model):
         ):
             return True
         raise ValidationError(
-            _(
+            self.env._(
                 "Sorry, you are not allowed to create/change this kind of "
                 "document. For more information please contact your manager."
             )
@@ -350,22 +352,24 @@ class ProductTemplate(models.Model):
             if not invalid_attribute_ids and not invalid_value_ids:
                 continue
             if not error_message:
-                error_message = _(
+                error_message = self.env._(
                     "Following Attribute/Value from restriction "
                     "are not present in template attributes/values. "
                     "Please make sure you are adding right restriction"
                 )
-            error_message += _("\nRestriction: %s", domain_id.name)
+            error_message += self.env._("\nRestriction: %s", domain_id.name)
             error_message += (
                 invalid_attribute_ids
-                and _(
+                and self.env._(
                     "\nAttribute/s: %s", ", ".join(invalid_attribute_ids.mapped("name"))
                 )
                 or ""
             )
             error_message += (
                 invalid_value_ids
-                and _("\nValue/s: %s\n", ", ".join(invalid_value_ids.mapped("name")))
+                and self.env._(
+                    "\nValue/s: %s\n", ", ".join(invalid_value_ids.mapped("name"))
+                )
                 or ""
             )
         if error_message:
@@ -400,7 +404,7 @@ class ProductProduct(models.Model):
 
             if duplicates:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "Configurable Products cannot have duplicates "
                         "(identical attribute values)"
                     )
@@ -440,7 +444,7 @@ class ProductProduct(models.Model):
                 return buf.getvalue()
             except Exception:
                 _logger.error(
-                    _("Error while calculating mako product name: %s")
+                    self.env._("Error while calculating mako product name: %s")
                     % self.display_name
                 )
         return self.display_name
@@ -522,7 +526,7 @@ class ProductProduct(models.Model):
         ):
             return True
         raise ValidationError(
-            _(
+            self.env._(
                 "Sorry, you are not allowed to create/change this kind of "
                 "document. For more information please contact your manager."
             )

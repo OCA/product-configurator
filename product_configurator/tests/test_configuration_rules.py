@@ -4,7 +4,7 @@
 from odoo import SUPERUSER_ID, Command
 from odoo.exceptions import ValidationError
 from odoo.fields import first
-from odoo.tests.common import Form, TransactionCase
+from odoo.tests import Form, TransactionCase
 from odoo.tools.safe_eval import safe_eval
 
 

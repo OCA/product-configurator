@@ -1,10 +1,12 @@
 import logging
 from ast import literal_eval
+from collections.abc import Iterable
+from itertools import chain
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Command
-from odoo.tools.misc import flatten, formatLang
+from odoo.tools.misc import formatLang
 
 _logger = logging.getLogger(__name__)
 
@@ -230,7 +232,7 @@ class ProductConfigLine(models.Model):
             forbidden_values = line.value_ids - line.attr_line_val_ids
             if forbidden_values:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "Values must belong to the attribute of the "
                         "corresponding attribute_line set on the "
                         "configuration line"
@@ -280,7 +282,7 @@ class ProductConfigImage(models.Model):
                 )
             except ValidationError as exc:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "Values entered for line '%s' generate "
                         "a incompatible configuration",
                         cfg_img.name,
@@ -334,7 +336,7 @@ class ProductConfigStepLine(models.Model):
             ).mapped("config_step_id")
             if config_step.config_step_id in cfg_steps:
                 raise ValidationError(
-                    _("Cannot have a configuration step defined twice.")
+                    self.env._("Cannot have a configuration step defined twice.")
                 )
 
 
@@ -402,6 +404,11 @@ class ProductConfigSession(models.Model):
             if not session.config_step_name:
                 session.config_step_name = session.config_step
 
+    def flatten_attribute_value_ids(self, value_ids):
+        return chain.from_iterable(
+            v if isinstance(v, Iterable) else [v] for v in value_ids
+        )
+
     @api.model
     def get_cfg_weight(self, value_ids=None, custom_vals=None):
         """Computes the weight of the configured product based on the
@@ -421,7 +428,7 @@ class ProductConfigSession(models.Model):
 
         self = self.with_context(active_id=product_tmpl.id)
 
-        value_ids = flatten(value_ids)
+        value_ids = list(self.flatten_attribute_value_ids(value_ids))
 
         weight_extra = 0.0
         product_attr_val_obj = self.env["product.template.attribute.value"]
@@ -504,8 +511,6 @@ class ProductConfigSession(models.Model):
     product_preset_id = fields.Many2one(
         comodel_name="product.product",
         string="Preset",
-        domain="[('product_tmpl_id', '=', product_tmpl_id),\
-            ('config_preset_ok', '=', True)]",
     )
 
     def action_confirm(self, product_id=None):
@@ -520,7 +525,10 @@ class ProductConfigSession(models.Model):
         for session in self.filtered(lambda s: s.state == "done"):
             if not session.product_id:
                 raise ValidationError(
-                    _("Finished configuration session must have a " "product_id linked")
+                    self.env._(
+                        "Finished configuration session must have a "
+                        "product_id linked"
+                    )
                 )
 
     def update_session_configuration_value(self, vals, product_tmpl_id=None):
@@ -562,7 +570,7 @@ class ProductConfigSession(models.Model):
                     field_val = vals[field_name]
                 else:
                     raise UserError(
-                        _(
+                        self.env._(
                             "An error occurred while parsing value for attribute %s",
                             attr_line.attribute_id.name,
                         )
@@ -714,9 +722,9 @@ class ProductConfigSession(models.Model):
         try:
             self.validate_configuration(final=False)
         except ValidationError as exc:
-            raise ValidationError(_(f"{exc}")) from exc
+            raise ValidationError(self.env._(f"{exc}")) from exc
         except Exception as exc:
-            raise ValidationError(_("Invalid Configuration")) from exc
+            raise ValidationError(self.env._("Invalid Configuration")) from exc
         return res
 
     @api.model_create_multi
@@ -724,7 +732,7 @@ class ProductConfigSession(models.Model):
         for vals in vals_list:
             vals["name"] = self.env["ir.sequence"].next_by_code(
                 "product.config.session"
-            ) or _("New")
+            ) or self.env._("New")
             product_tmpl = (
                 self.env["product.template"]
                 .browse(vals.get("product_tmpl_id"))
@@ -750,10 +758,10 @@ class ProductConfigSession(models.Model):
                     # TODO: Remove if cond when PR with
                     # raise error on github is merged
                 except ValidationError as exc:
-                    raise ValidationError(_("%s") % exc.name) from exc
+                    raise ValidationError(self.env._("%s") % exc.name) from exc
                 except Exception as exc:
                     raise ValidationError(
-                        _(
+                        self.env._(
                             "Default values provided generate an invalid "
                             "configuration"
                         )
@@ -783,9 +791,9 @@ class ProductConfigSession(models.Model):
         try:
             self.validate_configuration()
         except ValidationError as exc:
-            raise ValidationError(_("%s") % exc.name) from exc
+            raise ValidationError(self.env._("%s") % exc.name) from exc
         except Exception as exc:
-            raise ValidationError(_("Invalid Configuration")) from exc
+            raise ValidationError(self.env._("Invalid Configuration")) from exc
 
         duplicates = self.search_variant(
             value_ids=value_ids, product_tmpl_id=self.product_tmpl_id
@@ -800,7 +808,7 @@ class ProductConfigSession(models.Model):
         variant = product_obj.sudo().create(vals)
 
         variant.message_post(
-            body=_("Product created via configuration wizard"),
+            body=self.env._("Product created via configuration wizard"),
             author_id=self.env.user.partner_id.id,
         )
 
@@ -999,7 +1007,7 @@ class ProductConfigSession(models.Model):
                 return False
             elif not (value_ids or custom_value_ids) and state != "select":
                 raise UserError(
-                    _(
+                    self.env._(
                         "You must select at least one "
                         "attribute in order to configure a product"
                     )
@@ -1009,9 +1017,7 @@ class ProductConfigSession(models.Model):
 
         adjacent_steps = self.get_adjacent_steps()
         next_step = adjacent_steps.get("next_step")
-        open_step_lines = list(
-            map(lambda x: "%s" % (x), self.get_open_step_lines().ids)
-        )
+        open_step_lines = list(map(str, self.get_open_step_lines().ids))
 
         session_config_step = self.config_step
         if (
@@ -1026,7 +1032,7 @@ class ProductConfigSession(models.Model):
             pass
         elif not (value_ids or custom_value_ids):
             raise UserError(
-                _(
+                self.env._(
                     "You must select at least one "
                     "attribute in order to configure a product"
                 )
@@ -1173,7 +1179,7 @@ class ProductConfigSession(models.Model):
                 step_to_open = step
                 break
         if step_to_open:
-            return "%s" % (step_to_open.id)
+            return str(step_to_open.id)
         return False
 
     @api.model
@@ -1336,7 +1342,7 @@ class ProductConfigSession(models.Model):
                 ):
                     # TODO: Verify custom value type to be correct
                     raise ValidationError(
-                        _("Required attribute '%s' is empty", attr.name)
+                        self.env._("Required attribute '%s' is empty", attr.name)
                     )
 
     @api.model
@@ -1397,7 +1403,7 @@ class ProductConfigSession(models.Model):
                 else:
                     group_by_attr[val.attribute_id] = val
 
-            message = _("The following values are not available:")
+            message = self.env._("The following values are not available:")
             for attr, val in group_by_attr.items():
                 message += "\n {}: {}".format(attr.name, ", ".join(val.mapped("name")))
             raise ValidationError(message)
@@ -1415,7 +1421,7 @@ class ProductConfigSession(models.Model):
             custom_attrs_with_error = self.env["product.attribute"].browse(
                 custom_attrs_with_error
             )
-            error_message = _(
+            error_message = self.env._(
                 "The following custom values are not permitted "
                 "according to the product template - %s.\n\nIt is possible "
                 "that a change has been made to allowed custom values "
@@ -1440,7 +1446,7 @@ class ProductConfigSession(models.Model):
                 )
                 attrs_with_error[line.attribute_id] = wrong_vals
         if attrs_with_error:
-            error_message = _(
+            error_message = self.env._(
                 "The following multi values are not permitted "
                 "according to the product template - %s.\n\nIt is possible "
                 "that a change has been made to allowed multi values "
@@ -1476,7 +1482,7 @@ class ProductConfigSession(models.Model):
             product_tmpl_id = self.product_tmpl_id
             if not product_tmpl_id:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "Cannot conduct search on an empty config session "
                         "without product_tmpl_id kwarg"
                     )
@@ -1521,7 +1527,6 @@ class ProductConfigSession(models.Model):
         return self.create(vals)
 
     # TODO: Disallow duplicates
-
     def flatten_val_ids(self, value_ids):
         """Return a list of value_ids from a list with a mix of ids
         and list of ids (multiselection)
@@ -1529,7 +1534,10 @@ class ProductConfigSession(models.Model):
         :param value_ids: list of value ids or mix of ids and list of ids
                            (e.g: [1, 2, 3, [4, 5, 6]])
         :returns: flattened list of ids ([1, 2, 3, 4, 5, 6])"""
-        flat_val_ids = set(flatten(value_ids))
+        if not isinstance(value_ids, list | tuple):
+            return [value_ids]  # Ensure single values are wrapped in a list
+
+        flat_val_ids = set(self.flatten_attribute_value_ids(value_ids))
         return list(flat_val_ids)
 
     def formatPrices(self, prices=None, dp="Product Price"):
@@ -1543,28 +1551,6 @@ class ProductConfigSession(models.Model):
             for v in prices["vals"]
         ]
         return prices
-
-    def encode_custom_values(self, custom_vals):
-        """Hook to alter the values of the custom values before creating
-        or writing
-        :param custom_vals: dict {product.attribute.id: custom_value}
-        :returns: list of custom values compatible with write and create
-        """
-        attr_obj = self.env["product.attribute"]
-        binary_attribute_ids = attr_obj.search([("custom_type", "=", "binary")]).ids
-        custom_lines = []
-
-        for key, val in custom_vals.items():
-            custom_vals = {"attribute_id": key}
-            # TODO: Is this extra check neccesairy as we already make
-            # the check in validate_configuration?
-            attr_obj.browse(key).validate_custom_val(val)
-            if key in binary_attribute_ids:
-                custom_vals.update({"attachment_ids": [(6, 0, val.ids)]})
-            else:
-                custom_vals.update({"value": val})
-            custom_lines.append((0, 0, custom_vals))
-        return custom_lines
 
     @api.model
     def get_child_specification(self, model, parent):
@@ -1584,7 +1570,9 @@ class ProductConfigSession(models.Model):
         - needed this method because odoo don't add specification for fields
         one2many or many2many there is view-reference(using : tree_view_ref)
         intead of view in that field"""
-        model_obj = self.env[model]
+        if not model:
+            return {}
+        model_obj = self.env.get(model)
         specs = model_obj._onchange_spec()
         for name, field in model_obj._fields.items():
             if field.type not in ["one2many", "many2many"]:
@@ -1632,7 +1620,7 @@ class ProductConfigSessionCustomValue(models.Model):
             uom = attr_val_custom.attribute_id.uom_id.name
             attr_val_custom.name = "{}{}".format(
                 attr_val_custom.value,
-                (" %s" % uom) or "",
+                f" {uom}" if uom else "",
             )
 
     name = fields.Char(readonly=True, compute="_compute_val_name", store=True)
@@ -1682,7 +1670,9 @@ class ProductConfigSessionCustomValue(models.Model):
                 > 1
             ):
                 raise ValidationError(
-                    _("Configuration cannot have the " "same value inserted twice")
+                    self.env._(
+                        "Configuration cannot have the " "same value inserted twice"
+                    )
                 )
 
     # @api.constrains('cfg_session_id.value_ids')
@@ -1702,14 +1692,14 @@ class ProductConfigSessionCustomValue(models.Model):
             custom_type = custom_val.attribute_id.custom_type
             if custom_val.value and custom_type == "binary":
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "Attribute custom type is binary, attachments are the "
                         "only accepted values with this custom field type"
                     )
                 )
             if custom_val.attachment_ids and custom_type != "binary":
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "Attribute custom type must be 'binary' for saving "
                         "attachments to custom value"
                     )

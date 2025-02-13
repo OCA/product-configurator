@@ -47,6 +47,7 @@
                                 name="product_preset_id"
                                 invisible="not context.get('allow_preset_selection')"
                                 options="{'no_create': True}"
+                                domain="[('product_tmpl_id', '=', product_tmpl_id),('config_preset_ok', '=', True)]"
                             />
                             <separator
                                 string="To reset/change the Preset Please close and start the configuration again"
@@ -57,11 +58,11 @@
                                 invisible="state != 'select' or not attribute_line_ids"
                                 name="attribute_line_ids"
                             >
-                                <tree>
+                                <list>
                                     <field name="attribute_id" />
                                     <field name="custom" />
                                     <field name="multi" />
-                                </tree>
+                                </list>
                             </field>
                         </group>
                         <group colspan="1">

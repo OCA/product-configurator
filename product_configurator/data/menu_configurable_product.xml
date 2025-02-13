@@ -24,7 +24,7 @@
         <field name="name">Configurable Templates</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">product.template</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="view_id" ref="product.product_template_kanban_view" />
         <field
             name="context"
@@ -42,7 +42,7 @@
         <field name="name">Configured Variants</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">product.product</field>
-        <field name="view_mode">kanban,form,tree</field>
+        <field name="view_mode">kanban,form,list</field>
         <field name="search_view_id" ref="product.product_search_form_view" />
         <field name="view_id" eval="False" />
         <!-- Force empty -->
@@ -88,7 +88,7 @@
         <field name="name">Configuration Steps</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">product.config.step</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <menuitem
@@ -103,7 +103,7 @@
         <field name="name">Configuration Restrictions</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">product.config.domain</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <menuitem
@@ -118,7 +118,7 @@
         <field name="name">Configuration Sessions</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">product.config.session</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <menuitem

@@ -1,4 +1,4 @@
-#Odoo Product Configurator
+# Odoo Product Configurator
 
 This module is Dynamic configuration wizard for Odoo back-end and the foundation for
 external configuration interfaces such 'website_product_configurator'.

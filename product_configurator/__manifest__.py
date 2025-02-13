@@ -1,6 +1,6 @@
 {
     "name": "Product Configurator",
-    "version": "17.0.1.0.1",
+    "version": "18.0.1.0.0",
     "category": "Generic Modules/Base",
     "summary": "Base for product configuration interface modules",
     "author": "Pledra, Odoo Community Association (OCA)",
@@ -11,7 +11,7 @@
             "mako",
         ]
     },
-    "depends": ["account"],
+    "depends": ["account", "stock"],
     "data": [
         "security/configurator_security.xml",
         "security/ir.model.access.csv",

@@ -34,6 +34,40 @@ class ProductAttributes(BaseCommon):
         )
         cls.ProductAttributeValueFuel = cls.value_gasoline.attribute_id.id
 
+        cls.product_template = cls.env["product.template"].create(
+            {
+                "name": "Test Product",
+            }
+        )
+        cls.attribute = cls.env["product.attribute"].create(
+            {
+                "name": "Color",
+            }
+        )
+
+        cls.value_red = cls.env["product.attribute.value"].create(
+            {
+                "name": "Red",
+                "attribute_id": cls.attribute.id,
+            }
+        )
+
+        cls.value_blue = cls.env["product.attribute.value"].create(
+            {
+                "name": "Blue",
+                "attribute_id": cls.attribute.id,
+            }
+        )
+
+        # Create attribute line and assign values
+        cls.product_template.attribute_line_ids.create(
+            {
+                "product_tmpl_id": cls.product_template.id,
+                "attribute_id": cls.attribute.id,
+                "value_ids": [(6, 0, [cls.value_red.id, cls.value_blue.id])],
+            }
+        )
+
     def test_01_onchange_custome_type(self):
         self.ProductAttributeFuel.min_val = 20
         self.ProductAttributeFuel.max_val = 30
@@ -189,4 +223,46 @@ class ProductAttributes(BaseCommon):
             productattributeline.value_ids,
             "Error: If default_val not exists\
             Method: onchange_values()",
+        )
+
+    def test_13_name_search_without_product_template(self):
+        res = self.env["product.attribute.value"].with_context().name_search("Red")
+        self.assertTrue(
+            res,
+            "Expected name_search to return results without product template context",
+        )
+
+    def test_14_name_search_exclude_values(self):
+        self.assertTrue(self.value_blue, "Attribute value 'Blue' must be initialized.")
+        res = self.env["product.attribute.value"].name_search("Blue")
+        self.assertTrue(
+            any(r[0] == self.value_blue.id for r in res),
+            "Expected Blue to be in search results",
+        )
+
+    def test_15_name_search_with_invalid_template(self):
+        self.env.context = dict(self.env.context, _cfg_product_tmpl_id=999999)
+        result = self.env["product.attribute.value"].name_search(
+            name="Red", args=[], operator="ilike", limit=10
+        )
+        self.assertEqual(
+            result, [], "Expected no results when using an invalid product template ID"
+        )
+
+    def test_16_name_search_with_no_attributes(self):
+        empty_product_template = self.env["product.template"].create(
+            {
+                "name": "Empty Product",
+            }
+        )
+        self.env.context = dict(
+            self.env.context, _cfg_product_tmpl_id=empty_product_template.id
+        )
+        result = self.env["product.attribute.value"].name_search(
+            name="Red", args=[], operator="ilike", limit=10
+        )
+        self.assertEqual(
+            result,
+            [],
+            "Expected no results when the product template has no attributes",
         )
