@@ -1,7 +1,7 @@
 # Copyright (C) 2021 Open Source Integrators
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, fields, models
+from odoo import fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval
 
@@ -49,7 +49,7 @@ class ProductConfiguratorMrp(models.TransientModel):
             variant=product,
         )
         line_vals = {
-            "bom_id": bom.id,
+            "bom_id": bom.id if bom else False,
             "product_uom_id": product.uom_id.id,
             "config_session_id": self.config_session_id.id,
         }
@@ -65,18 +65,23 @@ class ProductConfiguratorMrp(models.TransientModel):
 
         mrpProduction = self.env[model_name]
         cfg_session = self.config_session_id
-        specs = cfg_session.get_onchange_specifications(model=model_name)
+        specs = cfg_session.sanitized_spec(
+            cfg_session.get_onchange_specifications(model=model_name)
+        )
         updates = mrpProduction.onchange(line_vals, ["bom_id"], specs)
         values = updates.get("value", {})
         values = cfg_session.get_vals_to_write(values=values, model=model_name)
         values.update(line_vals)
         if not values.get("bom_id"):
+            product_name = (
+                self.env["product.product"].browse(res["res_id"]).display_name
+            )
             raise ValidationError(
-                _(
+                self.env._(
                     "There is no BOM associated with selected product. "
-                    "Please inform to administrator/manager. [Product: %s]"
-                    % (self.env["product.product"].browse(res["res_id"]).display_name)
+                    "Please inform the administrator/manager. [Product: %s]"
                 )
+                % product_name
             )
 
         if self.order_id:

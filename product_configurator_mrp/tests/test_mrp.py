@@ -3,48 +3,47 @@
 
 from datetime import datetime
 
-from odoo.addons.product_configurator.tests.test_product_configurator_test_cases import (
-    ProductConfiguratorTestCases,
-)
+from ..tests.test_product_configurator_test_cases import ProductConfiguratorTestCases
 
 
 class TestMrp(ProductConfiguratorTestCases):
-    def setUp(self):
-        super().setUp()
-        self.mrpBomConfigSet = self.env["mrp.bom.line.configuration.set"]
-        self.mrpBomConfig = self.env["mrp.bom.line.configuration"]
-        self.mrpBom = self.env["mrp.bom"]
-        self.mrpBomLine = self.env["mrp.bom.line"]
-        self.mrpRoutingWorkcenter = self.env["mrp.routing.workcenter"]
-        self.productProduct = self.env["product.product"]
-        self.productTemplate = self.env["product.template"]
-        self.mrpProduction = self.env["mrp.production"]
-        self.product_id = self.env.ref("product.product_product_3")
-        self.workcenter_id = self.env.ref("mrp.mrp_workcenter_3")
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.mrpBomConfigSet = cls.env["mrp.bom.line.configuration.set"]
+        cls.mrpBomConfig = cls.env["mrp.bom.line.configuration"]
+        cls.mrpBom = cls.env["mrp.bom"]
+        cls.mrpBomLine = cls.env["mrp.bom.line"]
+        cls.mrpRoutingWorkcenter = cls.env["mrp.routing.workcenter"]
+        cls.productProduct = cls.env["product.product"]
+        cls.productTemplate = cls.env["product.template"]
+        cls.mrpProduction = cls.env["mrp.production"]
+        cls.product_id = cls.env.ref("product.product_product_3")
+        cls.workcenter_id = cls.env.ref("mrp.mrp_workcenter_3")
 
         # create bom
-        self.bom_id = self.mrpBom.create(
+        cls.bom_id = cls.mrpBom.create(
             {
-                "product_tmpl_id": self.product_id.product_tmpl_id.id,
+                "product_tmpl_id": cls.product_id.product_tmpl_id.id,
                 "product_qty": 1.00,
-                "type": "normal",
+                "type": "consu",
                 "ready_to_produce": "all_available",
             }
         )
         # create bom line
-        self.bom_line_id = self.mrpBomLine.create(
+        cls.bom_line_id = cls.mrpBomLine.create(
             {
-                "bom_id": self.bom_id.id,
-                "product_id": self.product_id.id,
+                "bom_id": cls.bom_id.id,
+                "product_id": cls.product_id.id,
                 "product_qty": 1.00,
             }
         )
         # create BOM operations line
-        self.mrpRoutingWorkcenter.create(
+        cls.mrpRoutingWorkcenter.create(
             {
-                "bom_id": self.bom_id.id,
+                "bom_id": cls.bom_id.id,
                 "name": "Operation 1",
-                "workcenter_id": self.workcenter_id.id,
+                "workcenter_id": cls.workcenter_id.id,
             }
         )
 

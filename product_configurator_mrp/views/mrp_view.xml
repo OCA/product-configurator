@@ -5,9 +5,6 @@
         <field name="model">mrp.production</field>
         <field name="inherit_id" ref="mrp.mrp_production_form_view" />
         <field name="arch" type="xml">
-            <xpath expr="//form" position="attributes">
-                <attribute name="js_class">product_configurator_mrp_form</attribute>
-            </xpath>
             <xpath expr="//div[hasclass('oe_title')]" position="attributes">
                 <attribute
                     name="class"
@@ -22,43 +19,21 @@
                         class="oe_highlight"
                         type="object"
                         string="Reconfigure"
-                        attrs="{'invisible': ['|', ('config_ok','=',False), ('state', '!=', 'draft')]}"
+                        invisible="not config_ok or state != 'draft'"
                     />
                 </div>
             </xpath>
             <page name="finished_products" position="after">
                 <page string="Custom Values" name="custom_values">
                     <field name="custom_value_ids" readonly="True" force_save="True">
-                        <tree>
+                        <list>
                             <field name="attribute_id" />
                             <field name="cfg_session_id" />
                             <field name="attachment_ids" />
-                        </tree>
+                        </list>
                     </field>
                 </page>
             </page>
-        </field>
-    </record>
-
-    <record id="mrp_production_tree_view_config" model="ir.ui.view">
-        <field name="name">product.config.mrp.tree.view</field>
-        <field name="model">mrp.production</field>
-        <field name="inherit_id" ref="mrp.mrp_production_tree_view" />
-        <field name="arch" type="xml">
-            <xpath expr="//tree" position="attributes">
-                <attribute name="js_class">product_configurator_mrp_tree</attribute>
-            </xpath>
-        </field>
-    </record>
-
-    <record id="mrp_production_kanban_view_config" model="ir.ui.view">
-        <field name="name">product.config.mrp.kanban.view</field>
-        <field name="model">mrp.production</field>
-        <field name="inherit_id" ref="mrp.mrp_production_kanban_view" />
-        <field name="arch" type="xml">
-            <xpath expr="//kanban" position="attributes">
-                <attribute name="js_class">product_configurator_mrp_kanban</attribute>
-            </xpath>
         </field>
     </record>
 
@@ -78,9 +53,7 @@
             </xpath>
 
             <xpath expr="//field[@name='product_id']" position="attributes">
-                <attribute
-                    name="attrs"
-                >{'readonly': [('config_ok', '=', True)]}</attribute>
+                <attribute name="readonly">config_ok</attribute>
                 <attribute name="force_save">True</attribute>
             </xpath>
 
@@ -89,8 +62,9 @@
                 position="attributes"
             >
                 <attribute
-                    name="attrs"
-                >{'column_invisible': [('parent.type','not in', ('normal', 'phantom'))], 'readonly': [('parent.config_ok', '=', True)]}</attribute>
+                    name="column_invisible"
+                >parent.type not in ('normal', 'phantom')</attribute>
+                <attribute name="readonly">parent.config_ok</attribute>
             </xpath>
 
             <xpath
@@ -99,7 +73,7 @@
             >
                 <field
                     name="config_set_id"
-                    attrs="{'readonly': [('parent.config_ok', '=', False)]}"
+                    readonly="not parent.config_ok"
                     options="{'create_edit': True, 'open': 'True'}"
                 />
             </xpath>
@@ -114,15 +88,15 @@
                 <group>
                     <field name="name" />
                     <field name="configuration_ids">
-                        <tree editable="bottom">
+                        <list editable="bottom">
                             <field name="value_ids" widget="many2many_tags" />
-                        </tree>
+                        </list>
                     </field>
                     <field name="bom_line_ids">
-                        <tree>
+                        <list>
                             <field name="bom_id" />
                             <field name="product_id" />
-                        </tree>
+                        </list>
                     </field>
                 </group>
             </form>
@@ -133,16 +107,16 @@
         <field name="name">mrp.bom.line.configuration.set.tree.view</field>
         <field name="model">mrp.bom.line.configuration.set</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name" />
-            </tree>
+            </list>
         </field>
     </record>
 
     <record id="action_mrp_bom_line_config_set" model="ir.actions.act_window">
         <field name="name">Product Attribute Sets</field>
         <field name="res_model">mrp.bom.line.configuration.set</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <menuitem

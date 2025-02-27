@@ -1,38 +1,52 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<templates>
-    <t t-extend="ListView.buttons" t-name="ConfigListView.buttons">
-        <t t-jquery="button.o_list_button_add" t-operation="after">
+<templates id="template" xml:space="preserve">
+    <!-- Inherit template to add button on the POS Payment Screen. -->
+    <t
+        t-name="product_configurator_mrp.FormView"
+        t-inherit="web.FormView"
+        t-inherit-mode="extension"
+    >
+        <xpath
+            expr="//t[@t-set-slot='control-panel-create-button'][2]"
+            position="inside"
+        >
             <button
-                t-if="widget.is_action_enabled('create')"
+                type="button"
+                class="btn btn-outline-primary o_form_button_create_config"
+                t-on-click="_onConfigure"
+            >
+                Configure
+            </button>
+        </xpath>
+    </t>
+    <t
+        t-name="product_configurator_mrp.ListView"
+        t-inherit="web.ListView"
+        t-inherit-mode="extension"
+    >
+        <xpath expr="//t[@t-set-slot='control-panel-create-button']" position="inside">
+            <button
                 type="button"
                 class="btn btn-primary o_list_button_add_config"
-                accesskey="c"
+                t-on-click="_onConfigure"
             >
                 Configure
             </button>
-        </t>
+        </xpath>
     </t>
-
-    <t t-extend="KanbanView.buttons" t-name="ConfigKanbanView.buttons">
-        <t t-jquery="button" t-operation="after">
+    <t
+        t-name="product_configurator_mrp.KanbanView"
+        t-inherit="web.KanbanView"
+        t-inherit-mode="extension"
+    >
+        <xpath expr="//t[@t-set-slot='control-panel-create-button']" position="inside">
             <button
                 type="button"
-                t-attf-class="btn #{btnClass} o-kanban-button-new_config"
-                accesskey="c"
+                class="btn btn-primary o-kanban-button-new_config"
+                t-on-click="_onConfigure"
             >
                 Configure
             </button>
-        </t>
-    </t>
-
-    <t t-name="ConfigFormView.buttons">
-        <button
-            t-if="widget.is_action_enabled('create')"
-            type="button"
-            class="btn btn-secondary o_form_button_create_config"
-            accesskey="c"
-        >
-            Configure
-        </button>
+        </xpath>
     </t>
 </templates>

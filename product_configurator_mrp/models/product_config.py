@@ -7,6 +7,20 @@ from odoo import models
 class ProductConfigSession(models.Model):
     _inherit = "product.config.session"
 
+    def sanitized_spec(self, specs):
+        """New method to sanitize the specifications by removing invalid entries fix the
+        onchange issue. In 'get_onchange_specifications()', all the fields of the model
+        view are retrieved, and their values are returned as "field_name.value", causing
+        issues in the BOM onchange values."""
+        new_val = {}
+        for key, val in specs.items():
+            if "." in key:
+                continue
+            if val is None or val == "1":
+                specs[key] = {}
+            new_val[key] = specs[key]
+        return new_val
+
     def create_get_bom(self, variant, product_tmpl_id=None, values=None):
         # default_type is set as 'product' when the user navigates
         # through menu item "Products". This conflicts
@@ -52,7 +66,9 @@ class ProductConfigSession(models.Model):
             # related products to the bom lines.
             for product in attr_products:
                 bom_line_vals = {"product_id": product.id, "product_qty": 1}
-                specs = self.get_onchange_specifications(model="mrp.bom.line")
+                specs = self.sanitized_spec(
+                    self.get_onchange_specifications(model="mrp.bom.line")
+                )
                 updates = mrpBomLine.onchange(
                     bom_line_vals, ["product_id", "product_qty"], specs
                 )
@@ -73,8 +89,10 @@ class ProductConfigSession(models.Model):
                                     "product_id": parent_bom_line.product_id.id,
                                     "product_qty": parent_bom_line.product_qty,
                                 }
-                                specs = self.get_onchange_specifications(
-                                    model="mrp.bom.line"
+                                specs = self.sanitized_spec(
+                                    self.get_onchange_specifications(
+                                        model="mrp.bom.line"
+                                    )
                                 )
                                 updates = mrpBomLine.onchange(
                                     parent_bom_line_vals,
@@ -92,7 +110,9 @@ class ProductConfigSession(models.Model):
                         "product_id": parent_bom_line.product_id.id,
                         "product_qty": parent_bom_line.product_qty,
                     }
-                    specs = self.get_onchange_specifications(model="mrp.bom.line")
+                    specs = self.sanitized_spec(
+                        self.get_onchange_specifications(model="mrp.bom.line")
+                    )
                     updates = mrpBomLine.onchange(
                         parent_bom_line_vals, ["product_id", "product_qty"], specs
                     )
@@ -108,7 +128,9 @@ class ProductConfigSession(models.Model):
                 "product_id": variant.id,
                 "bom_line_ids": bom_lines,
             }
-            specs = self.get_onchange_specifications(model="mrp.bom")
+            specs = self.sanitized_spec(
+                self.get_onchange_specifications(model="mrp.bom")
+            )
             updates = mrpBom.onchange(
                 bom_values,
                 ["product_id", "product_tmpl_id", "bom_line_ids"],
