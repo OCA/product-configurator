@@ -2,36 +2,13 @@ import logging
 
 from odoo import http, models
 from odoo.exceptions import UserError, ValidationError
-from odoo.http import request, route
+from odoo.http import request
 from odoo.tools.safe_eval import safe_eval
 
 from odoo.addons.http_routing.models.ir_http import slug
 from odoo.addons.website_sale.controllers.main import WebsiteSale
-from odoo.addons.website_sale_product_configurator.controllers.main import (
-    WebsiteSaleProductConfiguratorController,
-)
 
 _logger = logging.getLogger(__name__)
-
-
-class CustomWebsiteSaleProductConfigurator(WebsiteSaleProductConfiguratorController):
-    @route()
-    def show_advanced_configurator(
-        self,
-        product_id,
-        variant_values,
-        add_qty=1,
-        force_dialog=False,
-        **kw,
-    ):
-        """Inherit: skips showing the advanced product configurator modal for
-        a product"""
-        product = request.env["product.product"].browse(int(product_id))
-        if product.config_ok:
-            return False
-        return super().show_advanced_configurator(
-            product_id, variant_values, add_qty=add_qty, force_dialog=force_dialog, **kw
-        )
 
 
 def get_pricelist():

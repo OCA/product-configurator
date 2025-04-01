@@ -10,6 +10,7 @@
         "website_sale",
         "product_configurator",
         "product_configurator_sale",
+        "website_sale_product_configurator",
     ],
     "data": [
         "security/configurator_security.xml",

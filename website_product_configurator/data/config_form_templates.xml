@@ -671,7 +671,7 @@
                             </ol>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" id="product_detail_main" data-name="Product Page">
                         <div class="col-md-6 col-xl-8">
                             <!-- Cart wizard image. -->
                             <t t-call="website_sale.shop_product_images">
@@ -719,6 +719,18 @@
                                             t-att-value="cfg_session_id.id"
                                         />
                                         <div class="col-xs-12">
+                                            <t
+                                                t-set="attribute_exclusions"
+                                                t-value="product._get_attribute_exclusions()"
+                                            />
+                                            <t
+                                                t-set="filtered_sorted_variants"
+                                                t-value="product._get_possible_variants_sorted()"
+                                            />
+                                            <ul
+                                                class="d-none js_add_cart_variants mb-0"
+                                                t-att-data-attribute_exclusions="json.dumps(attribute_exclusions)"
+                                            />
                                             <ul class="product_vals">
                                                 <t t-foreach="vals" t-as="val">
                                                     <li>
@@ -754,13 +766,38 @@
                                         t-call="website_product_configurator.product_price"
                                     />
                                     <!-- <p t-if="True" class="css_not_available_msg alert alert-warning">This combination does not exist.</p> -->
-                                    <a
-                                        role="button"
-                                        id="add_to_cart"
-                                        class="btn btn-primary btn-lg mt16 js_check_product a-submit d-block d-sm-inline-block"
-                                        href="#"
-                                    ><i class="fa fa-shopping-cart" /> Add to Cart</a>
-                                    <div id="product_option_block" />
+                                    <div
+                                        id="o_wsale_cta_wrapper"
+                                        class="d-flex flex-wrap align-items-center"
+                                    >
+                                        <t t-set="hasQuantities" t-value="false" />
+                                        <t t-set="hasBuyNow" t-value="false" />
+                                        <!-- TODO: remove line below in master -->
+                                        <t
+                                            t-set="ctaSizeBig"
+                                            t-value="not hasQuantities or not hasBuyNow"
+                                        />
+
+                                        <div
+                                            id="add_to_cart_wrap"
+                                            t-attf-class="{{'d-none' if combination_info['prevent_zero_price_sale'] else 'd-inline-flex'}} align-items-center mb-2 me-auto"
+                                        >
+                                            <a
+                                                data-animation-selector=".o_wsale_product_images"
+                                                role="button"
+                                                id="add_to_cart"
+                                                t-attf-class="btn btn-primary js_check_product a-submit flex-grow-1"
+                                                href="#"
+                                            >
+                                                <i class="fa fa-shopping-cart me-2" />
+                                                Add to cart
+                                            </a>
+                                        </div>
+                                        <div
+                                            id="product_option_block"
+                                            class="d-flex flex-wrap w-100"
+                                        />
+                                    </div>
                                 </div>
                             </form>
                             <p
@@ -906,7 +943,7 @@
         name="Select Quantity"
     >
         <xpath expr="//a[@id='add_to_cart']" position="before">
-            <div t-attf-class="css_quantity input-group" contenteditable="false">
+            <div t-attf-class="css_quantity input-group me-2" contenteditable="false">
                 <a
                     t-attf-href="#"
                     class="btn btn-link js_add_cart_json"

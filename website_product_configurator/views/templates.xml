@@ -41,4 +41,15 @@
         </t>
     </template>
 
+    <!-- Inherited template to modify conditional rendering of the optional product popup,
+    hiding the attribute configuration when 'config_ok' is enabled. -->
+    <template
+        id="optional_products_inherited_template"
+        inherit_id="website_sale_product_configurator.configure_optional_products"
+        name="Inherit Configure Optional Products"
+    >
+        <xpath expr="//t[@t-if='product and not combination']/.." position="attributes">
+            <attribute name="t-if">not product.config_ok</attribute>
+        </xpath>
+    </template>
 </odoo>

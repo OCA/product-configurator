@@ -282,10 +282,13 @@ class ProductAttributeValue(models.Model):
         related_product_av_ids = self.env["product.attribute.value"].search(
             [("id", "in", pt_attr_value_ids.ids), ("product_id", "!=", False)]
         )
+        # 'sudo()' was added to fix a public user access error when calculating the
+        # price of extra template attributes for configured products,
+        # ensuring proper access.
         extra_prices = {
-            av.id: av.product_id.with_context(
-                pricelist=pricelist.id
-            )._get_contextual_price()
+            av.id: av.sudo()
+            .product_id.with_context(pricelist=pricelist.id)
+            ._get_contextual_price()
             for av in related_product_av_ids
         }
         remaining_av_ids = pt_attr_value_ids - related_product_av_ids
