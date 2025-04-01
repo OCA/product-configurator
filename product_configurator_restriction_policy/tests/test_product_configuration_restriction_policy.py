@@ -1,9 +1,7 @@
-from odoo.addons.product_configurator.tests import test_product_configurator_test_cases
+from odoo.addons.product_configurator.tests.common import ProductConfiguratorTestCases
 
 
-class ProductRestrictionPolicy(
-    test_product_configurator_test_cases.ProductConfiguratorTestCases
-):
+class ProductRestrictionPolicy(ProductConfiguratorTestCases):
     def test_product_restriction_policy(self):
         """
         The test_product_restriction_policy function tests
