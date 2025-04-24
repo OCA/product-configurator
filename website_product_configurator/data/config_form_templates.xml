@@ -60,7 +60,7 @@
                                 <span
                                                 class="config_product_price"
                                                 t-esc="cfg_session.price"
-                                                t-options="{'widget': 'monetary', 'display_currency': website._get_current_pricelist().currency_id}"
+                                                t-options="{'widget': 'monetary', 'display_currency': website._get_current_pricelist().currency_id or website.currency_id}"
                                             />
 
                               </div>
@@ -435,7 +435,7 @@
                                     <t t-if="price_extra">
                                         (+<t
                                             t-esc="price_extra"
-                                            t-options="{'widget': 'monetary', 'display_currency': pricelist.currency_id, 'from_currency': website.currency_id}"
+                                            t-options="{'widget': 'monetary', 'display_currency': pricelist.currency_id or website.currency_id, 'from_currency': website.currency_id}"
                                         />)
                                     </t>
                                 </option>
@@ -523,7 +523,7 @@
                                             >
                                                 (+<t
                                                     t-esc="price_extra"
-                                                    t-options="{'widget': 'monetary', 'display_currency': pricelist.currency_id, 'from_currency': website.currency_id}"
+                                                    t-options="{'widget': 'monetary', 'display_currency': pricelist.currency_id or website.currency_id, 'from_currency': website.currency_id}"
                                                 />)
                                             </span>
                                         </t>
