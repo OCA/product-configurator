@@ -260,6 +260,11 @@ class ProductAttributeValue(models.Model):
         help="Attribute value image (Display on website for radio buttons)",
     )
 
+    quantity = fields.Float(
+        string="Quantity",
+        default=1.0,
+    )
+
     @api.model
     def get_attribute_value_extra_prices(
         self, product_tmpl_id, pt_attr_value_ids, pricelist=None
@@ -273,6 +278,7 @@ class ProductAttributeValue(models.Model):
         )
         extra_prices = {
             av.id: av.product_id.with_context(pricelist=pricelist.id).price
+            * av.quantity
             for av in related_product_av_ids
         }
         remaining_av_ids = pt_attr_value_ids - related_product_av_ids

@@ -52,7 +52,8 @@ class ProductConfigSession(models.Model):
             # If not Bom, then Cycle through attributes to add their
             # related products to the bom lines.
             for product in attr_products:
-                bom_line_vals = {"product_id": product.id, "product_qty": 1}
+                qty = attr_values.filtered(lambda a: a.product_id == product).quantity
+                bom_line_vals = {"product_id": product.id, "product_qty": qty}
                 specs = self.get_onchange_specifications(model="mrp.bom.line")
                 updates = mrpBomLine.onchange(
                     bom_line_vals, ["product_id", "product_qty"], specs

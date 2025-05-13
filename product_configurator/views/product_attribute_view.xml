@@ -20,6 +20,13 @@
         <field name="priority">100</field>
         <field name="inherit_id" ref="product.product_attribute_view_form" />
         <field name="arch" type="xml">
+            <xpath
+                    expr="//field[@name='value_ids']//field[@name='sequence']"
+                    position="after"
+                >
+                <field name="product_id" />
+                <field name="quantity" />
+            </xpath>
             <xpath expr="//form//group[@name='main_fields']" position="before">
                 <div
                         class="oe_left"
@@ -162,6 +169,7 @@
                 <field name="sequence" widget="handle" />
                 <field name="attribute_id" />
                 <field name="name" />
+                <field name="quantity" />
             </tree>
         </field>
     </record>
@@ -186,6 +194,9 @@
                         </group>
                         <group>
                             <field name="product_id" />
+                        </group>
+                        <group>
+                            <field name="quantity" />
                         </group>
                     </group>
                 </sheet>
