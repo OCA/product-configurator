@@ -617,125 +617,6 @@ class ProductConfigurator(models.TransientModel):
         res.update({"arch": etree.tostring(mod_view)})
         return res
 
-    def prepare_attrs_initial(
-        self, attr_lines, field_prefix, custom_field_prefix, dynamic_fields, wiz
-    ):
-        cfg_step_ids = []
-        for attr_line in attr_lines:
-            attribute_id = attr_line.attribute_id.id
-            field_name = field_prefix + str(attribute_id)
-            domain_field_prefix = self._prefixes.get("domain_field_prefix")
-            domain_field_name = domain_field_prefix + str(attribute_id)
-            custom_field = custom_field_prefix + str(attribute_id)
-
-            if field_name not in dynamic_fields:
-                continue
-
-            config_steps = wiz.product_tmpl_id.config_step_line_ids.filtered(
-                lambda x, attr_line=attr_line: attr_line in x.attribute_line_ids
-            )
-
-            # attrs property for dynamic fields
-            attrs = {"readonly": "", "required": "", "invisible": ""}
-            invisible_str = ""
-            readonly_str = ""
-            required_str = ""
-
-            if config_steps:
-                cfg_step_ids = [str(id) for id in config_steps.ids]
-                invisible_str = f"state not in {cfg_step_ids}"
-                readonly_str = f"state not in {cfg_step_ids}"
-                # If attribute is required make it so only in the proper step
-                if attr_line.required:
-                    required_str = f"state in {cfg_step_ids}"
-            else:
-                invisible_str = "state not in {}".format(["configure"])
-                readonly_str = "state not in {}".format(["configure"])
-                # If attribute is required make it so only in the proper step
-                if attr_line.required:
-                    required_str = "state in {}".format(["configure"])
-
-            if attr_line.custom:
-                pass
-                # TODO: Implement restrictions for ranges
-
-            config_lines = wiz.product_tmpl_id.config_line_ids
-            dependencies = config_lines.filtered(
-                lambda cl, attr_line=attr_line: cl.attribute_line_id == attr_line
-            )
-
-            # If an attribute field depends on another field from the same
-            # configuration step then we must use attrs to enable/disable the
-            # required and readonly depending on the value entered in the
-            # dependee
-            # Create a dictionary of attribute dependencies
-            if attr_line.value_ids <= dependencies.mapped("value_ids"):
-                attr_depends = {}
-                domain_lines = dependencies.mapped("domain_id.domain_line_ids")
-                for domain_line in domain_lines:
-                    attr_id = domain_line.attribute_id.id
-                    attr_field = field_prefix + str(attr_id)
-                    attr_lines = wiz.product_tmpl_id.attribute_line_ids
-                    # If the fields it depends on are not in the config step
-                    # allow to update attrs for all attribute.\ otherwise
-                    # required will not work with stepchange using statusbar.
-                    # if config_steps and wiz.state not in cfg_step_ids:
-                    #     continue
-                    if attr_field not in attr_depends:
-                        attr_depends[attr_field] = set()
-                    if domain_line.condition == "in":
-                        attr_depends[attr_field] |= set(domain_line.value_ids.ids)
-                    elif domain_line.condition == "not in":
-                        val_ids = attr_lines.filtered(
-                            lambda line, attr_id=attr_id: line.attribute_id.id
-                            == attr_id
-                        ).value_ids
-                        val_ids = val_ids - domain_line.value_ids
-                        attr_depends[attr_field] |= set(val_ids.ids)
-
-                # Apply dependency conditions
-                readonly_str, required_str = self._generate_dependency_attributes(
-                    attr_line, attr_depends, dynamic_fields, readonly_str, required_str
-                )
-
-            attrs = {
-                "readonly": readonly_str,
-                "required": required_str,
-                "invisible": invisible_str,
-            }
-
-        return (
-            attrs,
-            field_name,
-            custom_field,
-            config_steps,
-            cfg_step_ids,
-            domain_field_name,
-        )
-
-    def _generate_dependency_attributes(
-        self, attr_line, attr_depends, dynamic_fields, readonly_str, required_str
-    ):
-        """
-        Applies conditions based on attribute dependencies to readonly and required
-        strings."""
-        if attr_line.custom:
-            return readonly_str, required_str
-        for dependee_field, val_ids in attr_depends.items():
-            if not val_ids:
-                continue
-            field_type = dynamic_fields.get(dependee_field, {}).get("type")
-            if field_type != "many2many":
-                readonly_str += f" and {dependee_field} not in {str(list(val_ids))}"
-            if (
-                attr_line.required
-                and not attr_line.custom
-                and field_type != "many2many"
-            ):
-                required_str += f" and {dependee_field} in {str(list(val_ids))}"
-
-        return readonly_str, required_str
-
     @api.model
     def add_dynamic_fields(self, res, dynamic_fields, wiz):
         """Create the configuration view using the dynamically generated
@@ -744,6 +625,7 @@ class ProductConfigurator(models.TransientModel):
 
         field_prefix = self._prefixes.get("field_prefix")
         custom_field_prefix = self._prefixes.get("custom_field_prefix")
+        domain_field_prefix = self._prefixes.get("domain_field_prefix")
 
         try:
             # Search for view container hook and add dynamic view and fields
@@ -765,16 +647,19 @@ class ProductConfigurator(models.TransientModel):
 
         # Loop over the dynamic fields and add them to the view one by one
         for attr_line in attr_lines:
-            (
-                attrs,
-                field_name,
-                custom_field,
-                config_steps,
-                cfg_step_ids,
-                domain_field_name,
-            ) = self.prepare_attrs_initial(
-                attr_line, field_prefix, custom_field_prefix, dynamic_fields, wiz
+            attribute_id = attr_line.attribute_id.id
+            field_name = field_prefix + str(attribute_id)
+            domain_field_name = domain_field_prefix + str(attribute_id)
+            custom_field = custom_field_prefix + str(attribute_id)
+            attrs = {
+                "required": attr_line.required_condition or "",
+                "readonly": attr_line.readonly_condition or "",
+                "invisible": attr_line.invisible_condition or "",
+            }
+            config_steps = wiz.product_tmpl_id.config_step_line_ids.filtered(
+                lambda x, line=attr_line: line in x.attribute_line_ids
             )
+            cfg_step_ids = [str(id) for id in config_steps.ids]
 
             # Create the new field in the view
             node = etree.Element(
@@ -830,28 +715,32 @@ class ProductConfigurator(models.TransientModel):
 
                 attrs.update(
                     {
-                        "readonly": attrs.get("readonly")
-                        + f" or {field_name} != {field_val}"
+                        "readonly": f"{attrs['readonly']}"
+                        f"{' or ' if attrs['readonly'] != '' else ''}"
+                        f"{field_name} != {field_val}"
                     }
                 )
                 attrs.update(
                     {
-                        "invisible": attrs.get("invisible")
-                        + f" or {field_name} != {field_val}"
+                        "invisible": f"{attrs['invisible']}"
+                        f"{' or ' if attrs['invisible'] != '' else ''}"
+                        f"{field_name} != {field_val}"
                     }
                 )
                 attrs.update(
                     {
-                        "required": attrs.get("required")
-                        + f" or {field_name} != {field_val}"
+                        "required": f"{attrs['required']}"
+                        f"{' or ' if attrs['required'] != '' else ''}"
+                        f"{field_name} != {field_val}"
                     }
                 )
 
                 if config_steps:
                     attrs.update(
                         {
-                            "required": attrs.get("required")
-                            + f" or 'state' in {cfg_step_ids}"
+                            "required": f"{attrs['required']}"
+                            f"{' or ' if attrs['required'] != '' else ''}"
+                            f"state in {cfg_step_ids}"
                         }
                     )
 

@@ -78,6 +78,24 @@
                     column_invisible="not context.get('default_config_ok', False)"
                 />
                 <field
+                    name="required_condition"
+                    column_invisible="not context.get('default_config_ok', False)"
+                    optional="hide"
+                    groups="base.group_no_one"
+                />
+                <field
+                    name="readonly_condition"
+                    column_invisible="not context.get('default_config_ok', False)"
+                    optional="hide"
+                    groups="base.group_no_one"
+                />
+                <field
+                    name="invisible_condition"
+                    column_invisible="not context.get('default_config_ok', False)"
+                    optional="hide"
+                    groups="base.group_no_one"
+                />
+                <field
                     name="multi"
                     column_invisible="not context.get('default_config_ok', False)"
                     readonly="custom"

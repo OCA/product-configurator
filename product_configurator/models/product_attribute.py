@@ -163,6 +163,10 @@ class ProductAttributeLine(models.Model):
     # TODO: Order by dependencies first and then sequence so dependent fields
     # do not come before master field
 
+    @property
+    def _prefixes(self):
+        return self.env["product.configurator"]._prefixes
+
     @api.onchange("attribute_id")
     def onchange_attribute(self):
         """Set default value of required/multi/cutom from attribute"""
@@ -180,12 +184,107 @@ class ProductAttributeLine(models.Model):
 
     custom = fields.Boolean(help="Allow custom values for this attribute?")
     required = fields.Boolean(help="Is this attribute required?")
+    required_condition = fields.Char(compute="_compute_attribute_condition", store=True)
+    invisible_condition = fields.Char(
+        compute="_compute_attribute_condition", store=True
+    )
+    readonly_condition = fields.Char(compute="_compute_attribute_condition", store=True)
     multi = fields.Boolean(
         help="Allow selection of multiple values for this attribute?",
     )
     default_val = fields.Many2one(comodel_name="product.attribute.value")
 
     sequence = fields.Integer(default=10)
+
+    @api.depends(
+        "required", "custom", "product_tmpl_id", "product_tmpl_id.config_step_line_ids"
+    )
+    def _compute_attribute_condition(self):
+        for line in self:
+            config_steps = line.product_tmpl_id.config_step_line_ids.filtered(
+                lambda x, attr_line=line: attr_line in x.attribute_line_ids
+            )
+            depends = line.get_dependencies()
+            line.required_condition = line.get_required_condition(config_steps, depends)
+            line.readonly_condition = line.get_readonly_condition(config_steps, depends)
+            line.invisible_condition = line.get_invisible_condition(config_steps)
+
+    def get_required_condition(self, config_steps, dependencies):
+        self.ensure_one()
+        required_str = ""
+        if self.required:
+            if config_steps:
+                if self.required:
+                    cfg_step_ids = [str(id) for id in config_steps.ids]
+                    required_str += f"state in {cfg_step_ids}"
+                else:
+                    required_str += "state in ['configure']"
+            for depend_field, val_ids in dependencies.items():
+                if not val_ids:
+                    continue
+                field_type = "many2many" if self.multi else "many2one"
+                if self.required and not self.custom and field_type != "many2many":
+                    if required_str:
+                        required_str += " and "
+                    required_str += f"{depend_field} in {str(list(val_ids))}"
+        return required_str
+
+    def get_invisible_condition(self, config_steps):
+        self.ensure_one()
+        if config_steps:
+            cfg_step_ids = [str(id) for id in config_steps.ids]
+            return f"state not in {cfg_step_ids}"
+        else:
+            return "state not in ['configure']"
+
+    def get_readonly_condition(self, config_steps, dependencies):
+        self.ensure_one()
+        readonly_str = ""
+        if config_steps:
+            cfg_step_ids = [str(id) for id in config_steps.ids]
+            readonly_str += f"state not in {cfg_step_ids}"
+        else:
+            readonly_str += "state not in ['configure']"
+        for depend_field, val_ids in dependencies.items():
+            if not val_ids:
+                continue
+            field_type = "many2many" if self.multi else "many2one"
+            if field_type != "many2many":
+                if readonly_str:
+                    readonly_str += " and "
+                readonly_str += f"{depend_field} not in {str(list(val_ids))}"
+        return readonly_str
+
+    def get_dependencies(self):
+        self.ensure_one()
+        field_prefix = self._prefixes.get("field_prefix")
+        config_lines = self.product_tmpl_id.config_line_ids
+        dependencies = config_lines.filtered(
+            lambda cl, attr_line=self: cl.attribute_line_id == attr_line
+        )
+        attr_depends = {}
+        if self.value_ids <= dependencies.mapped("value_ids"):
+            domain_lines = dependencies.mapped("domain_id.domain_line_ids")
+            for domain_line in domain_lines:
+                attr_id = domain_line.attribute_id.id
+                attr_field = field_prefix + str(attr_id)
+                attr_lines = self.product_tmpl_id.attribute_line_ids
+                # If the fields it depends on are not in the config step
+                # allow to update attrs for all attribute.\ otherwise
+                # required will not work with stepchange using statusbar.
+                # if config_steps and wiz.state not in cfg_step_ids:
+                #     continue
+                if attr_field not in attr_depends:
+                    attr_depends[attr_field] = set()
+                if domain_line.condition == "in":
+                    attr_depends[attr_field] |= set(domain_line.value_ids.ids)
+                elif domain_line.condition == "not in":
+                    val_ids = attr_lines.filtered(
+                        lambda line, attr_id=self: line.attribute_id.id == attr_id
+                    ).value_ids
+                    val_ids = val_ids - domain_line.value_ids
+                    attr_depends[attr_field] |= set(val_ids.ids)
+        return attr_depends
 
     @api.constrains("value_ids", "default_val")
     def _check_default_values(self):
