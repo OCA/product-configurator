@@ -24,7 +24,9 @@ class ProductConfigurator(models.TransientModel):
 
     def _find_wizard_context(self):
         # TODO: For more ref. https://github.com/odoo/odoo/pull/135145
-        wizard_id = self.env.context.get("wizard_id_view_ref") or self.env.context.get("wizard_id")
+        wizard_id = self.env.context.get("wizard_id_view_ref") or self.env.context.get(
+            "wizard_id"
+        )
 
         if not wizard_id:
             return False
