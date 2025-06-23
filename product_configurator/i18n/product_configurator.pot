@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 17.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -16,7 +16,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product.py:0
-#, python-format
 msgid ""
 "\n"
 "Attribute/s: %s"
@@ -25,7 +24,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product.py:0
-#, python-format
 msgid ""
 "\n"
 "Restriction: %s"
@@ -34,7 +32,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product.py:0
-#, python-format
 msgid ""
 "\n"
 "Value/s: %s\n"
@@ -129,7 +126,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product.py:0
-#, python-format
 msgid ""
 "All attribute values used in attribute value lines must be defined in the "
 "attribute lines of the template"
@@ -159,7 +155,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
-#, python-format
 msgid "An error occurred while parsing value for attribute %s"
 msgstr ""
 
@@ -303,14 +298,12 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
-#, python-format
 msgid "Cannot have a configuration step defined twice."
 msgstr ""
 
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/wizard/product_configurator.py:0
-#, python-format
 msgid ""
 "Changing the product template while having an active configuration will "
 "erase reset/clear all values"
@@ -345,7 +338,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product.py:0
-#, python-format
 msgid ""
 "Configurable Products cannot have duplicates (identical attribute values)"
 msgstr ""
@@ -585,7 +577,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product_attribute.py:0
-#, python-format
 msgid ""
 "Default values for each attribute line must exist in the attribute values "
 "(%(attr_name)s: %(default_val)s)"
@@ -594,7 +585,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product.py:0
-#, python-format
 msgid "Default values provided generate an invalid configuration"
 msgstr ""
 
@@ -663,7 +653,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product.py:0
-#, python-format
 msgid "Error while calculating mako product name: %s"
 msgstr ""
 
@@ -680,7 +669,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
-#, python-format
 msgid "Finished configuration session must have a product_id linked"
 msgstr ""
 
@@ -692,7 +680,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product.py:0
-#, python-format
 msgid ""
 "Following Attribute/Value from restriction are not present in template "
 "attributes/values. Please make sure you are adding right restriction"
@@ -777,6 +764,11 @@ msgstr ""
 #. module: product_configurator
 #: model:product.config.step,name:product_configurator.config_step_interior
 msgid "Interior"
+msgstr ""
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_attribute_line__invisible_condition
+msgid "Invisible Condition"
 msgstr ""
 
 #. module: product_configurator
@@ -878,7 +870,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product_attribute.py:0
-#, python-format
 msgid "Maximum value must be greater than Minimum value"
 msgstr ""
 
@@ -939,7 +930,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product_attribute.py:0
-#, python-format
 msgid ""
 "On the product %(product)s you cannot associate the value %(value)s with the"
 " attribute %(attr)s because they do not match."
@@ -1061,7 +1051,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/wizard/product_configurator.py:0
-#, python-format
 msgid "Product Template does not have any attribute lines defined"
 msgstr ""
 
@@ -1082,7 +1071,13 @@ msgid "Product configuration Wizard"
 msgstr ""
 
 #. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_attribute_line__readonly_condition
+msgid "Readonly Condition"
+msgstr ""
+
+#. module: product_configurator
 #: model_terms:ir.ui.view,arch_db:product_configurator.product_form_view_custom_vals_inherit
+#: model_terms:ir.ui.view,arch_db:product_configurator.product_kanban_view_inherited
 msgid "Reconfigure Product"
 msgstr ""
 
@@ -1095,6 +1090,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute__required
 #: model:ir.model.fields,field_description:product_configurator.field_product_template_attribute_line__required
 msgid "Required"
+msgstr ""
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_attribute_line__required_condition
+msgid "Required Condition"
 msgstr ""
 
 #. module: product_configurator
@@ -1111,7 +1111,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product.py:0
-#, python-format
 msgid ""
 "Restrictions added make the current default values generate an invalid configuration.                      \n"
 "%s"
@@ -1141,21 +1140,18 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product_attribute.py:0
-#, python-format
 msgid "Selected custom field type '%s' is not searchable"
 msgstr ""
 
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product_attribute.py:0
-#, python-format
 msgid "Selected custom value '%(name)s' must be at least %(min_val)s"
 msgstr ""
 
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product_attribute.py:0
-#, python-format
 msgid ""
 "Selected custom value '%(name)s' must be between %(min_val)s and %(max_val)s"
 msgstr ""
@@ -1163,7 +1159,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product_attribute.py:0
-#, python-format
 msgid "Selected custom value '%(name)s' must be lower than %(max_value)s"
 msgstr ""
 
@@ -1217,8 +1212,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product.py:0
-#: code:addons/product_configurator/models/product.py:0
-#, python-format
 msgid ""
 "Sorry, you are not allowed to create/change this kind of document. For more "
 "information please contact your manager."
@@ -1275,7 +1268,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product_attribute.py:0
-#, python-format
 msgid ""
 "The attribute %(attr)s must have at least one value for the product "
 "%(product)s."
@@ -1296,7 +1288,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/wizard/product_configurator.py:0
-#, python-format
 msgid "There was a problem rendering the view (dynamic_form not found)"
 msgstr ""
 
@@ -1370,14 +1361,12 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
-#, python-format
 msgid "Values entered for line '%s' generate a incompatible configuration"
 msgstr ""
 
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product_config.py:0
-#, python-format
 msgid ""
 "Values must belong to the attribute of the corresponding attribute_line set "
 "on the configuration line"
@@ -1386,7 +1375,6 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product_attribute.py:0
-#, python-format
 msgid ""
 "Values provided to the attribute value line are incompatible with the "
 "current rules"
@@ -1431,6 +1419,5 @@ msgstr ""
 #. module: product_configurator
 #. odoo-python
 #: code:addons/product_configurator/models/product.py:0
-#, python-format
 msgid "You cannot have a duplicate configuration for the same value"
 msgstr ""
