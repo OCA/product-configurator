@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -107,9 +107,6 @@ msgstr ""
 #. module: product_configurator_mrp
 #. odoo-javascript
 #: code:addons/product_configurator_mrp/static/src/xml/mrp_production_views.xml:0
-#: code:addons/product_configurator_mrp/static/src/xml/mrp_production_views.xml:0
-#: code:addons/product_configurator_mrp/static/src/xml/mrp_production_views.xml:0
-#, python-format
 msgid "Configure"
 msgstr ""
 
@@ -154,13 +151,6 @@ msgid "ID"
 msgstr ""
 
 #. module: product_configurator_mrp
-#: model:ir.model.fields,field_description:product_configurator_mrp.field_mrp_bom_line_configuration____last_update
-#: model:ir.model.fields,field_description:product_configurator_mrp.field_mrp_bom_line_configuration_set____last_update
-#: model:ir.model.fields,field_description:product_configurator_mrp.field_product_configurator_mrp____last_update
-msgid "Last Modified on"
-msgstr ""
-
-#. module: product_configurator_mrp
 #: model:ir.model.fields,field_description:product_configurator_mrp.field_mrp_bom_line_configuration__write_uid
 #: model:ir.model.fields,field_description:product_configurator_mrp.field_mrp_bom_line_configuration_set__write_uid
 #: model:ir.model.fields,field_description:product_configurator_mrp.field_product_configurator_mrp__write_uid
@@ -175,6 +165,7 @@ msgid "Last Updated on"
 msgstr ""
 
 #. module: product_configurator_mrp
+#: model:ir.model,name:product_configurator_mrp.model_mrp_production
 #: model:ir.model.fields,field_description:product_configurator_mrp.field_product_configurator_mrp__order_id
 msgid "Manufacturing Order"
 msgstr ""
@@ -226,11 +217,6 @@ msgid "Product Variant"
 msgstr ""
 
 #. module: product_configurator_mrp
-#: model:ir.model,name:product_configurator_mrp.model_mrp_production
-msgid "Production Order"
-msgstr ""
-
-#. module: product_configurator_mrp
 #: model:res.groups,name:product_configurator_mrp.group_product_configurator_mrp
 msgid "Products & BOMS"
 msgstr ""
@@ -253,9 +239,8 @@ msgstr ""
 #. module: product_configurator_mrp
 #. odoo-python
 #: code:addons/product_configurator_mrp/wizard/product_configurator_mrp.py:0
-#, python-format
 msgid ""
-"There is no BOM associated with selected product. Please inform to "
+"There is no BOM associated with selected product. Please inform the "
 "administrator/manager. [Product: %s]"
 msgstr ""
 
