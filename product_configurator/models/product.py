@@ -456,7 +456,7 @@ class ProductProduct(models.Model):
                 product.mapped("product_template_attribute_value_ids.weight_extra")
             )
 
-    def _compute_product_weight(self):
+    def _compute_weight(self):
         for product in self:
             if product.config_ok:
                 tmpl_weight = product.product_tmpl_id.weight
@@ -464,10 +464,10 @@ class ProductProduct(models.Model):
             else:
                 product.weight = product.weight_dummy
 
-    def _search_product_weight(self, operator, value):
+    def _search_weight(self, operator, value):
         return [("weight_dummy", operator, value)]
 
-    def _inverse_product_weight(self):
+    def _inverse_weight(self):
         """Store weight in dummy field"""
         self.weight_dummy = self.weight
 
@@ -477,9 +477,9 @@ class ProductProduct(models.Model):
     weight_extra = fields.Float(compute="_compute_product_weight_extra")
     weight_dummy = fields.Float(string="Manual Weight", digits="Stock Weight")
     weight = fields.Float(
-        compute="_compute_product_weight",
-        inverse="_inverse_product_weight",
-        search="_search_product_weight",
+        compute="_compute_weight",
+        inverse="_inverse_weight",
+        search="_search_weight",
         store=False,
     )
 
