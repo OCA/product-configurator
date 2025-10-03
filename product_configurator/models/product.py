@@ -177,9 +177,9 @@ class ProductTemplate(models.Model):
                     self.env._(
                         "Restrictions added make the current default values "
                         "generate an invalid configuration.\
-                      \n%s"
+                      \n%s",
+                        exc.args[0],
                     )
-                    % (exc.args[0])
                 ) from exc
 
     def toggle_config(self):
@@ -444,8 +444,10 @@ class ProductProduct(models.Model):
                 return buf.getvalue()
             except Exception:
                 _logger.error(
-                    self.env._("Error while calculating mako product name: %s")
-                    % self.display_name
+                    self.env._(
+                        "Error while calculating mako product name: %s",
+                        self.display_name,
+                    )
                 )
         return self.display_name
 
@@ -540,8 +542,7 @@ class ProductProduct(models.Model):
         if config_product:
             self.env["product.product"].check_config_user_access(mode="delete")
         ctx = dict(self.env.context, unlink_from_variant=True)
-        self.env.context = ctx
-        return super().unlink()
+        return super(ProductProduct, self.with_context(**ctx)).unlink()
 
     @api.model_create_multi
     def create(self, vals_list):

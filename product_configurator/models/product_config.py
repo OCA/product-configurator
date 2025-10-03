@@ -16,7 +16,7 @@ class ProductConfigDomain(models.Model):
     _description = "Domain for Config Restrictions"
 
     @api.depends("implied_ids")
-    def _get_trans_implied(self):
+    def _compute_trans_implied_ids(self):
         """Computes the transitive closure of relation implied_ids"""
 
         def linearize(domains):
@@ -74,7 +74,7 @@ class ProductConfigDomain(models.Model):
     )
     trans_implied_ids = fields.Many2many(
         comodel_name="product.config.domain",
-        compute=_get_trans_implied,
+        compute="_compute_trans_implied_ids",
         column1="domain_id",
         column2="parent_id",
         string="Transitively inherits",
@@ -721,7 +721,7 @@ class ProductConfigSession(models.Model):
         try:
             self.validate_configuration(final=False)
         except ValidationError as exc:
-            raise ValidationError(self.env._(f"{exc}")) from exc
+            raise ValidationError(self.env._("%s", exc)) from exc
         except Exception as exc:
             raise ValidationError(self.env._("Invalid Configuration")) from exc
         return res
@@ -757,7 +757,7 @@ class ProductConfigSession(models.Model):
                     # TODO: Remove if cond when PR with
                     # raise error on github is merged
                 except ValidationError as exc:
-                    raise ValidationError(self.env._("%s") % exc.name) from exc
+                    raise ValidationError(self.env._("%s", exc.name)) from exc
                 except Exception as exc:
                     raise ValidationError(
                         self.env._(
@@ -789,7 +789,7 @@ class ProductConfigSession(models.Model):
         try:
             self.validate_configuration()
         except ValidationError as exc:
-            raise ValidationError(self.env._("%s") % exc.name) from exc
+            raise ValidationError(self.env._("%s", exc.name)) from exc
         except Exception as exc:
             raise ValidationError(self.env._("Invalid Configuration")) from exc
 

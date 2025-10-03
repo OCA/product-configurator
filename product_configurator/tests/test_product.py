@@ -11,10 +11,13 @@ class TestProduct(ProductConfiguratorTestCases):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # load demo data
+        cls._load_demo_data()
+
         cls.productTemplate = cls.env["product.template"]
         cls.productAttributeLine = cls.env["product.template.attribute.line"]
         cls.productConfigStepLine = cls.env["product.config.step.line"]
-        cls.product_category = cls.env.ref("product.product_category_5")
+        cls.product_category = cls.env.ref("product.product_category_goods")
         cls.attributelinefuel = cls.env.ref(
             "product_configurator.product_attribute_line_2_series_fuel"
         )
@@ -380,10 +383,14 @@ class TestProduct(ProductConfiguratorTestCases):
         )
 
     def test_11_compute_product_weight_extra(self):
-        product_id = self.env.ref("product.product_delivery_01")
-        product_template_attr_value_ids = self.env.ref(
-            "product.product_4_attribute_1_value_2"
+        product_id = self.env["product.product"].create(
+            {
+                "name": "Dummy Test Product",
+            }
         )
+        product_template_attr_value_ids = self.env.ref(
+            "product_configurator.test_product_template_attribute_line_1"
+        ).product_template_value_ids[1]
         product_template_attr_value_ids.write(
             {
                 "weight_extra": 50.0,

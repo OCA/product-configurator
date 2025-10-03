@@ -6,9 +6,9 @@
         <field name="priority">16</field>
         <field name="inherit_id" ref="product.product_template_form_view" />
         <field name="arch" type="xml">
-            <xpath expr="//header" position="inside">
+            <field name="product_variant_count" position="after">
                 <field name="config_ok" invisible="1" />
-            </xpath>
+            </field>
         </field>
     </record>
 
@@ -18,15 +18,17 @@
         <field name="priority">16</field>
         <field name="inherit_id" ref="product.product_template_only_form_view" />
         <field name="arch" type="xml">
-            <xpath expr='//header' position="inside">
-                <button
-                    name="configure_product"
-                    class="oe_highlight"
-                    type="object"
-                    string="Configure Product"
-                    groups="product_configurator.group_product_configurator"
-                    invisible="not config_ok"
-                />
+            <xpath expr='//sheet' position="before">
+                <header>
+                    <button
+                        name="configure_product"
+                        class="oe_highlight"
+                        type="object"
+                        string="Configure Product"
+                        groups="product_configurator.group_product_configurator"
+                        invisible="not config_ok"
+                    />
+                </header>
             </xpath>
             <div name="button_box" position="inside">
                 <button
@@ -316,15 +318,17 @@
         <field name="model">product.product</field>
         <field name="inherit_id" ref="product.product_normal_form_view" />
         <field name="arch" type="xml">
-            <xpath expr='//header' position="inside">
-                <button
-                    name="reconfigure_product"
-                    groups="product_configurator.group_product_configurator"
-                    class="oe_highlight"
-                    type="object"
-                    string="Reconfigure Product"
-                    invisible="not config_ok"
-                />
+            <xpath expr='//sheet' position="before">
+                <header>
+                    <button
+                        name="reconfigure_product"
+                        groups="product_configurator.group_product_configurator"
+                        class="oe_highlight"
+                        type="object"
+                        string="Reconfigure Product"
+                        invisible="not config_ok"
+                    />
+                </header>
             </xpath>
             <!-- <xpath expr="//button[@name='toggle_config']" position="attributes">
                 <attribute name="invisible">1</attribute>

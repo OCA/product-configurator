@@ -3,8 +3,54 @@
     <!-- Product Category -->
 
     <record id="product_category_bmw" model="product.category">
-        <field name="parent_id" ref="product.product_category_all" />
+        <field name="parent_id" ref="product.product_category_goods" />
         <field name="name">BMW</field>
+    </record>
+
+    <!-- Normal Product Template-->
+    <record id="test_product_template" model="product.template">
+        <field name="name">Test Template</field>
+        <field name="categ_id" ref="product.product_category_goods" />
+        <field name="standard_price">500.0</field>
+        <field name="list_price">750.0</field>
+        <field name="type">consu</field>
+        <field name="weight">0.01</field>
+        <field name="uom_id" ref="uom.product_uom_unit" />
+        <field name="description_sale">160x80cm, with large legs</field>
+    </record>
+
+    <!-- Legs Material -->
+    <record id="pa_test_att_1" model="product.attribute">
+        <field name="name">Test</field>
+        <field name="sequence">90</field>
+    </record>
+
+    <record id="pav_test_1" model="product.attribute.value">
+        <field name="name">Test 1</field>
+        <field name="attribute_id" ref="pa_test_att_1" />
+        <field name="sequence">1</field>
+    </record>
+
+    <record id="pav_test_2" model="product.attribute.value">
+        <field name="name">Test 2</field>
+        <field name="attribute_id" ref="pa_test_att_1" />
+        <field name="sequence">2</field>
+    </record>
+
+    <!-- the product template attribute lines have to be defined before creating the variants -->
+    <record
+        id="test_product_template_attribute_line_1"
+        model="product.template.attribute.line"
+    >
+        <field name="product_tmpl_id" ref="test_product_template" />
+        <field name="attribute_id" ref="pa_test_att_1" />
+        <field
+            name="value_ids"
+            eval="[Command.set([
+                ref('pav_test_1'),
+                ref('pav_test_2'),
+            ])]"
+        />
     </record>
 
     <!-- Configurable Product Template -->

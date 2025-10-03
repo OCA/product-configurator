@@ -11,6 +11,8 @@ class ProductConfig(ProductConfiguratorTestCases):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # load demo data
+        cls._load_demo_data()
         cls.productConfWizard = cls.env["product.configurator"]
         cls.productTemplate = cls.env["product.template"]
         cls.productAttribute = cls.env["product.attribute"]
@@ -162,7 +164,7 @@ class ProductConfig(ProductConfiguratorTestCases):
 
     def test_01_check_config_step(self):
         with self.assertRaises(ValidationError):
-            self.config_product_2.config_step_id = 4
+            self.config_product_2.config_step_id = self.config_step_engine
 
     def test_02_get_trans_implied(self):
         self.domain_gasolin.write({"implied_ids": [(6, 0, [self.domain_engine.id])]})

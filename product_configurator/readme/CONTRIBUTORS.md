@@ -1,2 +1,4 @@
 - [Aion Tech](https://aiontech.company/):
   - Simone Rubino \<<simone.rubino@aion-tech.it>\>
+- [Komit](https://komit-consulting.com)
+  - Hieu Vo Minh Bao (hieu.vmb@komit-consulting.com)

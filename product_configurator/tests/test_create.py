@@ -1,13 +1,16 @@
-from odoo.addons.base.tests.common import BaseCommon
+from ..tests.common import ProductConfiguratorTestCases
 
 
-class ConfigurationCreate(BaseCommon):
+class ConfigurationCreate(ProductConfiguratorTestCases):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # load demo data
+        cls._load_demo_data()
+
         cls.ProductConfWizard = cls.env["product.configurator"]
         cls.config_product = cls.env.ref("product_configurator.bmw_2_series")
-        cls.product_category = cls.env.ref("product.product_category_5")
+        cls.product_category = cls.env.ref("product.product_category_goods")
 
         # attributes
         cls.attr_fuel = cls.env.ref("product_configurator.product_attribute_fuel")
