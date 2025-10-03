@@ -3,15 +3,18 @@
 
 from odoo import SUPERUSER_ID, Command
 from odoo.exceptions import ValidationError
-from odoo.fields import first
-from odoo.tests import Form, TransactionCase
+from odoo.tests import Form
 from odoo.tools.safe_eval import safe_eval
 
+from ..tests.common import ProductConfiguratorTestCases
 
-class ConfigurationRules(TransactionCase):
+
+class ConfigurationRules(ProductConfiguratorTestCases):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # load demo data
+        cls._load_demo_data()
         # The product attribute view only shows configuration fields
         # (such as `val_custom`)
         # when called with a specific context
@@ -21,7 +24,7 @@ class ConfigurationRules(TransactionCase):
         )
         action_eval_context = configuration_attributes_action._get_eval_context()
         configuration_attribute_context = safe_eval(
-            configuration_attributes_action.context, globals_dict=action_eval_context
+            configuration_attributes_action.context, context=action_eval_context
         )
         configuration_attribute_model = cls.env["product.attribute"].with_context(
             **configuration_attribute_context
@@ -55,7 +58,9 @@ class ConfigurationRules(TransactionCase):
         with regular_attribute_form.value_ids.new() as value:
             value.name = "Test value 2"
         cls.regular_attribute = regular_attribute_form.save()
-        cls.regular_attribute_value_1 = first(cls.regular_attribute.value_ids)
+        cls.regular_attribute_value_1 = next(
+            iter(cls.regular_attribute.value_ids), cls.regular_attribute.value_ids
+        )
         cls.regular_attribute_value_2 = (
             cls.regular_attribute.value_ids - cls.regular_attribute_value_1
         )

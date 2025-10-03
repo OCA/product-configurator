@@ -418,7 +418,7 @@ class ProductAttributeValue(models.Model):
                 attribute.display_name = name
 
     @api.model
-    def name_search(self, name="", args=None, operator="ilike", limit=100):
+    def name_search(self, name="", domain=None, operator="ilike", limit=100):
         """Use name_search as a domain restriction for the frontend to show
         only values set on the product template taking all the configuration
         restrictions into account.
@@ -426,6 +426,7 @@ class ProductAttributeValue(models.Model):
         TODO: This only works when activating the selection not when typing
         """
         product_tmpl_id = self.env.context.get("_cfg_product_tmpl_id")
+        args = domain
         if product_tmpl_id:
             # TODO: Avoiding browse here could be a good performance enhancer
             product_tmpl = self.env["product.template"].browse(product_tmpl_id)
@@ -457,7 +458,9 @@ class ProductAttributeValue(models.Model):
             if attr_restrict_ids:
                 new_args.append(("attribute_id", "not in", attr_restrict_ids))
             args = new_args
-        res = super().name_search(name=name, args=args, operator=operator, limit=limit)
+        res = super().name_search(
+            name=name, domain=args, operator=operator, limit=limit
+        )
         return res
 
     # TODO: Prevent unlinking custom options by overriding unlink

@@ -11,11 +11,13 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # load demo data
+        cls._load_demo_data()
         cls.productTemplate = cls.env["product.template"]
         cls.productAttributeLine = cls.env["product.template.attribute.line"]
         cls.productConfigStepLine = cls.env["product.config.step.line"]
         cls.productConfigSession = cls.env["product.config.session"]
-        cls.product_category = cls.env.ref("product.product_category_5")
+        cls.product_category = cls.env.ref("product.product_category_goods")
         cls.attr_line_fuel = cls.env.ref(
             "product_configurator.product_attribute_line_2_series_fuel"
         )

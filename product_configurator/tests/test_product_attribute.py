@@ -1,16 +1,18 @@
 from odoo.exceptions import ValidationError
 
-from odoo.addons.base.tests.common import BaseCommon
+from ..tests.common import ProductConfiguratorTestCases
 
 # FIXME: many tests here do not have any assertions.
 # They simply run something and expect it to not raise an exception.
 # This is not a good practice. Tests should have assertions.
 
 
-class ProductAttributes(BaseCommon):
+class ProductAttributes(ProductConfiguratorTestCases):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # load demo data
+        cls._load_demo_data()
         cls.productAttributeLine = cls.env["product.template.attribute.line"]
         cls.ProductAttributeFuel = cls.env.ref(
             "product_configurator.product_attribute_fuel"
@@ -19,7 +21,7 @@ class ProductAttributes(BaseCommon):
             "product_configurator.product_attribute_line_2_series_fuel"
         )
         cls.ProductTemplate = cls.env.ref("product_configurator.bmw_2_series")
-        cls.product_category = cls.env.ref("product.product_category_5")
+        cls.product_category = cls.env.ref("product.product_category_goods")
         cls.ProductAttributePrice = cls.env["product.template.attribute.value"]
         cls.attr_fuel = cls.env.ref("product_configurator.product_attribute_fuel")
         cls.attr_engine = cls.env.ref("product_configurator.product_attribute_engine")
@@ -241,9 +243,10 @@ class ProductAttributes(BaseCommon):
         )
 
     def test_15_name_search_with_invalid_template(self):
-        self.env.context = dict(self.env.context, _cfg_product_tmpl_id=999999)
-        result = self.env["product.attribute.value"].name_search(
-            name="Red", args=[], operator="ilike", limit=10
+        result = (
+            self.env["product.attribute.value"]
+            .with_context(**dict(self.env.context, _cfg_product_tmpl_id=999999))
+            .name_search(name="Red", domain=[], operator="ilike", limit=10)
         )
         self.assertEqual(
             result, [], "Expected no results when using an invalid product template ID"
@@ -255,11 +258,12 @@ class ProductAttributes(BaseCommon):
                 "name": "Empty Product",
             }
         )
-        self.env.context = dict(
-            self.env.context, _cfg_product_tmpl_id=empty_product_template.id
-        )
-        result = self.env["product.attribute.value"].name_search(
-            name="Red", args=[], operator="ilike", limit=10
+        result = (
+            self.env["product.attribute.value"]
+            .with_context(
+                **dict(self.env.context, _cfg_product_tmpl_id=empty_product_template.id)
+            )
+            .name_search(name="Red", domain=[], operator="ilike", limit=10)
         )
         self.assertEqual(
             result,

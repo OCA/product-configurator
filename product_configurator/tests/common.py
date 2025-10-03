@@ -1,13 +1,16 @@
-from odoo.addons.base.tests.common import BaseCommon
+from odoo.tests.common import TransactionCase
+from odoo.tools import convert_file
 
 
-class ProductConfiguratorTestCases(BaseCommon):
+class ProductConfiguratorTestCases(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # load demo data
+        cls._load_demo_data()
         cls.ProductConfWizard = cls.env["product.configurator"]
         cls.config_product = cls.env.ref("product_configurator.bmw_2_series")
-        cls.product_category = cls.env.ref("product.product_category_5")
+        cls.product_category = cls.env.ref("product.product_category_goods")
         # attributes
         cls.attr_fuel = cls.env.ref("product_configurator.product_attribute_fuel")
         cls.attr_engine = cls.env.ref("product_configurator.product_attribute_engine")
@@ -114,3 +117,30 @@ class ProductConfiguratorTestCases(BaseCommon):
         )
 
         return product_config_wizard.action_next_step()
+
+    @classmethod
+    def _load(cls, module, filepath):
+        # pylint: disable=no-value-for-parameter
+        convert_file(
+            cls.env,
+            module=module,
+            filename=filepath,
+            idref=None,
+            mode="init",
+            noupdate=False,
+        )
+
+    @classmethod
+    def _load_demo_data(cls):
+        cls._load(module="product_configurator", filepath="demo/product_template.xml")
+        cls._load(module="product_configurator", filepath="demo/product_attribute.xml")
+        cls._load(
+            module="product_configurator", filepath="demo/product_config_domain.xml"
+        )
+        cls._load(
+            module="product_configurator", filepath="demo/product_config_lines.xml"
+        )
+        cls._load(
+            module="product_configurator", filepath="demo/product_config_step.xml"
+        )
+        cls._load(module="product_configurator", filepath="demo/config_image_ids.xml")
