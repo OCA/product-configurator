@@ -638,7 +638,7 @@ class ProductConfigurator(models.TransientModel):
         except Exception as exc:
             raise UserError(
                 self.env._(
-                    "There was a problem rendering the view " "(dynamic_form not found)"
+                    "There was a problem rendering the view (dynamic_form not found)"
                 )
             ) from exc
 

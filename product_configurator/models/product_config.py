@@ -350,7 +350,7 @@ class ProductConfigSession(models.Model):
         "product_tmpl_id.attribute_line_ids",
         "product_tmpl_id.attribute_line_ids.value_ids",
         "product_tmpl_id.attribute_line_ids.product_template_value_ids",
-        "product_tmpl_id.attribute_line_ids." "product_template_value_ids.price_extra",
+        "product_tmpl_id.attribute_line_ids.product_template_value_ids.price_extra",
     )
     def _compute_cfg_price(self):
         for session in self:
@@ -449,7 +449,7 @@ class ProductConfigSession(models.Model):
         "product_tmpl_id.attribute_line_ids",
         "product_tmpl_id.attribute_line_ids.value_ids",
         "product_tmpl_id.attribute_line_ids.product_template_value_ids",
-        "product_tmpl_id.attribute_line_ids.product_template_value_ids" ".weight_extra",
+        "product_tmpl_id.attribute_line_ids.product_template_value_ids.weight_extra",
     )
     def _compute_cfg_weight(self):
         for cfg_session in self:
@@ -526,8 +526,7 @@ class ProductConfigSession(models.Model):
             if not session.product_id:
                 raise ValidationError(
                     self.env._(
-                        "Finished configuration session must have a "
-                        "product_id linked"
+                        "Finished configuration session must have a product_id linked"
                     )
                 )
 
@@ -762,8 +761,7 @@ class ProductConfigSession(models.Model):
                 except Exception as exc:
                     raise ValidationError(
                         self.env._(
-                            "Default values provided generate an invalid "
-                            "configuration"
+                            "Default values provided generate an invalid configuration"
                         )
                     ) from exc
                 vals.update({"value_ids": [(6, 0, default_val_ids)]})
@@ -1671,7 +1669,7 @@ class ProductConfigSessionCustomValue(models.Model):
             ):
                 raise ValidationError(
                     self.env._(
-                        "Configuration cannot have the " "same value inserted twice"
+                        "Configuration cannot have the same value inserted twice"
                     )
                 )
 
