@@ -1,7 +1,6 @@
 #  Copyright 2024 Simone Rubino - Aion Tech
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo.fields import first
 from odoo.tests import Form
 
 from odoo.addons.base.tests.common import BaseCommon
@@ -83,9 +82,9 @@ class TestSaleOrderLine(BaseCommon):
         # having extra price 10 and 20 respectively
         product_template = self.product_template
         ptavs = product_template.attribute_line_ids.product_template_value_ids
-        ptav_10 = first(ptavs)
+        ptav_10 = ptavs[:1]
         ptav_10.price_extra = 10
-        ptav_20 = first(ptavs - ptav_10)
+        ptav_20 = (ptavs - ptav_10)[:1]
         ptav_20.price_extra = 20
         attribute = ptav_10.attribute_id
         sale_order = self.sale_order

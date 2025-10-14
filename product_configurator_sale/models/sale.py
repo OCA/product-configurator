@@ -56,7 +56,7 @@ class SaleOrderLine(models.Model):
 
     @api.depends(
         "config_session_id",
-        "tax_id",
+        "tax_ids",
         "company_id",
     )
     def _compute_price_unit(self):
@@ -67,7 +67,7 @@ class SaleOrderLine(models.Model):
                 line.price_unit = account_tax_obj._fix_tax_included_price_company(
                     line.config_session_id.price,
                     line.product_id.taxes_id,
-                    line.tax_id,
+                    line.tax_ids,
                     line.company_id,
                 )
             else:

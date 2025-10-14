@@ -9,7 +9,9 @@ class SaleOrder(TC.ProductConfiguratorTestCases):
         super().setUpClass()
         cls.SaleOrder = cls.env["sale.order"]
         cls.productPricelist = cls.env["product.pricelist"]
-        cls.resPartner = cls.env.ref("product_configurator_sale.partenr_sale_1")
+        cls.resPartner = cls.env["res.partner"].create(
+            {"name": "Test Partner", "company_type": "company"}
+        )
         cls.currency_id = cls.env.ref("base.USD")
         cls.ProductConfWizard = cls.env["product.configurator.sale"]
 
