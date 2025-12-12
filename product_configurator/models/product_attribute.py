@@ -280,7 +280,8 @@ class ProductAttributeLine(models.Model):
                     attr_depends[attr_field] |= set(domain_line.value_ids.ids)
                 elif domain_line.condition == "not in":
                     val_ids = attr_lines.filtered(
-                        lambda line, attr_id=self: line.attribute_id.id == attr_id
+                        lambda line, attrib_id=self: line.attribute_id.id
+                        in attrib_id.ids
                     ).value_ids
                     val_ids = val_ids - domain_line.value_ids
                     attr_depends[attr_field] |= set(val_ids.ids)

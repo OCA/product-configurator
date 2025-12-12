@@ -30,14 +30,15 @@ class ProductConfigDomain(models.Model):
         for domain in self:
             domain.trans_implied_ids = linearize(domain)
 
-    def compute_domain(self):
+    @api.depends("domain_line_ids")
+    def _compute_domain(self):
         """Returns a list of domains defined on a
         product.config.domain_line_ids and all implied_ids"""
         # TODO: Enable the usage of OR operators between implied_ids
         # TODO: Add implied_ids sequence field to enforce order of operations
         # TODO: Prevent circular dependencies
-        computed_domain = []
         for domain in self:
+            computed_domain = []
             lines = domain.trans_implied_ids.mapped("domain_line_ids").sorted()
             if not lines:
                 continue
@@ -55,7 +56,7 @@ class ProductConfigDomain(models.Model):
                     lines[-1].value_ids.ids,
                 )
             )
-        return computed_domain
+            domain.domain = computed_domain
 
     name = fields.Char(required=True)
     domain_line_ids = fields.One2many(
@@ -79,6 +80,7 @@ class ProductConfigDomain(models.Model):
         column2="parent_id",
         string="Transitively inherits",
     )
+    domain = fields.Text(default="[]", compute="_compute_domain", store=True)
 
 
 class ProductConfigDomainLine(models.Model):
@@ -1214,25 +1216,28 @@ class ProductConfigSession(models.Model):
         # process domains as shown in this wikipedia pseudocode:
         # https://en.wikipedia.org/wiki/Polish_notation#Order_of_operations
         stack = []
-        for domain in reversed(domains):
-            if isinstance(domain, tuple):
-                # evaluate operand and push to stack
-                if domain[1] == "in":
-                    if not set(domain[2]) & set(value_ids):
-                        stack.append(False)
-                        continue
+        if domains:
+            domains = [literal_eval(dom) for dom in domains]
+            domains = [element for innerList in domains for element in innerList]
+            for domain in reversed(domains):
+                if isinstance(domain, tuple):
+                    # evaluate operand and push to stack
+                    if domain[1] == "in":
+                        if not set(domain[2]) & set(value_ids):
+                            stack.append(False)
+                            continue
+                    else:
+                        if set(domain[2]) & set(value_ids):
+                            stack.append(False)
+                            continue
+                    stack.append(True)
                 else:
-                    if set(domain[2]) & set(value_ids):
-                        stack.append(False)
-                        continue
-                stack.append(True)
-            else:
-                # evaluate operator and previous 2 operands
-                # compute_domain() only inserts 'or' operators
-                # compute_domain() enforces 2 operands per operator
-                operand1 = stack.pop()
-                operand2 = stack.pop()
-                stack.append(operand1 or operand2)
+                    # evaluate operator and previous 2 operands
+                    # compute_domain() only inserts 'or' operators
+                    # compute_domain() enforces 2 operands per operator
+                    operand1 = stack.pop()
+                    operand2 = stack.pop()
+                    stack.append(operand1 or operand2)
 
         # 'and' operator is implied for remaining stack elements
         avail = True
@@ -1289,14 +1294,14 @@ class ProductConfigSession(models.Model):
         avail_val_ids = []
         for attr_val_id in check_val_ids:
             config_lines = product_tmpl.config_line_ids.filtered(
-                lambda line, attr_val_id=attr_val_id: attr_val_id in line.value_ids.ids
+                lambda line, attr_val=attr_val_id: attr_val in line.value_ids.ids
             )
             if product_template_attribute_lines:
                 config_lines = config_lines.filtered(
                     lambda line: line.attribute_line_id
                     in product_template_attribute_lines
                 )
-            domains = config_lines.mapped("domain_id").compute_domain()
+            domains = config_lines.mapped("domain_id").mapped("domain")
             avail = self.validate_domains_against_sels(domains, value_ids, custom_vals)
             if avail:
                 avail_val_ids.append(attr_val_id)

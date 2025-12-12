@@ -597,7 +597,7 @@ class ProductConfig(ProductConfiguratorTestCases):
         self.productConfigDomainId = self.env["product.config.domain"].create(
             {"name": "restriction 1"}
         )
-        self.productConfigDomainId.compute_domain()
+        self.productConfigDomainId._compute_domain()
         # create attribute value line 1
         self.env["product.config.domain.line"].create(
             {
@@ -645,7 +645,7 @@ class ProductConfig(ProductConfiguratorTestCases):
                 ],
             }
         )
-        self.productConfigDomainId.compute_domain()
+        self.productConfigDomainId._compute_domain()
         # create attribute value line 1
         config_line = self.env["product.config.line"].create(  # noqa
             {
