@@ -29,7 +29,7 @@ class ProductConfiguratorPurchase(models.TransientModel):
 
     def action_config_done(self):
         """Parse values and execute final code before closing the wizard"""
-        res = super(ProductConfiguratorPurchase, self).action_config_done()
+        res = super().action_config_done()
         if res.get("res_model") == self._name:
             return res
         model_name = "purchase.order.line"

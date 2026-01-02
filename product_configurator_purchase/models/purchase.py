@@ -50,13 +50,12 @@ class PurchaseOrderLine(models.Model):
             model_name=wizard_model, extra_vals=extra_vals
         )
 
-
     @api.depends(
         "config_ok",
         "config_session_id",
     )
     def _compute_price_unit_and_date_planned_and_name(self):
-        res = super(PurchaseOrderLine, self)._compute_price_unit_and_date_planned_and_name()
+        res = super()._compute_price_unit_and_date_planned_and_name()
         for line in self:
             if line.config_ok and line.config_session_id:
                 line.price_unit = line.config_session_id.price
