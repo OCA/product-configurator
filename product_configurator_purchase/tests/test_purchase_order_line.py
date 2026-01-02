@@ -1,6 +1,3 @@
-#  Copyright 2024 Simone Rubino - Aion Tech
-#  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-
 from odoo.fields import first
 from odoo.tests import Form
 
@@ -29,7 +26,17 @@ class TestPurchaseOrderLine(BaseCommon):
         with attribute_form.value_ids.new() as value:
             value.name = "Test value 2"
         cls.attribute = attribute_form.save()
-        cls.product_template = cls.env.ref("product_configurator.bmw_2_series")
+
+        product_template_form = Form(cls.env["product.template"])
+        product_template_form.name = "Test configurable template"
+        product_template_form.supplier_taxes_id.clear()
+        with product_template_form.attribute_line_ids.new() as attribute_line:
+            attribute_line.attribute_id = cls.attribute
+            for value in cls.attribute.value_ids:
+                attribute_line.value_ids.add(value)
+        product_template = product_template_form.save()
+        product_template.config_ok = True
+        cls.product_template = product_template
 
     def _create_wizard(self, purchase_order, product_template):
         """Create configuration wizard for `product_template` in `purchase_order`."""

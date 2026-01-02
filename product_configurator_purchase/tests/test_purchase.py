@@ -10,12 +10,10 @@ class PurchaseOrder(TC.ProductConfiguratorTestCases):
     def setUpClass(cls):
         super().setUpClass()
         cls.PurchaseOrder = cls.env["purchase.order"]
-        cls.productPricelist = cls.env["product.pricelist"]
         cls.resPartner = cls.env.ref("product_configurator_purchase.partenr_purchase_1")
         cls.currency_id = cls.env.ref("base.USD")
         cls.company_id = cls.env.ref("base.main_company")
         cls.ProductConfWizard = cls.env["product.configurator.purchase"]
-
         cls.config_product = cls.env.ref("product_configurator.bmw_2_series")
 
     def test_00_reconfigure_product(self):
