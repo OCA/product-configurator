@@ -1,7 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <!-- TODO: Workaround until we add more demo data Services + Products -->
-
     <record id="product_configurator.bmw_2_series" model="product.template">
         <field name="type">consu</field>
     </record>
@@ -121,6 +120,7 @@
         <field name="type">consu</field>
     </record>
 
+    <!-- Partner Demodata -->
     <record id="partenr_purchase_1" model="res.partner">
         <field name="name">Test Partner</field>
         <field name="company_type">company</field>
@@ -136,5 +136,4 @@
         <field name="phone">+15 56856895</field>
         <field name="website">www.mycompany.com</field>
     </record>
-
 </odoo>

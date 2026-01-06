@@ -4,7 +4,6 @@ from odoo import fields, models
 
 
 class ProductConfiguratorPurchase(models.TransientModel):
-
     _name = "product.configurator.purchase"
     _inherit = "product.configurator"
     _description = "Product Configurator Purchase"
@@ -30,15 +29,26 @@ class ProductConfiguratorPurchase(models.TransientModel):
 
     def action_config_done(self):
         """Parse values and execute final code before closing the wizard"""
-        res = super(ProductConfiguratorPurchase, self).action_config_done()
+        res = super().action_config_done()
         if res.get("res_model") == self._name:
             return res
         model_name = "purchase.order.line"
         line_vals = self._get_order_line_vals(res["res_id"])
+
+        # Call onchange explicite as write and create
+        # will not trigger onchange automatically
         order_line_obj = self.env[model_name]
         cfg_session = self.config_session_id
-        specs = cfg_session.get_onchange_specifications(model=model_name)
-        updates = order_line_obj.onchange(line_vals, ["product_id"], specs)
+        fields_spec = cfg_session.get_onchange_specifications(model=model_name)
+        # Filter the fields_spec dictionary to keep only the keys present in line_vals.
+        fields_spec = {
+            key: val
+            for key, val in fields_spec.items()
+            if key in list(line_vals.keys())
+        }
+        # Trigger the onchange event for the 'product_id' field, passing in line_vals
+        # and the filtered fields_spec to update the order line accordingly
+        updates = order_line_obj.onchange(line_vals, ["product_id"], fields_spec)
         values = updates.get("value", {})
         values = cfg_session.get_vals_to_write(values=values, model=model_name)
         values.update(line_vals)
@@ -47,9 +57,9 @@ class ProductConfiguratorPurchase(models.TransientModel):
             for line in values.get("taxes_id")[1:]:
                 taxes_id.append(line[1])
             values["taxes_id"] = [(6, 0, taxes_id)]
+
         if self.order_line_id:
             self.order_line_id.write(values)
         else:
-            values.update({"order_id": self.order_id.id})
-            self.order_id.order_line.create(values)
+            self.order_id.write({"order_line": [(0, 0, values)]})
         return

@@ -1,11 +1,11 @@
 {
     "name": "Product Configurator Purchase",
-    "version": "15.0.1.0.0",
+    "version": "18.0.1.0.0",
     "category": "Generic Modules/Purchase",
     "summary": "Product configuration interface for Purchase",
-    "author": "Pledra, Odoo Community Association (OCA)",
-    "license": "AGPL-3",
     "website": "https://github.com/OCA/product-configurator",
+    "license": "AGPL-3",
+    "author": "Nitrokey GmbH, Odoo Community Association (OCA)",
     "depends": ["purchase", "product_configurator"],
     "data": [
         "security/ir.model.access.csv",
@@ -13,10 +13,7 @@
         "views/purchase_view.xml",
     ],
     "demo": ["demo/product_template.xml"],
-    "images": [],
-    "test": [],
     "installable": True,
     "auto_install": False,
-    "development_status": "Beta",
-    "maintainers": ["PCatinean"],
+    "maintainer": "Nitrokey GmbH",
 }

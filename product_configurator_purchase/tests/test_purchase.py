@@ -1,43 +1,56 @@
 from datetime import datetime
 
-# flake8: noqa: E501
-from odoo.addons.product_configurator.tests.test_product_configurator_test_cases import (
-    ProductConfiguratorTestCases,
+from odoo.addons.product_configurator.tests import (
+    common as TC,
 )
 
 
-class Purchase(ProductConfiguratorTestCases):
-    def setUp(self):
-        super(Purchase, self).setUp()
-        self.purchaseOrder = self.env["purchase.order"]
-        self.purchaseOrderLine = self.env["purchase.order.line"]
-        self.resPartner = self.env.ref(
-            "product_configurator_purchase.partenr_purchase_1"
-        )
-        self.currency_id = self.env.ref("base.USD")
-        self.company_id = self.env.ref("base.main_company")
-        self.ProductTemplate = self.env.ref("product_configurator.bmw_2_series")
-        self.ProductConfWizard = self.env["product.configurator.purchase"]
+class PurchaseOrder(TC.ProductConfiguratorTestCases):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.PurchaseOrder = cls.env["purchase.order"]
+        cls.resPartner = cls.env.ref("product_configurator_purchase.partenr_purchase_1")
+        cls.currency_id = cls.env.ref("base.USD")
+        cls.company_id = cls.env.ref("base.main_company")
+        cls.ProductConfWizard = cls.env["product.configurator.purchase"]
+        cls.config_product = cls.env.ref("product_configurator.bmw_2_series")
 
-    def test_00_action_config_start(self):
-        purchase_order_id = self.purchaseOrder.create(
+    def test_00_reconfigure_product(self):
+        product_id = self.env["product.product"].create(
+            {"product_tmpl_id": self.config_product.id, "name": "Test Product"}
+        )
+        purchase_order_id = self.PurchaseOrder.create(
             {
                 "partner_id": self.resPartner.id,
                 "currency_id": self.currency_id.id,
                 "date_order": datetime.now(),
                 "date_planned": datetime.now(),
                 "company_id": self.company_id.id,
+                "order_line": [
+                    (
+                        0,
+                        0,
+                        {
+                            "product_id": product_id.id,
+                        },
+                    )
+                ],
             }
         )
         context = dict(
             default_order_id=purchase_order_id.id,
             wizard_model="product.configurator.purchase",
         )
+
         self.ProductConfWizard = self.env["product.configurator.purchase"].with_context(
-            context
+            **context
         )
         purchase_order_id.action_config_start()
-        self._configure_product_nxt_step()
+        product_tmpl_id = purchase_order_id.order_line.product_id.product_tmpl_id.id
+        self.ProductConfWizard.create(
+            {"order_id": purchase_order_id.id, "product_tmpl_id": product_tmpl_id}
+        )
         purchase_order_id.order_line.reconfigure_product()
         product_tmpl = purchase_order_id.order_line.product_id.product_tmpl_id
         self.assertEqual(

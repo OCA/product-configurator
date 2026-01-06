@@ -50,9 +50,13 @@ class PurchaseOrderLine(models.Model):
             model_name=wizard_model, extra_vals=extra_vals
         )
 
-    @api.onchange("product_qty", "product_uom")
-    def _onchange_quantity(self):
-        res = super(PurchaseOrderLine, self)._onchange_quantity()
-        if self.config_ok and self.config_session_id:
-            self.price_unit = self.config_session_id.price
+    @api.depends(
+        "config_ok",
+        "config_session_id",
+    )
+    def _compute_price_unit_and_date_planned_and_name(self):
+        res = super()._compute_price_unit_and_date_planned_and_name()
+        for line in self:
+            if line.config_ok and line.config_session_id:
+                line.price_unit = line.config_session_id.price
         return res
