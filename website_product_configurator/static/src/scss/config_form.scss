@@ -63,12 +63,16 @@
     }
     .config_attribute input[type="radio"]:checked + .image_config_attr_value_radio {
         filter: none;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        box-shadow:
+            0 4px 8px 0 rgba(0, 0, 0, 0.2),
+            0 6px 20px 0 rgba(0, 0, 0, 0.19);
     }
 
     .config_attribute input[type="checkbox"]:checked + .image_config_attr_value_radio {
         filter: none;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        box-shadow:
+            0 4px 8px 0 rgba(0, 0, 0, 0.2),
+            0 6px 20px 0 rgba(0, 0, 0, 0.19);
     }
 
     .config_attribute input[type="radio"][disabled] + .image_config_attr_value_radio {
@@ -105,7 +109,9 @@
         filter: none;
         border: solid silver 1px;
         border-radius: 5px;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        box-shadow:
+            0 4px 8px 0 rgba(0, 0, 0, 0.2),
+            0 6px 20px 0 rgba(0, 0, 0, 0.19);
     }
 
     .label_config_attr_value_radio {

@@ -573,7 +573,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         return request.render("website_product_configurator.cfg_product", values)
 
     @http.route(
-        "/product_configurator/reconfigure/" '<model("product.product"):product_id>',
+        '/product_configurator/reconfigure/<model("product.product"):product_id>',
         type="http",
         auth="public",
         website=True,
