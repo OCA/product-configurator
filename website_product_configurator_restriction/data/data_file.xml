@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding='UTF-8' ?>
+<odoo noupdate="1">
+    <record id="ir_cron_delete_sessions_with_no_activity" model="ir.cron">
+        <field name="name">Website Configurator: Delete inactive config-sessions</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="model_id" ref="product_configurator.model_product_config_session" />
+        <field name="state">code</field>
+        <field name="code">model.remove_inactive_config_sessions()</field>
+        <field eval="True" name="active" />
+    </record>
+
+    <!-- Server Action For Create variants -->
+    <record id="server_action_create_variants" model="ir.actions.server">
+        <field name="name">Create Product Variants</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_view_types">list,form</field>
+        <field eval="False" name="active" />
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+            action = records._create_dynamic_variant_ids()
+        </field>
+    </record>
+</odoo>
