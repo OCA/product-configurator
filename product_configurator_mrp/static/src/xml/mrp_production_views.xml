@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+    <!-- Inherit template to add button on the POS Payment Screen. -->
+    <t
+        t-name="product_configurator_mrp.FormView"
+        t-inherit="web.FormView"
+        t-inherit-mode="extension"
+    >
+        <xpath expr="//t[@t-set-slot='control-panel-create-button']" position="inside">
+            <button
+                type="button"
+                class="btn btn-outline-primary o_form_button_create_config"
+                t-on-click="_onConfigure"
+            >
+                Configure
+            </button>
+        </xpath>
+    </t>
+    <t
+        t-name="product_configurator_mrp.ListView"
+        t-inherit="web.ListView"
+        t-inherit-mode="extension"
+    >
+        <xpath expr="//t[@t-set-slot='control-panel-create-button']" position="inside">
+            <button
+                type="button"
+                class="btn btn-primary o_list_button_add_config"
+                t-on-click="_onConfigure"
+            >
+                Configure
+            </button>
+        </xpath>
+    </t>
+    <t
+        t-name="product_configurator_mrp.KanbanView"
+        t-inherit="web.KanbanView"
+        t-inherit-mode="extension"
+    >
+        <xpath expr="//t[@t-set-slot='control-panel-create-button']" position="inside">
+            <button
+                type="button"
+                class="btn btn-primary o-kanban-button-new_config"
+                t-on-click="_onConfigure"
+            >
+                Configure
+            </button>
+        </xpath>
+    </t>
+</templates>
