@@ -793,6 +793,8 @@ class ProductConfigurator(models.TransientModel):
         """Remove dynamic fields from the fields list and update the
         returned values with the dynamic data stored in value_ids"""
 
+        if not fields:
+            fields = list(self.fields_get(attributes=()))
         field_prefix = self._prefixes.get("field_prefix")
         custom_field_prefix = self._prefixes.get("custom_field_prefix")
         domain_field_prefix = self._prefixes.get("domain_field_prefix")
