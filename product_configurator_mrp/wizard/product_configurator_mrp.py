@@ -19,9 +19,7 @@ class ProductConfiguratorMrp(models.TransientModel):
         mrp_action = self.env.ref("mrp.mrp_production_action").read()
         if mrp_action:
             mrp_action = mrp_action[0]
-            context = safe_eval(
-                mrp_action["context"], self.env.context.copy(), nocopy=True
-            )
+            context = safe_eval(mrp_action["context"], self.env.context.copy())
             context.update(self.env.context)
             mrp_action.update(
                 {

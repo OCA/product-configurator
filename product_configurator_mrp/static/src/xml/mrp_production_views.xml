@@ -6,10 +6,7 @@
         t-inherit="web.FormView"
         t-inherit-mode="extension"
     >
-        <xpath
-            expr="//t[@t-set-slot='control-panel-create-button'][2]"
-            position="inside"
-        >
+        <xpath expr="//t[@t-set-slot='control-panel-create-button']" position="inside">
             <button
                 type="button"
                 class="btn btn-outline-primary o_form_button_create_config"

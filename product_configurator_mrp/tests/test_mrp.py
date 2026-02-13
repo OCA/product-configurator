@@ -1,125 +1,108 @@
 # Copyright (C) 2021 Open Source Integrators
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from datetime import datetime
+import odoo
+from odoo.tests import RecordCapturer
 
-from ..tests.test_product_configurator_test_cases import ProductConfiguratorTestCases
+from odoo.addons.product_configurator.tests.common import ProductConfiguratorTestCases
 
 
 class TestMrp(ProductConfiguratorTestCases):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.mrpBomConfigSet = cls.env["mrp.bom.line.configuration.set"]
-        cls.mrpBomConfig = cls.env["mrp.bom.line.configuration"]
-        cls.mrpBom = cls.env["mrp.bom"]
-        cls.mrpBomLine = cls.env["mrp.bom.line"]
-        cls.mrpRoutingWorkcenter = cls.env["mrp.routing.workcenter"]
-        cls.productProduct = cls.env["product.product"]
-        cls.productTemplate = cls.env["product.template"]
-        cls.mrpProduction = cls.env["mrp.production"]
-        cls.product_id = cls.env.ref("product.product_product_3")
-        cls.workcenter_id = cls.env.ref("mrp.mrp_workcenter_3")
+        cls.setup_configurator_model()
 
-        # create bom
-        cls.bom_id = cls.mrpBom.create(
-            {
-                "product_tmpl_id": cls.product_id.product_tmpl_id.id,
-                "product_qty": 1.00,
-                "type": "consu",
-                "ready_to_produce": "all_available",
-            }
-        )
-        # create bom line
-        cls.bom_line_id = cls.mrpBomLine.create(
-            {
-                "bom_id": cls.bom_id.id,
-                "product_id": cls.product_id.id,
-                "product_qty": 1.00,
-            }
-        )
-        # create BOM operations line
-        cls.mrpRoutingWorkcenter.create(
-            {
-                "bom_id": cls.bom_id.id,
-                "name": "Operation 1",
-                "workcenter_id": cls.workcenter_id.id,
-            }
+    @classmethod
+    def setup_configurator_model(cls):
+        """
+        Set the configurator model on the test class so that future calls to
+        _configure_product_nxt_step will do manufacturing configuration instead
+        of product configuration.
+        """
+        action = (
+            cls.env["mrp.production"]
+            .with_context(allowed_company_ids=cls.env.companies.ids)
+            .action_config_start()
         )
 
-    def test_00_skip_bom_line(self):
-        checkVal = self.mrpBomLine._skip_bom_line(product=self.product_id)
+        cls.ProductConfWizard = cls.env[action["res_model"]].with_context(
+            **action.get("context", {})
+        )
+
+    def get_record_from_action(self, action: dict) -> "odoo.model.base":
+        target = self.env[action["res_model"]].browse(action.get("res_id")).exists()
+        action_context = action.get("context", {})
+        return target.with_context(**action_context)
+
+    def create_record_from_action(
+        self, action: dict, create_vals: "odoo.values.base"
+    ) -> "odoo.model.base":
+        target = self.get_record_from_action(action)
+        assert not target, "Action opens existing record!"
+        return target.create(create_vals)
+
+    def run_mrp_configuration_flow(
+        self,
+    ) -> tuple[
+        "odoo.model.mrp_production", "odoo.model.mrp_bom", "odoo.model.product_product"
+    ]:
+        """
+        Run a pre-set manufacturing configuration flow.
+
+        Return the generated MO, any generated BoMs and any generated variants.
+        """
+        with (
+            RecordCapturer(self.env["product.product"], []) as prod_capturer,
+            RecordCapturer(self.env["mrp.bom"], []) as bom_capturer,
+        ):
+            last_action = self._configure_product_nxt_step()
+        mo = self.get_record_from_action(last_action)
+        return mo, bom_capturer.records, prod_capturer.records
+
+    def test_configure_new_product(self):
+        mo, new_bom, new_product = self.run_mrp_configuration_flow()
+
+        self.assertTrue(
+            new_product,
+            msg="The configurator should have generated a new product as no match "
+            "existed before",
+        )
+        self.assertTrue(
+            new_bom,
+            msg="The configurator should have generated a new bom as no match existed "
+            "before",
+        )
+        self.assertEqual(
+            mo._name,
+            "mrp.production",
+            msg="The last step should open a manufacturing order for the configured "
+            "product",
+        )
+        self.assertEqual(mo.product_id, new_product)
+        self.assertEqual(mo.bom_id, new_bom)
+
+        mo_2, no_bom, no_product = self.run_mrp_configuration_flow()
+
         self.assertFalse(
-            checkVal,
-            "Error: If value exists\
-            Method: _skip_bom_line()",
+            no_bom,
+            "A second run with the same configuration should re-use the previously "
+            "generated bom",
         )
-        self.bom_line_id.bom_id.config_ok = True
-        self.mrp_config_step = self.mrpBomConfigSet.create(
-            {
-                "name": "TestConfigSet",
-            }
+        self.assertEqual(
+            mo_2.bom_id,
+            new_bom,
+            "A second run with the same configuration should re-use the previously "
+            "generated bom",
         )
-        self.bom_line_id.write({"config_set_id": self.mrp_config_step.id})
-        # create bom_line_config
-        self.mrp_bom_config = self.mrpBomConfig.create(
-            {
-                "config_set_id": self.mrp_config_step.id,
-                "value_ids": [
-                    (
-                        6,
-                        0,
-                        [
-                            self.value_gasoline.id,
-                            self.value_218i.id,
-                            self.value_220i.id,
-                            self.value_red.id,
-                        ],
-                    )
-                ],
-            }
-        )
-        self.product_id.write(
-            {"attribute_value_ids": [(6, 0, self.mrp_bom_config.value_ids.ids)]}
-        )
-        self.mrpProduction.create(
-            {
-                "product_id": self.product_id.id,
-                "product_qty": 1.00,
-                "product_uom_id": 1.00,
-                "bom_id": self.bom_id.id,
-                "date_planned_start": datetime.now(),
-            }
-        )
-        self.mrpBomLine._skip_bom_line(product=self.product_id)
         self.assertFalse(
-            checkVal,
-            "Error: If value exists\
-            Method: _skip_bom_line()",
+            no_product,
+            "A second run with the same configuration should re-use the previously "
+            "generated product",
         )
-
-    def test_01_action_config_start(self):
-        mrpProduction = self.mrpProduction.create(
-            {
-                "product_id": self.product_id.id,
-                "product_qty": 1.00,
-                "product_uom_id": 1.00,
-                "bom_id": self.bom_id.id,
-                "date_planned_start": datetime.now(),
-            }
+        self.assertEqual(
+            mo_2.product_id,
+            new_product,
+            "A second run with the same configuration should re-use the previously "
+            "generated product",
         )
-        context = dict(
-            self.env.context,
-            default_order_id=mrpProduction.id,
-            wizard_model="product.configurator.mrp",
-        )
-        mrpProduction.action_config_start()
-        self.ProductConfWizard = self.env["product.configurator.mrp"].with_context(
-            **context
-        )
-        self._configure_product_nxt_step()
-        # self.assertEqual(
-        #     vals['res_id'],
-        #     mrpProduction.product_id.id,
-        #     'Not Equal'
-        # )
