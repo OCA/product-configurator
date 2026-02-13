@@ -815,6 +815,12 @@ class ProductConfigurator(models.TransientModel):
         if not dynamic_fields:
             return res
 
+        if len(self) != 1 or len(res) != 1:
+            raise AssertionError(
+                f"Programming error: the read method of {self._name} only supports "
+                f"singletons"
+            )
+
         for attr_line in self.product_tmpl_id.attribute_line_ids:
             attr_id = attr_line.attribute_id.id
             field_name = field_prefix + str(attr_id)
