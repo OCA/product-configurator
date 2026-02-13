@@ -79,9 +79,9 @@ class ProductConfiguratorMrp(models.TransientModel):
             raise ValidationError(
                 self.env._(
                     "There is no BOM associated with selected product. "
-                    "Please inform the administrator/manager. [Product: %s]"
+                    "Please inform the administrator/manager. [Product: %s]",
+                    product_name,
                 )
-                % product_name
             )
 
         if self.order_id:
