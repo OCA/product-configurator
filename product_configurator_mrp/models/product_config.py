@@ -25,10 +25,17 @@ class ProductConfigSession(models.Model):
         # default_type is set as 'product' when the user navigates
         # through menu item "Products". This conflicts
         # with the type for mrp.bom when mrpBom.onchange() is executed.
-        ctx = self.env.context.copy()
-        if ctx.get("default_type"):
-            ctx.pop("default_type")
-        self.env.context = ctx
+        if self.env.context.get("default_type"):
+            # pylint: disable=locally-disabled, context-overridden
+            # We fully override the context in order to fully remove the default
+            # value, otherwise we can only assign it a falsy value
+            self = self.with_context(
+                {
+                    key: val
+                    for key, val in self.env.context.items()
+                    if key != "default_type"
+                }
+            )
 
         if values is None:
             values = {}
