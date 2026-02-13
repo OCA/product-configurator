@@ -1,12 +1,14 @@
 import logging
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from itertools import chain
+from typing import Any
 
 from lxml import etree
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Command
+from odoo.orm.types import ValuesType
 from odoo.tools import frozendict
 
 from odoo.addons.base.models.ir_model import FIELD_TYPES
@@ -47,7 +49,7 @@ class ProductConfigurator(models.TransientModel):
     # TODO: Remove _prefix suffix as this is implied by the class property name
 
     @api.model
-    def _remove_dynamic_fields(self, fields):
+    def _remove_dynamic_fields(self, fields: list[str] | dict[str, Any]):
         """Remove elements from the fields dictionary/list that begin with any
         prefix from the _prefixes property
             :param fields: list or dict of the form [fn1, fn2] / {fn1: val}
@@ -784,7 +786,10 @@ class ProductConfigurator(models.TransientModel):
                 vals.update({"value_ids": [(6, 0, session.value_ids.ids)]})
         return super().create(vals_list)
 
-    def read(self, fields=None, load="_classic_read"):
+    @api.readonly
+    def read(
+        self, fields: Sequence[str] | None = None, load: str = "_classic_read"
+    ) -> list[ValuesType]:
         """Remove dynamic fields from the fields list and update the
         returned values with the dynamic data stored in value_ids"""
 
