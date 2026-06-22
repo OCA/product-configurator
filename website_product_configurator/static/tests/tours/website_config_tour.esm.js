@@ -84,8 +84,7 @@ registry.category("web_tour.tours").add("config", {
         },
         {
             content: "click on continue",
-            extra_trigger: ".nav-item.config_step a:contains(Lines)",
-            trigger: "span:contains(Continue)",
+            trigger: ".nav-item.config_step a:contains(Lines)",
             run: "click",
         },
         {

@@ -6,6 +6,7 @@ from odoo.http import request, route
 from odoo.tools.safe_eval import safe_eval
 
 from odoo.addons.website_sale.controllers.main import WebsiteSale
+
 try:
     from odoo.addons.website_sale_product_configurator.controllers.main import (
         WebsiteSaleProductConfiguratorController,
@@ -22,7 +23,9 @@ def slug(record):
 
 if WebsiteSaleProductConfiguratorController:
 
-    class CustomWebsiteSaleProductConfigurator(WebsiteSaleProductConfiguratorController):
+    class CustomWebsiteSaleProductConfigurator(
+        WebsiteSaleProductConfiguratorController
+    ):
         @route()
         def show_advanced_configurator(
             self,
@@ -150,7 +153,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 pass
             elif not active_step or active_step not in open_cfg_step_lines:
                 active_step = open_cfg_step_lines[:1]
-                cfg_session.config_step = "%s" % (active_step.id)
+                cfg_session.config_step = str(active_step.id)
 
         cfg_session = cfg_session.sudo()
         config_image_ids = False
@@ -399,9 +402,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             return {"error": str(Ex)}
 
         # if no step is defined or some attribute remains to add in a step
-        open_cfg_step_line_ids = [
-            "%s" % (step_id) for step_id in open_cfg_step_line_ids
-        ]
+        open_cfg_step_line_ids = [str(step_id) for step_id in open_cfg_step_line_ids]
         extra_attr_line_ids = self.get_extra_attribute_line_ids(product_template_id)
         if extra_attr_line_ids:
             open_cfg_step_line_ids.append("configure")
@@ -462,7 +463,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         if next_step and isinstance(
             next_step, type(request.env["product.config.step.line"])
         ):
-            next_step = "%s" % (next_step.id)
+            next_step = str(next_step.id)
         if next_step:
             config_session_id.config_step = next_step
         return {"next_step": next_step}
@@ -526,7 +527,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             product = config_session_id.product_id
             if product:
                 redirect_url = "/product_configurator/product"
-                redirect_url += "/%s" % (slug(config_session_id))
+                redirect_url += f"/{slug(config_session_id)}"
                 return {
                     "product_id": product.id,
                     "config_session": config_session_id.id,
@@ -567,11 +568,13 @@ class ProductConfigWebsiteSale(WebsiteSale):
         pricelist = get_pricelist()
         product_config_session = request.session.get("product_config_session")
 
-        if product_config_session and product_config_session.get(str(product_tmpl_id.id)):
+        if product_config_session and product_config_session.get(
+            str(product_tmpl_id.id)
+        ):
             request.session.pop("product_config_session", None)
 
-        reconfigure_product_url = "/product_configurator/reconfigure/%s" % slug(
-            product_id
+        reconfigure_product_url = (
+            f"/product_configurator/reconfigure/{slug(product_id)}"
         )
         values = {
             "product_variant": product_id,
@@ -598,18 +601,18 @@ class ProductConfigWebsiteSale(WebsiteSale):
             tmpl_value_ids = product_id.product_template_attribute_value_ids
             cfg_session.value_ids = tmpl_value_ids.mapped("product_attribute_value_id")
             cfg_session.product_id = product_id.id
-            return request.redirect("/shop/product/%s" % (slug(product_tmpl_id)))
+            return request.redirect(f"/shop/product/{slug(product_tmpl_id)}")
         except Exception:
             error_code = 1
             return request.redirect(
-                "/website_product_configurator/error_page/%s" % (error_code)
+                f"/website_product_configurator/error_page/{error_code}"
             )
 
     @http.route(
         [
             error_page,
-            "%s<string:message>" % error_page,
-            "%s<string:error>/<string:message>" % error_page,
+            f"{error_page}<string:message>",
+            f"{error_page}<string:error>/<string:message>",
         ],
         type="http",
         auth="public",

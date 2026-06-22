@@ -14,7 +14,6 @@ class TestSaleOrder(TestProductConfiguratorValues):
             {
                 "name": "New Pricelist",
                 "currency_id": cls.env.user.company_id.currency_id.id,
-                "discount_policy": "without_discount",
             }
         )
         cls.sale_order = cls.env["sale.order"].create(
