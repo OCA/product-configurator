@@ -1288,22 +1288,38 @@ class ProductConfigSession(models.Model):
 
         avail_val_ids = []
         for attr_val_id in check_val_ids:
-            config_lines = product_tmpl.config_line_ids.filtered(
-                lambda line, attr_val_id=attr_val_id: attr_val_id in line.value_ids.ids
+            avail = self._check_value_availability(
+                attr_val_id,
+                product_tmpl,
+                product_template_attribute_lines,
+                value_ids,
+                custom_vals,
             )
-            if product_template_attribute_lines:
-                config_lines = config_lines.filtered(
-                    lambda line: line.attribute_line_id
-                    in product_template_attribute_lines
-                )
-            domains = config_lines.mapped("domain_id").compute_domain()
-            avail = self.validate_domains_against_sels(domains, value_ids, custom_vals)
             if avail:
                 avail_val_ids.append(attr_val_id)
             elif attr_val_id in value_ids:
                 value_ids.remove(attr_val_id)
 
         return avail_val_ids
+
+    def _check_value_availability(
+        self, attr_val_id, product_tmpl, filter_attr_lines, value_ids, custom_vals
+    ):
+        """Check whether a single attribute value is available given the current
+        selections.
+
+        Extracted from values_available() as a hook so subclasses can substitute
+        a pre-built lookup.
+        """
+        config_lines = product_tmpl.config_line_ids.filtered(
+            lambda line, av=attr_val_id: av in line.value_ids.ids
+        )
+        if filter_attr_lines:
+            config_lines = config_lines.filtered(
+                lambda line: line.attribute_line_id in filter_attr_lines
+            )
+        domains = config_lines.mapped("domain_id").compute_domain()
+        return self.validate_domains_against_sels(domains, value_ids, custom_vals)
 
     @api.model
     def get_extra_attribute_line_ids(self, product_template_id):
