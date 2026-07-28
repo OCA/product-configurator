@@ -9,12 +9,15 @@ const config = [{
         globals: {
             _: "readonly",
             $: "readonly",
+            FileReader: "readonly",
             fuzzy: "readonly",
             jQuery: "readonly",
             moment: "readonly",
             odoo: "readonly",
             openerp: "readonly",
             owl: "readonly",
+            setTimeout: "readonly",
+            window: "readonly",
             luxon: "readonly",
         },
 
