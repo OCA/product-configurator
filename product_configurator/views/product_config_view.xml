@@ -38,6 +38,7 @@
                 <group>
                     <group>
                         <field name="name" />
+                        <field name="domain" groups="base.group_no_one" />
                     </group>
                 </group>
                 <notebook>
