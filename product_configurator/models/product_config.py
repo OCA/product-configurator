@@ -346,11 +346,6 @@ class ProductConfigSession(models.Model):
 
     @api.depends(
         "value_ids",
-        "product_tmpl_id.list_price",
-        "product_tmpl_id.attribute_line_ids",
-        "product_tmpl_id.attribute_line_ids.value_ids",
-        "product_tmpl_id.attribute_line_ids.product_template_value_ids",
-        "product_tmpl_id.attribute_line_ids." "product_template_value_ids.price_extra",
     )
     def _compute_cfg_price(self):
         for session in self:
