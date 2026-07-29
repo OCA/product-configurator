@@ -108,13 +108,6 @@
                 >{'flag_config_ok': context.get('default_config_ok', False)}</attribute>
             </xpath>
 
-            <xpath
-                expr="//field[@name='attribute_line_ids']/tree/field[@name='attribute_id']"
-                position="before"
-            >
-                <field name="sequence" widget="handle" />
-            </xpath>
-
             <!-- TODO: Apply domains so only values from template are available -->
             <xpath expr="//notebook/page[@name='variants']" position="after">
                 <page

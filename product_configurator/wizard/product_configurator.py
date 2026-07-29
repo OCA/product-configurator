@@ -300,9 +300,10 @@ class ProductConfigurator(models.TransientModel):
         if not state:
             state = self.state
         cfg_vals = self.env["product.attribute.value"]
-        if values.get("value_ids", []):
+        value_ids = values.get("value_ids", [])
+        if value_ids and isinstance(value_ids, list) and value_ids[0]:
             cfg_vals = self.env["product.attribute.value"].browse(
-                values.get("value_ids", [])[0][2]
+                value_ids[0][2] if len(value_ids[0]) > 2 else []
             )
         if not cfg_vals:
             cfg_vals = self.value_ids
@@ -455,8 +456,8 @@ class ProductConfigurator(models.TransientModel):
             preset_id = self.env["product.product"].browse(preset_id)
         pta_value_ids = preset_id.product_template_attribute_value_ids
         attr_value_ids = pta_value_ids.mapped("product_attribute_value_id")
-        self._origin.value_ids = attr_value_ids
-        self._origin.price = (
+        self.value_ids = attr_value_ids
+        self.price = (
             preset_id and preset_id.lst_price or self.product_tmpl_id.list_price
         )
 
@@ -879,7 +880,8 @@ class ProductConfigurator(models.TransientModel):
             vals.update({"user_id": self.env.uid, "config_session_id": session.id})
             wz_value_ids = vals.get("value_ids", [])
             if session.value_ids and (
-                (wz_value_ids and not wz_value_ids[0][2]) or not wz_value_ids
+                not wz_value_ids
+                or (len(wz_value_ids[0]) > 2 and not wz_value_ids[0][2])
             ):
                 vals.update({"value_ids": [(6, 0, session.value_ids.ids)]})
         return super().create(vals_list)
