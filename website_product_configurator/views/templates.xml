@@ -4,9 +4,7 @@
         <t t-call="web.layout">
             <t t-set="html_data" t-value="{'style': 'height: 100%;'}" />
             <t t-set="head">
-                <t t-call-assets="web.assets_common" t-js="false" />
                 <t t-call-assets="web.assets_frontend" t-js="false" />
-                <t t-call-assets="web.assets_common" t-css="false" />
                 <t t-call-assets="web.assets_frontend" t-css="false" />
             </t>
             <t t-set="body_classname" t-value="'container'" />
@@ -16,7 +14,7 @@
                         <img t-attf-src="/web/static/src/img/logo2.png" />
                     </div>
                 </div>
-                <div class="oe_structure oe_empty">
+                <div class="oe_structure oe_empty" id="oe_structure_error_content">
                     <div class="container">
                         <h1 class="mt32">ERROR!</h1>
                         <h4>

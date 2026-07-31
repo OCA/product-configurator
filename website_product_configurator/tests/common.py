@@ -11,7 +11,7 @@ class TestProductConfiguratorValues(common.ProductConfiguratorTestCases):
         super().setUpClass()
         cls.productConfigStepLine = cls.env["product.config.step.line"]
         cls.productAttributeLine = cls.env["product.template.attribute.line"]
-        cls.product_category = cls.env.ref("product.product_category_5")
+        cls.product_category = cls.env.ref("product.product_category_goods")
         cls.value_diesel = cls.env.ref(
             "product_configurator.product_attribute_value_diesel"
         )

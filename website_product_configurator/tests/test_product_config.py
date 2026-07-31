@@ -64,7 +64,7 @@ class TestProductConfig(TestProductConfiguratorValues):
         )
         session_id2 = self.productConfigSession.create(
             {
-                "product_tmpl_id": self.config_product_1.id,
+                "product_tmpl_id": self.product_tmpl_id.id,
                 "value_ids": [
                     (
                         6,

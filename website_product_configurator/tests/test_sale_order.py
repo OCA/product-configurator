@@ -7,14 +7,13 @@ class TestSaleOrder(TestProductConfiguratorValues):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.partner = cls.env.ref("base.res_partner_1")
+        cls.partner = cls.env["res.partner"].create({"name": "Test Customer"})
         cls.product = cls.env["product.product"].create({"name": "test product"})
         cls.product_uom_unit = cls.env.ref("uom.product_uom_unit")
         cls.pricelist = cls.env["product.pricelist"].create(
             {
                 "name": "New Pricelist",
                 "currency_id": cls.env.user.company_id.currency_id.id,
-                "discount_policy": "without_discount",
             }
         )
         cls.sale_order = cls.env["sale.order"].create(
@@ -31,7 +30,7 @@ class TestSaleOrder(TestProductConfiguratorValues):
                         {
                             "product_id": cls.product.id,
                             "name": "Test Line",
-                            "product_uom": cls.product_uom_unit.id,
+                            "product_uom_id": cls.product_uom_unit.id,
                             "product_uom_qty": 2.0,
                             "price_unit": 400.00,
                             "config_session_id": cls.session_id.id,
@@ -41,68 +40,26 @@ class TestSaleOrder(TestProductConfiguratorValues):
             }
         )
 
-    def test_cart_update(self):
-        product_id = (
-            self.sale_order.order_line.product_id.product_tmpl_id.product_variant_id.id
-        )
-        self.sale_order._cart_update(
-            product_id=product_id,
-            line_id=self.sale_order.order_line.id,
-            set_qty=0,
-            add_qty=0,
-        )
-        self.assertFalse(
-            self.product.product_tmpl_id.config_ok, "product is config_ok True"
-        )
-        self.product.product_tmpl_id.write({"config_ok": True})
-        cart_update = self.sale_order._cart_update(
-            product_id=product_id,
-            line_id=self.sale_order.order_line.id,
-            set_qty=2,
-            add_qty=2,
-        )
-        self.assertEqual(cart_update.get("line_id"), self.sale_order.order_line.id)
-        self.assertEqual(
-            cart_update.get("quantity"), self.sale_order.order_line.product_uom_qty
-        )
+    def test_cart_update_line_quantity(self):
+        """The cart overrides keep the configuration session on the line and
+        honour quantity updates (including removal on a zero quantity)."""
+        order = self.sale_order.with_context(skip_cart_verification=True)
+        order_line = order.order_line
+        product_id = order_line.product_id.id
 
-        self.sale_order.write({"order_line": False})
-        self.sale_order._cart_update(
-            product_id=product_id,
-            set_qty=1,
-            add_qty=1,
-        )
-        self.assertTrue(self.sale_order.order_line, "No Sale Order Line created.")
+        # The line created in setUpClass carries the configuration session.
+        self.assertEqual(order_line.config_session_id, self.session_id)
 
-        self.sale_order._cart_update(
-            product_id=product_id,
-            line_id=self.sale_order.order_line.id,
-            set_qty=-1,
-            add_qty=1,
-        )
-        self.assertFalse(
-            self.sale_order.order_line,
-            "Order Line is exist for quantity is less than equal zero.",
-        )
+        # Increasing the quantity preserves the configuration session.
+        order._cart_update_line_quantity(line_id=order_line.id, quantity=5)
+        self.assertEqual(order_line.product_uom_qty, 5)
+        self.assertEqual(order_line.config_session_id, self.session_id)
 
-        self.sale_order._cart_update(
-            line_id=self.sale_order.order_line.id,
-            product_id=product_id,
-            add_qty="test",
-        )
-        self.assertEqual(
-            self.sale_order.order_line.product_uom_qty,
-            1,
-            "If wrong value is added then 1 quantity is deducted from Order Line.",
-        )
+        # Adding the same product again matches the existing line.
+        result = order._cart_add(product_id=product_id, quantity=2)
+        self.assertEqual(result.get("line_id"), order_line.id)
+        self.assertEqual(order_line.product_uom_qty, 7)
 
-        self.sale_order._cart_update(
-            line_id=self.sale_order.order_line.id,
-            product_id=product_id,
-            set_qty="test",
-        )
-        self.assertEqual(
-            self.sale_order.order_line.product_uom_qty,
-            1,
-            "If wrong value is added then Order Line quantity as it is.",
-        )
+        # Setting the quantity to zero removes the line from the cart.
+        order._cart_update_line_quantity(line_id=order_line.id, quantity=0)
+        self.assertFalse(order.order_line, "Order line was not removed.")
