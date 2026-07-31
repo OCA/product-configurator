@@ -2,36 +2,10 @@ import logging
 
 from odoo import http, models
 from odoo.exceptions import UserError, ValidationError
-from odoo.http import request, route
+from odoo.http import request
 from odoo.tools.safe_eval import safe_eval
 
-from odoo.addons.http_routing.models.ir_http import slug
 from odoo.addons.website_sale.controllers.main import WebsiteSale
-from odoo.addons.website_sale_product_configurator.controllers.main import (
-    WebsiteSaleProductConfiguratorController,
-)
-
-_logger = logging.getLogger(__name__)
-
-
-class CustomWebsiteSaleProductConfigurator(WebsiteSaleProductConfiguratorController):
-    @route()
-    def show_advanced_configurator(
-        self,
-        product_id,
-        variant_values,
-        add_qty=1,
-        force_dialog=False,
-        **kw,
-    ):
-        """Inherit: skips showing the advanced product configurator modal for
-        a product"""
-        product = request.env["product.product"].browse(int(product_id))
-        if product.config_ok:
-            return False
-        return super().show_advanced_configurator(
-            product_id, variant_values, add_qty=add_qty, force_dialog=force_dialog, **kw
-        )
 
 
 def get_pricelist():
@@ -44,6 +18,9 @@ def get_pricelist():
     return pricelist
 
 
+_logger = logging.getLogger(__name__)
+
+
 error_page = "/website_product_configurator/error_page/"
 
 
@@ -53,7 +30,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         cfg_session = False
         product_config_sessions = request.session.get("product_config_session", {})
         is_public_user = request.env.user.has_group("base.group_public")
-        cfg_session_id = product_config_sessions.get(product_tmpl_id.id)
+        cfg_session_id = product_config_sessions.get(str(product_tmpl_id.id))
         if cfg_session_id:
             cfg_session = cfg_session_obj.search(
                 [("id", "=", int(cfg_session_id))], limit=1
@@ -139,7 +116,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 pass
             elif not active_step or active_step not in open_cfg_step_lines:
                 active_step = open_cfg_step_lines[:1]
-                cfg_session.config_step = "%s" % (active_step.id)
+                cfg_session.config_step = f"{active_step.id}"
 
         cfg_session = cfg_session.sudo()
         config_image_ids = False
@@ -154,7 +131,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             request.env["decimal.precision"].precision_get("Stock Weight") or 2
         )
         website_tmpl_xml_id = cfg_session.get_config_form_website_template()
-        pricelist = request.website._get_current_pricelist()
+        pricelist = request.website._get_and_cache_current_pricelist()
         product_tmpl = cfg_session.product_tmpl_id
         attr_value_ids = product_tmpl.attribute_line_ids.mapped("value_ids")
         av_obj = request.env["product.attribute.value"]
@@ -342,7 +319,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
     @http.route(
         "/website_product_configurator/onchange",
-        type="json",
+        type="jsonrpc",
         methods=["POST"],
         auth="public",
         website=True,
@@ -387,9 +364,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             return {"error": Ex}
 
         # if no step is defined or some attribute remains to add in a step
-        open_cfg_step_line_ids = [
-            "%s" % (step_id) for step_id in open_cfg_step_line_ids
-        ]
+        open_cfg_step_line_ids = [f"{step_id}" for step_id in open_cfg_step_line_ids]
         extra_attr_line_ids = self.get_extra_attribute_line_ids(product_template_id)
         if extra_attr_line_ids:
             open_cfg_step_line_ids.append("configure")
@@ -403,7 +378,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             image_line_ids=config_image_ids,
             model_name=config_image_ids[:1]._name,
         )
-        pricelist = request.website._get_current_pricelist()
+        pricelist = request.website._get_and_cache_current_pricelist()
         updates["open_cfg_step_line_ids"] = open_cfg_step_line_ids
         updates["config_image_vals"] = image_vals
         decimal_prec_obj = request.env["decimal.precision"]
@@ -450,14 +425,14 @@ class ProductConfigWebsiteSale(WebsiteSale):
         if next_step and isinstance(
             next_step, type(request.env["product.config.step.line"])
         ):
-            next_step = "%s" % (next_step.id)
+            next_step = f"{next_step.id}"
         if next_step:
             config_session_id.config_step = next_step
         return {"next_step": next_step}
 
     @http.route(
         "/website_product_configurator/save_configuration",
-        type="json",
+        type="jsonrpc",
         methods=["POST"],
         auth="public",
         website=True,
@@ -514,7 +489,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             product = config_session_id.product_id
             if product:
                 redirect_url = "/product_configurator/product"
-                redirect_url += "/%s" % (slug(config_session_id))
+                redirect_url += f"/{request.env['ir.http']._slug(config_session_id)}"
                 return {
                     "product_id": product.id,
                     "config_session": config_session_id.id,
@@ -555,11 +530,14 @@ class ProductConfigWebsiteSale(WebsiteSale):
         pricelist = get_pricelist()
         product_config_session = request.session.get("product_config_session")
 
-        if product_config_session and product_config_session.get(product_tmpl_id.id):
+        if product_config_session and product_config_session.get(
+            str(product_tmpl_id.id)
+        ):
             request.session.pop("product_config_session", None)
 
-        reconfigure_product_url = "/product_configurator/reconfigure/%s" % slug(
-            product_id
+        reconfigure_product_url = (
+            f"/product_configurator/reconfigure/"
+            f"{request.env['ir.http']._slug(product_id)}"
         )
         values = {
             "product_variant": product_id,
@@ -586,18 +564,20 @@ class ProductConfigWebsiteSale(WebsiteSale):
             tmpl_value_ids = product_id.product_template_attribute_value_ids
             cfg_session.value_ids = tmpl_value_ids.mapped("product_attribute_value_id")
             cfg_session.product_id = product_id.id
-            return request.redirect("/shop/product/%s" % (slug(product_tmpl_id)))
+            return request.redirect(
+                f"/shop/product/{request.env['ir.http']._slug(product_tmpl_id)}"
+            )
         except Exception:
             error_code = 1
             return request.redirect(
-                "/website_product_configurator/error_page/%s" % (error_code)
+                f"/website_product_configurator/error_page/{error_code}"
             )
 
     @http.route(
         [
             error_page,
-            "%s<string:message>" % error_page,
-            "%s<string:error>/<string:message>" % error_page,
+            f"{error_page}<string:message>",
+            f"{error_page}<string:error>/<string:message>",
         ],
         type="http",
         auth="public",

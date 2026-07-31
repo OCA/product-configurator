@@ -1,9 +1,7 @@
-/** @odoo-module **/
-
 import {WarningDialog} from "@web/core/errors/error_dialogs";
-import {insertThousandsSep} from "@web/core/utils/numbers";
-import {jsonrpc} from "@web/core/network/rpc_service";
 import {localization} from "@web/core/l10n/localization";
+import {rpc} from "@web/core/network/rpc";
+import {insertThousandsSep} from "@web/core/utils/numbers";
 import publicWidget from "@web/legacy/js/public/public_widget";
 
 publicWidget.registry.ProductConfigurator = publicWidget.Widget.extend({
@@ -49,8 +47,7 @@ publicWidget.registry.ProductConfigurator = publicWidget.Widget.extend({
             }
 
             this.call("ui", "block");
-
-            const data = await jsonrpc("/website_product_configurator/onchange", {
+            const data = await rpc("/website_product_configurator/onchange", {
                 form_values: form_data,
                 field_name: attribute[0].getAttribute("name"),
             });
@@ -369,7 +366,7 @@ publicWidget.registry.ProductConfigurator = publicWidget.Widget.extend({
         }
         if (flag) {
             self.call("ui", "block");
-            return jsonrpc("/website_product_configurator/save_configuration", {
+            return rpc("/website_product_configurator/save_configuration", {
                 form_values: form_data,
                 next_step: next_step || false,
                 current_step: current_config_step || false,

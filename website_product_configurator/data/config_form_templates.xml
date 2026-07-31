@@ -57,12 +57,18 @@
                                             <span>
                                                 <b>Price: </b>
                                             </span>
-                                            <!-- old code -->
-                                            <!-- <span class="config_product_price" t-esc="cfg_session.price" t-options="{'widget': 'monetary', 'display_currency': product_tmpl.currency_id}"/> -->
+                                            <t
+                                                t-set="current_pricelist"
+                                                t-value="website._get_and_cache_current_pricelist()"
+                                            />
+                                            <t
+                                                t-set="display_currency"
+                                                t-value="current_pricelist.exists() and current_pricelist.currency_id or website.currency_id"
+                                            />
                                             <span
                                                 class="config_product_price"
                                                 t-esc="cfg_session.price"
-                                                t-options="{'widget': 'monetary', 'display_currency': website._get_current_pricelist().currency_id}"
+                                                t-options="{'widget': 'monetary', 'display_currency': display_currency}"
                                             />
                                         </div>
                                     </div>
@@ -437,10 +443,15 @@
                                         t-value="extra_prices.get(value.id, 0)"
                                     />
                                     <t t-if="price_extra">
-                                        (+<t
+                                        <t
+                                        t-set="display_currency"
+                                        t-value="pricelist.exists() and pricelist.currency_id or website.currency_id"
+                                    />
+                                        (+                                        <t
                                         t-esc="price_extra"
-                                        t-options="{'widget': 'monetary', 'display_currency': pricelist.currency_id, 'from_currency': website.currency_id}"
-                                    />)
+                                        t-options="{'widget': 'monetary', 'display_currency': display_currency, 'from_currency': website.currency_id}"
+                                    />
+)
                                     </t>
                                 </option>
                             </t>
@@ -525,10 +536,15 @@
                                             <span
                                                 class="label_config_price_extra_radio"
                                             >
-                                                (+<t
+                                            <t
+                                                t-set="display_currency"
+                                                t-value="pricelist.exists() and pricelist.currency_id or website.currency_id"
+                                            />
+                                                (+                                                <t
                                                 t-esc="price_extra"
-                                                t-options="{'widget': 'monetary', 'display_currency': pricelist.currency_id, 'from_currency': website.currency_id}"
-                                            />)
+                                                t-options="{'widget': 'monetary', 'display_currency': display_currency, 'from_currency': website.currency_id}"
+                                            />
+)
                                             </span>
                                         </t>
                                         <input
@@ -611,7 +627,10 @@
                 class="oe_price_h4 decimal_precision"
                 t-att-data-precision="str(website.currency_id.decimal_places)"
             >
-                <t t-set="curr_pl" t-value="website._get_current_pricelist()" />
+                <t
+                    t-set="curr_pl"
+                    t-value="website._get_and_cache_current_pricelist()"
+                />
                 <t
                     t-set="price"
                     t-value="product_variant.with_context(pricelist=curr_pl.id)._get_contextual_price()"
@@ -672,17 +691,17 @@
                             </ol>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 col-xl-8">
+                    <div class="d-flex flex-column flex-md-row">
+                        <div class="col-md-3 col-xl-8">
                             <!-- Cart wizard image. -->
                             <t t-call="website_sale.shop_product_images">
                                 <t
                                     t-set="product_images"
-                                    t-value="product_variant._get_images() if product_variant else product._get_images()"
+                                    t-value="product_variant._get_images() if  product_variant else product._get_images()"
                                 />
                             </t>
                         </div>
-                        <div class="col-md-6 col-xl-4" id="product_details">
+                        <div class="col-md-3 col-xl-4" id="product_details">
                             <h1 itemprop="name" t-field="product.name">Product Name</h1>
                             <span
                                 itemprop="url"
@@ -725,7 +744,8 @@
                                                     <li>
                                                         <strong
                                                         t-field="val.attribute_id.name"
-                                                    />:
+                                                    />
+:
                                                         <span t-field="val.name" />
                                                     </li>
                                                 </t>
@@ -733,7 +753,8 @@
                                                     <li>
                                                         <strong
                                                         t-field="val.attribute_id.name"
-                                                    />:
+                                                    />
+:
                                                         <span t-field="val.value" />
                                                         <t
                                                         t-foreach="val.attachment_ids"
@@ -760,7 +781,9 @@
                                         id="add_to_cart"
                                         class="btn btn-primary btn-lg mt16 js_check_product a-submit d-block d-sm-inline-block"
                                         href="#"
-                                    ><i class="fa fa-shopping-cart" /> Add to Cart</a>
+                                    >
+                                        <i class="fa fa-shopping-cart" />
+ Add to Cart</a>
                                     <div id="product_option_block" />
                                 </div>
                             </form>
@@ -785,7 +808,7 @@
                               30-day money-back guarantee<br />
                               Free Shipping in U.S.<br />
                               Buy now, get in 2 days
-                            </p>
+                        </p>
                         </div>
                     </div>
                 </section>
@@ -793,7 +816,7 @@
                     itemprop="description"
                     t-field="product.website_description"
                     class="oe_structure mt16"
-                    id="product_full_description"
+                    id="oe_structure_product_full_description"
                 />
             </div>
         </t>
@@ -829,7 +852,10 @@
         customize_show="True"
         name="Alternative Products"
     >
-        <xpath expr="//div[@id='product_full_description']" position="after">
+        <xpath
+            expr="//div[@id='oe_structure_product_full_description']"
+            position="after"
+        >
             <div class="container mt32" t-if="product.alternative_product_ids">
                 <h3>Alternative Products:</h3>
                 <div class="row mt16" style="">
@@ -912,6 +938,7 @@
                     class="btn btn-link js_add_cart_json"
                     aria-label="Remove one"
                     title="Remove one"
+                    name="remove_one"
                 >
                     <i class="fa fa-minus" />
                 </a>
@@ -947,7 +974,9 @@
                 id="buy_now"
                 class="btn btn-outline-primary btn-lg mt16 d-block d-sm-inline-block"
                 href="#"
-            ><i class="fa fa-bolt" /> Buy Now</a>
+            >
+            <i class="fa fa-bolt" />
+ Buy Now</a>
         </xpath>
     </template>
 </odoo>

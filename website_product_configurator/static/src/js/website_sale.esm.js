@@ -1,23 +1,23 @@
-/** @odoo-module **/
+import {WebsiteSale} from "@website_sale/interactions/website_sale";
+import {patch} from "@web/core/utils/patch";
 
-import publicWidget from "@web/legacy/js/public/public_widget";
-
-publicWidget.registry.WebsiteSale.include({
+patch(WebsiteSale.prototype, {
     /**
      * Update the root product during an Add process.
      *
-     * @private
-     * @param {Object} $form
-     * @param {Number} productId
+     * @override
+     * @param {HTMLFormElement} form - The form in which the product is.
      */
-    // eslint-disable-next-line no-unused-vars
-    _updateRootProduct($form, productId) {
+    _updateRootProduct(form) {
         // Call the original method to keep existing functionality
-        this._super.apply(this, arguments);
+        super._updateRootProduct(...arguments);
 
         // Extend the rootProduct to include the `config_session_id`
-        this.rootProduct.config_session_id = $form
-            .find('input[name="config_session_id"]')
-            .val();
+        const configSessionInput = form.querySelector(
+            'input[name="config_session_id"]'
+        );
+        if (configSessionInput) {
+            this.rootProduct.config_session_id = configSessionInput.value;
+        }
     },
 });
