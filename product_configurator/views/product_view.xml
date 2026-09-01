@@ -10,6 +10,22 @@
             <xpath expr="//header" position="inside">
                 <field name="config_ok" invisible="1" />
             </xpath>
+            <xpath
+                expr="//group[@name='group_lots_and_weight']/label[@for='weight']"
+                position="attributes"
+            >
+                <attribute name="invisible">
+                    product_variant_count &gt; 1 and not is_product_variant and not config_ok
+                </attribute>
+            </xpath>
+            <xpath
+                expr="//group[@name='group_lots_and_weight']/div[@name='weight']"
+                position="attributes"
+            >
+                <attribute name="invisible">
+                    product_variant_count &gt; 1 and not is_product_variant and not config_ok
+                </attribute>
+            </xpath>
         </field>
     </record>
 
@@ -321,6 +337,12 @@
             <xpath expr="//div[@name='options']" position="inside">
                 <field name="config_preset_ok" invisible="not config_ok" />
                 <label for="config_preset_ok" invisible="not config_ok" />
+            </xpath>
+            <xpath
+                expr="//group[@name='group_lots_and_weight']/div[@name='weight']/field[@name='weight']"
+                position="attributes"
+            >
+                <attribute name="readonly">config_ok</attribute>
             </xpath>
         </field>
     </record>
