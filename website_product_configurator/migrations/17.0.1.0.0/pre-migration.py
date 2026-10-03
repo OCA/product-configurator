@@ -1,7 +1,7 @@
 def migrate(cr, version):
     # Query to check if the specific key exists in the 'ir_config_parameter' table.
     cr.execute(
-        """SELECT id, value key FROM ir_config_parameter
+        """SELECT id, value, key FROM ir_config_parameter
         WHERE key = 'product_configurator.default_configuration_step_website_view_id'"""
     )
     record = cr.fetchone()
