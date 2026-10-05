@@ -284,25 +284,25 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: _get_mako_tmpl_name()",
         )
 
-    def test_08_compute_product_weight(self):
+    def test_08_compute_weight(self):
         product_product = self._get_product_id()
         self.config_product.weight = 10
         product_product.weight_extra = 20
-        product_product._compute_product_weight()
+        product_product._compute_weight()
         self.assertEqual(
             product_product.weight,
             30,
             "Error: If value are not get 30\
-            Method: _compute_product_weight()",
+            Method: _compute_weight()",
         )
         product_product.config_ok = False
         product_product.weight_dummy = 50
-        product_product._compute_product_weight()
+        product_product._compute_weight()
         self.assertEqual(
             product_product.weight,
             50,
             "Error: If value are not get 50\
-            Method: _compute_product_weight()",
+            Method: _compute_weight()",
         )
 
     def test_09_compute_config_name(self):
@@ -671,15 +671,15 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: _get_config_name()",
         )
 
-    def test_21_search_product_weight(self):
+    def test_21_search_weight(self):
         product_product = self._get_product_id()
         operator = "and"
         value = 10
-        search_product_weight = product_product._search_product_weight(operator, value)
+        search_weight = product_product._search_weight(operator, value)
         self.assertTrue(
-            search_product_weight,
+            search_weight,
             "Error: If value False\
-            Method: _search_product_weight()",
+            Method: _search_weight()",
         )
 
     def test_22_search_weight(self):
