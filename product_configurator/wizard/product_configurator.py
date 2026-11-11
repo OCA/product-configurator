@@ -638,7 +638,7 @@ class ProductConfigurator(models.TransientModel):
         except Exception as exc:
             raise UserError(
                 self.env._(
-                    "There was a problem rendering the view " "(dynamic_form not found)"
+                    "There was a problem rendering the view (dynamic_form not found)"
                 )
             ) from exc
 
@@ -820,9 +820,16 @@ class ProductConfigurator(models.TransientModel):
                 check_val_ids=attr_line.value_ids.ids,
                 product_template_attribute_line_id=attr_line.id,
             )
-            if attr_line.custom:
-                config_session_obj = self.env["product.config.session"]
-                custom_val = config_session_obj.get_custom_value_id()
+            domains = self.get_onchange_domains(
+                cfg_val_ids=attr_line.value_ids.ids,
+                product_tmpl_id=self.product_tmpl_id,
+                config_session_id=self.config_session_id,
+            )
+            available_vals = self.config_session_id._get_line_available_vals(
+                attr_line, domains
+            )
+            custom_val = self.config_session_id.get_custom_value_id()
+            if attr_line.custom and custom_val.id in available_vals:
                 available_value_ids.append(custom_val.id)
             # Handle default values for dynamic fields on Odoo frontend
             res[0].update(

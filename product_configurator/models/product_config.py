@@ -1608,6 +1608,13 @@ class ProductConfigSession(models.Model):
             values[key] = new_lst
         return values
 
+    def _get_line_available_vals(self, attr_line, domains):
+        """Return available value ids for the attribute line field domain."""
+        field_prefix = self.env["product.configurator"]._prefixes.get("field_prefix")
+        field_name = f"{field_prefix}{attr_line.attribute_id.id}"
+        domain = domains.get(field_name, [("id", "in", [])])
+        return domain[0][2] if domain and len(domain[0]) >= 3 else []
+
 
 class ProductConfigSessionCustomValue(models.Model):
     _name = "product.config.session.custom.value"
