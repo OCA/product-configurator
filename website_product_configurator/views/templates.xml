@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="error_page">
+        <t t-call="website.layout">
+            <div class="wrap">
+                <div>
+                    <div class="text-center">
+                        <img t-attf-src="/web/static/src/img/logo2.png" />
+                    </div>
+                </div>
+                <div id="oe_structure_error_page" class="oe_structure oe_empty">
+                    <div class="container">
+                        <h1 class="mt32">ERROR!</h1>
+                        <h4>
+                            <b>
+                                <u
+                                >There is somthing going wrong. Please try again after some time.</u>
+                            </b>
+                        </h4>
+                        <t t-if="error">
+                            <ul>
+                                <li>
+                                    <h4>
+                                        <t t-esc="error" />
+                                    </h4>
+                                </li>
+                            </ul>
+                        </t>
+                        <br />
+                        <br />
+                        <p>
+                            <h4>
+                                <a t-attf-href="/shop">Go Back</a>
+                            </h4>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
