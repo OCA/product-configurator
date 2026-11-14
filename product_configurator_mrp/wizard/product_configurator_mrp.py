@@ -16,7 +16,7 @@ class ProductConfiguratorMrp(models.TransientModel):
     )
 
     def get_mrp_production_action(self):
-        mrp_action = self.env.ref("mrp.mrp_production_action").read()
+        mrp_action = self.env.ref("mrp.mrp_production_action").sudo().read()
         if mrp_action:
             mrp_action = mrp_action[0]
             context = safe_eval(
